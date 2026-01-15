@@ -1,0 +1,47 @@
+{% extends 'store/main.html' %}
+{% load static %}
+
+{% block content %}
+{% if subcategory %}
+<h2 class="mb-3">{{ subcategory.name }}</h2>
+{% else %}
+<h2 class="mb-3">All Products</h2>
+{% endif %}
+
+<div class="row">
+    {% for product in products %}
+    <div class="col-md-4 mb-4">
+        <div class="card">
+            {% if product.imageURL %}
+            <img src="{{ product.image.url }}"
+                 class="card-img-top product-img-rect"
+                 alt="{{ product.name }}">
+
+
+            {% else %}
+            <img src="{% static 'images/placeholder.png' %}"
+                 class="card-img-top product-img-rect"
+                 alt="placeholder">
+
+
+            {% endif %}
+            <div class="card-body">
+                <h5 class="card-title">{{ product.name }}</h5>
+                <p class="card-text">₹{{ product.price|floatformat:2 }}</p>
+                <!-- ✅ Add to Cart button (JS handled) -->
+                <button
+                        data-product="{{ product.id }}"
+                        data-action="add"
+                        class="btn btn-outline-secondary btn-sm update-cart">
+                    Add to cart
+                </button>
+
+                <!-- View button (keep for later product detail page) -->
+                <a href="#" class="btn btn-outline-success btn-sm">View</a>
+
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

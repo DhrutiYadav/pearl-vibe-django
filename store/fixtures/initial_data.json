@@ -1,0 +1,45 @@
+[
+  {
+    "model": "store.category",
+    "pk": 1,
+    "fields": {
+      "name": "Top Wear"
+    }
+  },
+  {
+    "model": "store.subcategory",
+    "pk": 1,
+    "fields": {
+      "name": "Shirts",
+      "category": 1
+    }
+  },
+  {
+    "model": "store.subcategory",
+    "pk": 2,
+    "fields": {
+      "name": "T-Shirts",
+      "category": 1
+    }
+  },
+  {
+    "model": "store.product",
+    "pk": 1,
+    "fields": {
+      "name": "Formal Shirt",
+      "price": 999,
+      "digital": false,
+      "subcategory": 1
+    }
+  },
+  {
+    "model": "store.product",
+    "pk": 2,
+    "fields": {
+      "name": "Casual T-Shirt",
+      "price": 599,
+      "digital": false,
+      "subcategory": 2
+    }
+  }
+]

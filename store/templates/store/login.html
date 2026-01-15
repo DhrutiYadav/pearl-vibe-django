@@ -1,0 +1,41 @@
+{% extends 'store/main.html' %}
+{% load static %}
+
+{% block content %}
+<h2 class="mb-4 text-center">Login</h2>
+
+<form method="post" class="mx-auto" style="max-width: 400px;">
+
+    {% csrf_token %}
+
+    <!-- Display form errors if any -->
+    {% if form.errors %}
+    <div class="alert alert-danger">
+        <ul class="mb-0">
+            {% for field in form %}
+            {% for error in field.errors %}
+            <li>{{ error|escape }}</li>
+            {% endfor %}
+            {% endfor %}
+            {% for error in form.non_field_errors %}
+            <li>{{ error|escape }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+
+    <div class="mb-3">
+        <input type="text" name="username" class="form-control" placeholder="Username" required>
+    </div>
+
+    <div class="mb-3">
+        <input type="password" name="password" class="form-control" placeholder="Password" required>
+    </div>
+
+    <button type="submit" class="btn btn-primary w-100">Login</button>
+
+    <p class="text-center mt-3">
+        Don't have an account? <a href="{% url 'store:register' %}">Register</a>
+    </p>
+</form>
+{% endblock %}

@@ -1,0 +1,104 @@
+{% extends 'store/main.html' %}
+{% load static %}
+
+{% block content %}
+
+<style>
+    .contact-page {
+      max-width: 900px;
+      margin: 40px auto;
+      padding: 20px;
+      background-color: #ffffff;
+      color: #1a1a1a;
+    }
+
+    .contact-page header {
+      font-size: 3rem;
+      font-weight: 900;
+      margin-bottom: 30px;
+    }
+
+    .contact-section {
+      display: flex;
+      gap: 40px;
+      border: 1px solid #a28c7e;
+      padding: 20px;
+    }
+
+    .contact-form {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .contact-form input,
+    .contact-form textarea {
+      border: none;
+      border-bottom: 1px solid #a28c7e;
+      background: transparent;
+      padding: 8px 0;
+      outline: none;
+    }
+
+    .contact-form textarea {
+      resize: none;
+      height: 60px;
+    }
+
+    .contact-form button {
+      width: 150px;
+      background: #000;
+      color: #fff;
+      border: none;
+      border-radius: 40px;
+      padding: 12px;
+      cursor: pointer;
+    }
+
+    .contact-info {
+      flex: 0.7;
+      font-size: 0.95rem;
+    }
+
+    .social-icons a {
+      font-size: 1.4rem;
+      margin-right: 15px;
+      color: #1a1a1a;
+    }
+</style>
+
+<div class="contact-page">
+    <header>Contact Us</header>
+
+    <div class="contact-section">
+        <form class="contact-form">
+            <label>Full Name</label>
+            <input type="text" placeholder="Full Name">
+
+            <label>Email</label>
+            <input type="email" placeholder="Email">
+
+            <label>Message</label>
+            <textarea placeholder="Message"></textarea>
+
+            <button type="submit">Contact Us</button>
+        </form>
+
+        <div class="contact-info">
+            <p><strong>Contact</strong></p>
+            <p>support@pearlvibe.example</p>
+
+            <p><strong>Based in</strong></p>
+            <p>Gujarat<br>India</p>
+
+            <div class="social-icons">
+                <a href="#"><i class="fab fa-facebook-f"></i></a>
+                <a href="#"><i class="fab fa-instagram"></i></a>
+                <a href="#"><i class="fab fa-twitter"></i></a>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

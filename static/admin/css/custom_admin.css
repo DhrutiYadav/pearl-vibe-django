@@ -1,0 +1,425 @@
+/* ==============================
+   PEARL VIBE ADMIN – CLEAN THEME
+   ============================== */
+
+/* Global / page background */
+body {
+    background-color: #F4F6FA;
+    color: #1F2933;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+}
+
+/* ==============================
+   HEADER
+   ============================== */
+#header {
+    background-color: #0E3167 !important;
+    border-bottom: 3px solid #C9A24D;
+    box-shadow: none;
+}
+
+#header h1,
+#header h1 a {
+    color: #C9A24D !important;
+    font-weight: 600;
+    font-size: 20px;
+}
+
+#user-tools,
+#user-tools a {
+    color: #ffffff !important;
+    text-transform: uppercase;
+    font-size: 12px;
+}
+
+/* Small brand padding fix */
+#header .container {
+    padding-left: 18px;
+    padding-right: 18px;
+}
+
+/* ==============================
+   PAGE TITLE
+   ============================== */
+.dashboard h1 {
+    font-size: 22px;
+    font-weight: 600;
+    color: #0E3167;
+    margin: 18px 0;
+}
+
+/* ==============================
+   LEFT PANEL – MODULE CARDS
+   ============================== */
+#content {
+    padding: 24px 36px;
+}
+
+/* Module container */
+.module {
+    background: #ffffff !important;
+    border-radius: 10px;
+    margin-bottom: 28px;
+    box-shadow: 0 6px 18px rgba(2,6,23,0.06);
+    overflow: hidden;
+    border: 1px solid rgba(15,23,42,0.04);
+}
+
+/* Module caption (section header) */
+.module caption {
+    background: linear-gradient(90deg, #143D8A, #0E3167) !important;
+    color: #ffffff !important;
+    padding: 14px 18px;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+    border-radius: 10px 10px 0 0;
+}
+
+/* Replace default table look with clean rows */
+.module table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+.module table th,
+.module table td {
+    border: none !important;
+    padding: 12px 18px;
+    background: #ffffff;
+    vertical-align: middle;
+}
+
+/* Row separators and hover */
+.module table tbody tr {
+    border-bottom: 1px solid #EEF2F7;
+    transition: background-color 0.18s ease;
+}
+
+.module table tbody tr:last-child {
+    border-bottom: none;
+}
+
+.module table tbody tr:hover {
+    background-color: #F7FAFD;
+}
+
+/* App / model name styling */
+.module table tbody th a {
+    color: #0E3167;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+/* Add / Change links styling */
+.module table td a {
+    color: #C9A24D;
+    font-weight: 600;
+    margin-left: 10px;
+}
+
+.module table td a:hover {
+    color: #0E3167;
+}
+
+/* Small icon alignment */
+.object-tools a.addlink {
+    background: none !important;
+    color: #C9A24D !important;
+    font-weight: 700;
+}
+
+/* ==============================
+   BUTTONS & FORMS
+   ============================== */
+.button,
+input[type=submit],
+input[type=button],
+.submit-row input {
+    background-color: #C9A24D;
+    color: #0E3167;
+    border: none;
+    font-weight: 700;
+    border-radius: 8px;
+    padding: 8px 12px;
+    cursor: pointer;
+}
+
+.button:hover,
+input[type=submit]:hover,
+input[type=button]:hover {
+    background-color: #b8923f;
+}
+
+/* Fieldset titles */
+fieldset.module h2 {
+    background-color: #0E3167;
+    color: #ffffff;
+    border-left: 4px solid #C9A24D;
+    padding: 8px 12px;
+    margin: 0 0 12px 0;
+    border-radius: 6px;
+}
+
+/* ==============================
+   CHANGELIST / TABLES
+   ============================== */
+#changelist table thead th {
+    background-color: #0E3167;
+    color: #ffffff;
+    font-weight: 600;
+    padding: 10px 12px;
+}
+
+#changelist table tbody tr:nth-child(even) {
+    background-color: #FBFDFF;
+}
+
+/* Links inside changelist */
+#changelist a {
+    color: #0E3167;
+}
+
+#changelist a:hover {
+    color: #C9A24D;
+}
+
+/* ==============================
+   RECENT ACTIONS (RIGHT PANEL)
+   ============================== */
+#recent-actions-module {
+    background-color: #143D8A !important;
+    color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 6px 18px rgba(2,6,23,0.06);
+    padding: 0;
+    overflow: hidden;
+}
+
+/* Recent actions header */
+#recent-actions-module h2 {
+    background: rgba(0,0,0,0.05);
+    color: #C9A24D;
+    margin: 0;
+    padding: 14px 18px;
+    font-weight: 700;
+}
+
+/* Recent actions body */
+#recent-actions-module .module {
+    background: transparent !important;
+    box-shadow: none;
+    border: none;
+}
+
+/* Recent links */
+#recent-actions-module a {
+    color: #ffffff;
+    font-weight: 600;
+}
+
+#recent-actions-module a:hover {
+    color: #C9A24D;
+}
+
+/* Make the recent actions list look less dense */
+#recent-actions-module .module li {
+    padding: 8px 18px;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+
+/* ==============================
+   LINKS & MISC
+   ============================== */
+a {
+    color: #0E3167;
+    text-decoration: underline;
+}
+
+a:hover {
+    color: #C9A24D;
+}
+
+/* Small helpers */
+.small {
+    color: #6B7280;
+}
+
+/* Ensure admin footer / other bits don't clash */
+#footer {
+    color: #6B7280;
+}
+
+/* ==============================
+   MOBILE / RESPONSIVE TWEAKS
+   ============================== */
+@media (max-width: 900px) {
+    #content {
+        padding: 12px 18px;
+    }
+
+    .module caption {
+        padding: 10px 12px;
+        font-size: 13px;
+    }
+
+    #recent-actions-module {
+        margin-top: 18px;
+    }
+}
+
+
+/* ==============================
+   FIX: ROW DIVIDER LINE CUTTING TEXT
+   ============================== */
+
+/* Remove any row borders */
+.module table tbody tr {
+    border: none !important;
+}
+
+/* Add divider ONLY at bottom of cells */
+.module table tbody td,
+.module table tbody th {
+    border-bottom: 1px solid #E5EAF2 !important;
+    padding-top: 14px;
+    padding-bottom: 14px;
+}
+
+/* Remove divider from last row */
+.module table tbody tr:last-child td,
+.module table tbody tr:last-child th {
+    border-bottom: none !important;
+}
+
+/* Keep text above the line */
+.module table tbody th a,
+.module table tbody td a {
+    position: relative;
+    z-index: 1;
+}
+
+/* Remove default Django admin input look */
+input[type="color"] {
+    width: 40px !important;
+    height: 40px !important;
+    padding: 0 !important;
+    border-radius: 50% !important;
+    border: 1px solid #999 !important;
+    cursor: pointer;
+}
+
+/* Remove background box around color input */
+.form-row .field-default_color {
+    background: transparent !important;
+}
+
+/* ==============================
+   FINAL COLOR INPUT HARD FIX
+   ============================== */
+
+/* Prevent theme wrappers from clipping the circle */
+.field-default_color,
+.field-default_color div,
+.field-default_color .flex-container {
+    overflow: visible !important;
+    background: transparent !important;
+    box-shadow: none !important;
+}
+
+/* Force color input above all theme layers */
+input.pv-color-input {
+    position: relative !important;
+    z-index: 10 !important;
+}
+
+/* Kill any pseudo-elements added by themes */
+input.pv-color-input::before,
+input.pv-color-input::after {
+    display: none !important;
+    content: none !important;
+}
+
+
+/* ==============================
+   RIGHT-SIDE FORM FIX (ALL THEMES)
+   ============================== */
+
+/* Stop form field containers from clipping */
+.aligned .form-row,
+.aligned .form-row > div,
+.aligned .field-default_color,
+.aligned .field-default_color > div {
+    overflow: visible !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+}
+
+/* Force the color input above theme layers */
+.aligned input.pv-color-input {
+    position: relative !important;
+    z-index: 999 !important;
+}
+
+/* Remove masks / clipping used by dark & half themes */
+.aligned .form-row {
+    clip-path: none !important;
+    mask: none !important;
+    -webkit-mask: none !important;
+}
+
+/* Kill theme pseudo overlays */
+.aligned .form-row::before,
+.aligned .form-row::after {
+    content: none !important;
+    display: none !important;
+}
+
+/* =====================================================
+   DJANGO ADMIN RIGHT PANEL FIX (DARK + HALF THEMES)
+   ===================================================== */
+
+/* Django admin right sidebar container */
+#content-related {
+    overflow: visible !important;
+    background: transparent !important;
+}
+
+/* Remove clipping/masks applied by themes */
+#content-related,
+#content-related * {
+    clip-path: none !important;
+    mask: none !important;
+    -webkit-mask: none !important;
+}
+
+/* Ensure Recent Actions box is not clipped */
+#recent-actions-module {
+    overflow: visible !important;
+}
+
+/* ==============================
+   HIDE DJANGO ADMIN THEME TOGGLE
+   ============================== */
+
+/* Hide theme toggle button (sun / moon / half-circle) */
+.theme-toggle,
+button.theme-toggle,
+#user-tools .theme-toggle,
+#user-tools button[aria-label*="theme"],
+#user-tools button svg {
+    display: none !important;
+}
+
+#content-related {
+    --body-fg: #C9A24D;
+}
+
+.quiet,
+a.quiet:link,
+a.quiet:visited,
+#content-related h3 {
+    color: #E5C87A !important;
+}

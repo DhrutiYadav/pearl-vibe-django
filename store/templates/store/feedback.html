@@ -1,0 +1,9 @@
+{% extends 'store/main.html' %}
+{% block content %}
+<h2>Feedback</h2>
+{% if message %}<div class="alert alert-success">{{ message }}</div>{% endif %}
+<form method="post">{% csrf_token %}
+  <div class="mb-3"><textarea class="form-control" name="feedback" rows="5" placeholder="Your feedback"></textarea></div>
+  <button class="btn btn-primary" type="submit">Send Feedback</button>
+</form>
+{% endblock %}
