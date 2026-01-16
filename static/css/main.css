@@ -1,4 +1,15 @@
-body{padding-top:20px} .row-image{width:50px;height:50px} .box-element{padding:10px}
+body {
+    padding-top: 20px;
+}
+
+.row-image {
+    width: 80px; /* keep the larger width you want */
+    height: 50px; /* adjust if needed */
+}
+
+.box-element {
+    padding: 10px;
+}
 
 .product-img-rect {
     width: 100%;
@@ -8,7 +19,7 @@ body{padding-top:20px} .row-image{width:50px;height:50px} .box-element{padding:1
 
 .subcategory-img {
     width: 100%;
-    height: 460px;        /* rectangle height */
+    height: 460px;      /* rectangle height */
     object-fit: contain;
 }
 
@@ -72,4 +83,60 @@ body{padding-top:20px} .row-image{width:50px;height:50px} .box-element{padding:1
     font-size: 1.4rem;
     margin-right: 15px;
     color: #1a1a1a;
+}
+
+/* CART ROW */
+.cart-row {
+    display: flex;
+    align-items: center;
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+    border-bottom: 1px solid #ececec;
+}
+
+/* PRODUCT IMAGE */
+.row-image {
+    width: 80px;
+}
+
+/* ARROW ICONS */
+.chg-quantity {
+    width: 12px;
+    cursor: pointer;
+}
+
+.chg-quantity:hover {
+    opacity: 0.6;
+}
+
+/* QUANTITY + ARROWS LAYOUT */
+.quantity-wrapper {
+    display: flex;
+    align-items: center;     /* centers 1 between ▲ ▼ */
+    gap: 6px;
+    font-weight: 700;
+}
+
+/* NUMBER */
+.quantity-value {
+    min-width: 18px;
+    text-align: center;
+}
+
+/* ARROWS ON RIGHT */
+.arrow-wrapper {
+    display: flex;
+    flex-direction: column; /* ▲ above ▼ */
+    justify-content: space-between;
+    height: 28px;
+}
+
+/* ARROW ICONS */
+.chg-quantity {
+    width: 12px;
+    cursor: pointer;
+}
+
+.chg-quantity:hover {
+    opacity: 0.6;
 }

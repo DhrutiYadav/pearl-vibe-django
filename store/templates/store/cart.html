@@ -58,21 +58,25 @@
                 </div>
 
                 <div style="flex:1">
-                    <p class="quantity">{{ item.quantity }}</p>
-                    <div class="quantity">
-                        <img
-                                data-product="{{ item.product.id }}"
-                                data-action="add"
-                                class="chg-quantity update-cart"
-                                src="{% static 'images/arrow-up.png' %}">
+                    <div class="quantity-wrapper">
+                        <span class="quantity-value">{{ item.quantity }}</span>
 
-                        <img
-                                data-product="{{ item.product.id }}"
-                                data-action="remove"
-                                class="chg-quantity update-cart"
-                                src="{% static 'images/arrow-down.png' %}">
+                        <div class="arrow-wrapper">
+                            <img
+                                    data-product="{{ item.product.id }}"
+                                    data-action="add"
+                                    class="chg-quantity update-cart"
+                                    src="{% static 'images/arrow-up.png' %}">
+
+                            <img
+                                    data-product="{{ item.product.id }}"
+                                    data-action="remove"
+                                    class="chg-quantity update-cart"
+                                    src="{% static 'images/arrow-down.png' %}">
+                        </div>
                     </div>
                 </div>
+
 
                 <div style="flex:1">
                     <p>₹{{ item.get_total }}</p>
