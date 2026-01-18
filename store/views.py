@@ -3,11 +3,26 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.http import JsonResponse
 from django.contrib.auth.models import User
+from django.contrib.auth.decorators import login_required, user_passes_test
 from .models import *
 from .utils import cookieCart
 import json
 import datetime
 
+
+def is_admin(user):
+    return user.is_staff or user.is_superuser
+
+@login_required
+@user_passes_test(is_admin)
+def dashboard_home(request):
+    context = {
+        "total_products": 120,
+        "total_orders": 45,
+        "total_users": 20,
+        "revenue": 56000,
+    }
+    return render(request, "dashboard/dashboard.html", context)
 
 # ---------------------------
 # STORE / PRODUCT VIEWS
@@ -208,3 +223,11 @@ def processOrder(request):
             )
 
     return JsonResponse('Payment submitted', safe=False)
+
+
+def product_detail(request, product_id):
+    product = get_object_or_404(Product, id=product_id)
+
+    return render(request, 'store/product_detail.html', {
+        'product': product
+    })

@@ -423,3 +423,8 @@ a.quiet:visited,
 #content-related h3 {
     color: #E5C87A !important;
 }
+
+.color-chip.removable:hover {
+    opacity: 0.7;
+    transform: scale(1.05);
+}

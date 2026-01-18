@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{% block title %}Dashboard{% endblock %}</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f6f9;
+        }
+        .sidebar {
+            width: 220px;
+            height: 100vh;
+            background: #111827;
+            color: white;
+            position: fixed;
+            padding: 20px;
+        }
+        .sidebar a {
+            color: white;
+            text-decoration: none;
+            display: block;
+            margin: 12px 0;
+        }
+        .content {
+            margin-left: 240px;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="sidebar">
+    <h2>Pearl Vibe</h2>
+    <a href="/dashboard/">Dashboard</a>
+    <a href="/dashboard/products/">Products</a>
+    <a href="/dashboard/orders/">Orders</a>
+    <a href="/dashboard/users/">Users</a>
+</div>
+
+<div class="content">
+    {% block content %}{% endblock %}
+</div>
+
+</body>
+</html>

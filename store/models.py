@@ -17,10 +17,10 @@ class Product(models.Model):
     price = models.FloatField()
     image = models.ImageField(upload_to='images/', null=True, blank=True)
     digital = models.BooleanField(default=False)
-
+    description = models.TextField(blank=True)
     # ✅ ADD THESE TWO LINES
     colors = models.JSONField(default=list, blank=True)   # multiple colors
-    default_color = models.CharField(max_length=20, default="#8B4513")
+    # default_color = models.CharField(max_length=20, default="#8B4513")
 
     def __str__(self):
         return self.name

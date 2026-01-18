@@ -27,19 +27,46 @@
             {% endif %}
             <div class="card-body">
                 <h5 class="card-title">{{ product.name }}</h5>
-                <p class="card-text">₹{{ product.price|floatformat:2 }}</p>
-                <!-- ✅ Add to Cart button (JS handled) -->
-                <button
-                        data-product="{{ product.id }}"
-                        data-action="add"
-                        class="btn btn-outline-secondary btn-sm update-cart">
-                    Add to cart
-                </button>
 
-                <!-- View button (keep for later product detail page) -->
-                <a href="#" class="btn btn-outline-success btn-sm">View</a>
+                <p class="card-text">
+                    ₹{{ product.price|floatformat:2 }}
+                </p>
 
+                <!-- ✅ Color Display -->
+                {% if product.color %}
+                <div class="mb-2 d-flex align-items-center gap-2">
+        <span
+                title="Color"
+                style="
+                width: 16px;
+                height: 16px;
+                border-radius: 50%;
+                background-color: {{ product.color }};
+                border: 1px solid #999;
+                display: inline-block;
+            ">
+        </span>
+                </div>
+                {% endif %}
+
+                <!-- ✅ Buttons -->
+                <div class="d-flex gap-2">
+                    <!-- Add to Cart -->
+                    <button
+                            data-product="{{ product.id }}"
+                            data-action="add"
+                            class="btn btn-outline-secondary btn-sm update-cart">
+                        Add to cart
+                    </button>
+
+                    <!-- View Product -->
+                    <a href="{% url 'store:product_detail' product.id %}"
+                       class="btn btn-outline-success btn-sm">
+                        View
+                    </a>
+                </div>
             </div>
+
         </div>
     </div>
     {% endfor %}

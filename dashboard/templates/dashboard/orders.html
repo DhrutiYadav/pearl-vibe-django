@@ -1,0 +1,28 @@
+{% extends 'dashboard/base.html' %}
+
+{% block title %}Orders{% endblock %}
+
+{% block content %}
+<h1>Orders</h1>
+
+<table border="1" cellpadding="10" cellspacing="0">
+    <tr>
+        <th>Order ID</th>
+        <th>Customer</th>
+        <th>Total</th>
+        <th>Status</th>
+    </tr>
+    <tr>
+        <td>#1001</td>
+        <td>Rahul</td>
+        <td>₹1,499</td>
+        <td>Paid</td>
+    </tr>
+    <tr>
+        <td>#1002</td>
+        <td>Amit</td>
+        <td>₹2,299</td>
+        <td>Pending</td>
+    </tr>
+</table>
+{% endblock %}

@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Pearl Vibe | Admin Dashboard</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f9;
+        }
+
+        /* Top navbar */
+        .navbar {
+            background-color: #0b2d5c;
+            color: #ffffff;
+            padding: 15px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .navbar h2 {
+            margin: 0;
+            font-size: 22px;
+        }
+
+        .navbar a {
+            color: #ffffff;
+            text-decoration: none;
+            margin-left: 15px;
+            font-size: 14px;
+        }
+
+        /* Layout */
+        .layout {
+            display: flex;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 230px;
+            background-color: #102f5e;
+            min-height: 100vh;
+            padding-top: 20px;
+        }
+
+        .sidebar a {
+            display: block;
+            padding: 12px 20px;
+            color: #ffffff;
+            text-decoration: none;
+            font-size: 15px;
+        }
+
+        .sidebar a:hover {
+            background-color: #1e4fa1;
+        }
+
+        /* Main content */
+        .content {
+            flex: 1;
+            padding: 25px;
+        }
+
+        /* Cards */
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+        }
+
+        .card {
+            background-color: #ffffff;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        }
+
+        .card h3 {
+            margin: 0;
+            font-size: 28px;
+            color: #0b2d5c;
+        }
+
+        .card p {
+            margin-top: 8px;
+            color: #666;
+        }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            .cards {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .layout {
+                flex-direction: column;
+            }
+            .sidebar {
+                width: 100%;
+                min-height: auto;
+            }
+            .cards {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<div class="navbar">
+    <h2>Pearl Vibe Admin</h2>
+    <div>
+        <a href="/">View Site</a>
+        <a href="/admin/logout/">Logout</a>
+    </div>
+</div>
+
+<div class="layout">
+
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+        <a href="/dashboard/">Dashboard</a>
+        <a href="#">Products</a>
+        <a href="#">Categories</a>
+        <a href="#">Orders</a>
+        <a href="#">Users</a>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div class="content">
+        <h2>Dashboard Overview</h2>
+
+        <div class="cards">
+            <div class="card">
+                <h3>120</h3>
+                <p>Total Products</p>
+            </div>
+
+            <div class="card">
+                <h3>45</h3>
+                <p>Total Orders</p>
+            </div>
+
+            <div class="card">
+                <h3>20</h3>
+                <p>Total Users</p>
+            </div>
+
+            <div class="card">
+                <h3>₹56,000</h3>
+                <p>Total Revenue</p>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>
