@@ -28,26 +28,49 @@
             <div class="card-body">
                 <h5 class="card-title">{{ product.name }}</h5>
 
-                <p class="card-text">
-                    ₹{{ product.price|floatformat:2 }}
-                </p>
+                <!-- ✅ Price + Size + Colors in one line -->
+                <div class="d-flex justify-content-between align-items-center mb-2">
 
-                <!-- ✅ Color Display -->
-                {% if product.color %}
-                <div class="mb-2 d-flex align-items-center gap-2">
-        <span
-                title="Color"
-                style="
+                    <!-- Left side: Price + Size -->
+                    <div class="d-flex align-items-center gap-2">
+        <span class="fw-bold">
+            ₹{{ product.price|floatformat:2 }}
+        </span>
+
+                        {% if product.sizes %}
+                        <small class="text-muted">
+                            Size:
+                            {% for size in product.sizes %}
+                            {{ size }}{% if not forloop.last %}, {% endif %}
+                            {% endfor %}
+                        </small>
+                        {% endif %}
+                    </div>
+
+                    <!-- Right side: Colors -->
+                    {% if product.colors %}
+                    <div class="d-flex align-items-center gap-1">
+                        <small>Color:</small>
+
+                        {% for color in product.colors %}
+                        <span
+                                title="{{ color }}"
+                                style="
                 width: 16px;
                 height: 16px;
                 border-radius: 50%;
-                background-color: {{ product.color }};
-                border: 1px solid #999;
+                background-color: {{ color }};
+                border: 1px solid #000;
                 display: inline-block;
             ">
         </span>
+                        {% endfor %}
+
+                    </div>
+                    {% endif %}
+
                 </div>
-                {% endif %}
+
 
                 <!-- ✅ Buttons -->
                 <div class="d-flex gap-2">

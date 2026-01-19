@@ -1,15 +1,29 @@
 from django.db import models
 from django.contrib.auth.models import User
 
+
 class Category(models.Model):
     name = models.CharField(max_length=100)
+
+    class Meta:
+        verbose_name_plural = "Categories"
+
     def __str__(self): return self.name
+
 
 class SubCategory(models.Model):
     category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='subcategories')
     name = models.CharField(max_length=100)
     image = models.ImageField(upload_to='images/', null=True, blank=True)
+
+    class Meta:
+        verbose_name_plural = "Sub Categories"
+
     def __str__(self): return self.name
+
+
+def default_sizes():
+    return ["Free"]
 
 class Product(models.Model):
     subcategory = models.ForeignKey(SubCategory, on_delete=models.CASCADE, related_name='products')
@@ -19,7 +33,8 @@ class Product(models.Model):
     digital = models.BooleanField(default=False)
     description = models.TextField(blank=True)
     # ✅ ADD THESE TWO LINES
-    colors = models.JSONField(default=list, blank=True)   # multiple colors
+    colors = models.JSONField(default=list, blank=True)  # multiple colors
+    sizes = models.JSONField(default=default_sizes, blank=True)
     # default_color = models.CharField(max_length=20, default="#8B4513")
 
     def __str__(self):
@@ -31,7 +46,6 @@ class Product(models.Model):
             return self.image.url
         except:
             return ''
-
 
 
 # -------------------------
@@ -94,6 +108,8 @@ class OrderItem(models.Model):
     quantity = models.IntegerField(default=0)
     date_added = models.DateTimeField(auto_now_add=True)
 
+    size = models.CharField(max_length=20, blank=True, null=True)
+    color = models.CharField(max_length=50, blank=True, null=True)
     @property
     def get_total(self):
         return self.product.price * self.quantity

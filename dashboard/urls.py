@@ -13,5 +13,6 @@ urlpatterns = [
     path('subcategories/', views.dashboard_subcategories, name='dashboard_subcategories'),
     path('categories/', views.dashboard_categories, name='dashboard_categories'),
     path('categories/add/', views.dashboard_add_category, name='dashboard_add_category'),
+    path('subcategories/add/', views.add_subcategory, name='add_subcategory'),
 
 ]

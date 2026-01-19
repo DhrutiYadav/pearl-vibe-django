@@ -22,9 +22,11 @@
         <div class="mt-3">
             <strong>Available Colors:</strong>
 
-            <div class="d-flex gap-2 mt-2">
+            <div class="d-flex gap-2 mt-2" id="color-options">
                 {% for color in product.colors %}
                 <span
+                        class="color-option"
+                        data-color="{{ color }}"
                         title="{{ color }}"
                         style="
                 width: 22px;
@@ -32,7 +34,7 @@
                 border-radius: 50%;
                 background-color: {{ color }};
                 border: 1px solid #000;
-                display: inline-block;
+                cursor: pointer;
             ">
         </span>
                 {% endfor %}
@@ -41,13 +43,80 @@
         {% endif %}
 
 
+        {% if product.sizes %}
+        <div class="mt-3">
+            <strong>Available Sizes:</strong>
+
+            <div class="d-flex gap-2 mt-2" id="size-options">
+                {% for size in product.sizes %}
+                <span
+                        class="size-option"
+                        data-size="{{ size }}"
+                        style="
+                padding: 6px 12px;
+                border: 1px solid #333;
+                border-radius: 6px;
+                cursor: pointer;
+                user-select: none;
+            ">
+            {{ size }}
+        </span>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+
+        <input type="hidden" id="selected-size">
+        <input type="hidden" id="selected-color">
+
         <button
+                id="add-to-cart-btn"
                 data-product="{{ product.id }}"
                 data-action="add"
-                class="btn btn-dark mt-4 update-cart">
-            Add to Cart
+                class="btn btn-outline-secondary update-cart"
+                disabled>
+            Add to cart
         </button>
+
 
     </div>
 </div>
 {% endblock %}
+
+<script>
+    let selectedSize = null;
+    let selectedColor = null;
+
+    const sizeOptions = document.querySelectorAll(".size-option");
+    const colorOptions = document.querySelectorAll(".color-option");
+    const addToCartBtn = document.getElementById("add-to-cart-btn");
+
+    function checkEnableButton() {
+        if (selectedSize && selectedColor) {
+            addToCartBtn.disabled = false;
+        }
+    }
+
+    // Size select
+    sizeOptions.forEach(option => {
+        option.addEventListener("click", function () {
+            sizeOptions.forEach(o => o.style.background = "");
+            this.style.background = "#ddd";
+            selectedSize = this.dataset.size;
+            document.getElementById("selected-size").value = selectedSize;
+            checkEnableButton();
+        });
+    });
+
+    // Color select
+    colorOptions.forEach(option => {
+        option.addEventListener("click", function () {
+            colorOptions.forEach(o => o.style.outline = "");
+            this.style.outline = "3px solid #000";
+            selectedColor = this.dataset.color;
+            document.getElementById("selected-color").value = selectedColor;
+            checkEnableButton();
+        });
+    });
+</script>

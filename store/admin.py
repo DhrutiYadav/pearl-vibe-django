@@ -132,6 +132,7 @@ class ProductAdmin(admin.ModelAdmin):
         'description',
         'colors_input',
         'color_preview',
+        'sizes',
     )
 
 

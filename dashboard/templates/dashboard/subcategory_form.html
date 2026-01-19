@@ -1,0 +1,31 @@
+{% extends 'dashboard/base.html' %}
+
+{% block title %}Add Subcategory{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Add New Subcategory</h2>
+
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <div class="mb-3">
+            <label>Category</label>
+            {{ form.category }}
+        </div>
+
+        <div class="mb-3">
+            <label>Subcategory Name</label>
+            {{ form.name }}
+        </div>
+
+        <div class="mb-3">
+            <label>Image</label>
+            {{ form.image }}
+        </div>
+
+        <button type="submit" class="btn btn-success">Save</button>
+        <a href="{% url 'dashboard_subcategories' %}" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+{% endblock %}

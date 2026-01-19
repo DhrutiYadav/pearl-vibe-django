@@ -9,8 +9,10 @@ from .utils import cookieCart
 import json
 import datetime
 
+
 def is_admin(user):
     return user.is_staff or user.is_superuser
+
 
 @login_required
 @user_passes_test(is_admin)
@@ -22,6 +24,7 @@ def dashboard_home(request):
         "revenue": 56000,
     }
     return render(request, "dashboard/dashboard.html", context)
+
 
 # ---------------------------
 # STORE / PRODUCT VIEWS
@@ -40,6 +43,7 @@ def subcategories(request, category_id):
         'subcategories': subcategories
     })
 
+
 def products_by_subcategory(request, subcategory_id):
     subcategory = get_object_or_404(SubCategory, id=subcategory_id)
     products = subcategory.products.all()
@@ -47,6 +51,7 @@ def products_by_subcategory(request, subcategory_id):
         'products': products,
         'subcategory': subcategory
     })
+
 
 # ---------------------------
 # AUTH VIEWS
@@ -161,8 +166,13 @@ def checkout(request):
 
 def updateItem(request):
     data = json.loads(request.body)
+
     productId = data['productId']
     action = data['action']
+
+    # ✅ NEW: get size & color from request
+    size = data.get('size')
+    color = data.get('color')
 
     customer = request.user.customer
     product = Product.objects.get(id=productId)
@@ -172,9 +182,12 @@ def updateItem(request):
         complete=False
     )
 
+    # ✅ IMPORTANT: include size & color here
     orderItem, created = OrderItem.objects.get_or_create(
         order=order,
-        product=product
+        product=product,
+        size=size,
+        color=color,
     )
 
     if action == 'add':

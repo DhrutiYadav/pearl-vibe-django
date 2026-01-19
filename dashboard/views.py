@@ -6,6 +6,7 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from store.models import Product, Category
 from store.forms import CategoryForm
 from django.contrib.auth.models import User
+from store.forms import SubCategoryForm
 
 def is_admin(user):
     return user.is_staff or user.is_superuser
@@ -151,3 +152,19 @@ def dashboard_home(request):
         'total_users': User.objects.count(),
     }
     return render(request, 'dashboard/home.html', context)
+
+
+@login_required(login_url='/admin/login/')
+@user_passes_test(is_admin)
+def add_subcategory(request):
+    if request.method == 'POST':
+        form = SubCategoryForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect('dashboard_subcategories')
+    else:
+        form = SubCategoryForm()
+
+    return render(request, 'dashboard/subcategory_form.html', {
+        'form': form
+    })
