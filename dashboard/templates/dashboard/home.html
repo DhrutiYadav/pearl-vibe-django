@@ -1,8 +1,41 @@
 {% extends 'dashboard/base.html' %}
 
-{% block title %}Dashboard Home{% endblock %}
-
 {% block content %}
-    <h1>Dashboard Home</h1>
-    <p>Welcome to Pearl Vibe Admin Dashboard</p>
+<h2>Dashboard</h2>
+
+<div class="stats-container">
+
+    <div class="stat-card products">
+        <div class="stat-icon">🛒</div>
+        <div class="stat-info">
+            <h3>{{ total_products }}</h3>
+            <p>Total Products</p>
+        </div>
+    </div>
+
+    <div class="stat-card categories">
+        <div class="stat-icon">📂</div>
+        <div class="stat-info">
+            <h3>{{ total_categories }}</h3>
+            <p>Total Categories</p>
+        </div>
+    </div>
+
+    <div class="stat-card subcategories">
+        <div class="stat-icon">📁</div>
+        <div class="stat-info">
+            <h3>{{ total_subcategories }}</h3>
+            <p>Total Subcategories</p>
+        </div>
+    </div>
+
+    <div class="stat-card users">
+        <div class="stat-icon">👤</div>
+        <div class="stat-info">
+            <h3>{{ total_users }}</h3>
+            <p>Total Users</p>
+        </div>
+    </div>
+
+</div>
 {% endblock %}

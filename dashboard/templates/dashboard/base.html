@@ -1,7 +1,13 @@
+{% load static %}
 <!DOCTYPE html>
 <html>
 <head>
     <title>{% block title %}Dashboard{% endblock %}</title>
+
+    <link rel="stylesheet" href="{% static 'dashboard/css/style.css' %}">
+    <script src="{% static 'dashboard/js/script.js' %}"></script>
+
+
     <style>
         body {
             margin: 0;
@@ -11,7 +17,7 @@
         .sidebar {
             width: 220px;
             height: 100vh;
-            background: #111827;
+            background: #0E3167;
             color: white;
             position: fixed;
             padding: 20px;
@@ -28,11 +34,17 @@
         }
     </style>
 </head>
+
 <body>
 
 <div class="sidebar">
-    <h2>Pearl Vibe</h2>
+    <div class="sidebar-logo">
+        <img src="{% static 'dashboard/images/logo.png' %}" alt="Pearl Vibe Logo">
+    </div>
+
     <a href="/dashboard/">Dashboard</a>
+    <a href="/dashboard/categories/">Categories</a>
+    <a href="/dashboard/subcategories/">Subcategories</a>
     <a href="/dashboard/products/">Products</a>
     <a href="/dashboard/orders/">Orders</a>
     <a href="/dashboard/users/">Users</a>

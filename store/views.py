@@ -9,7 +9,6 @@ from .utils import cookieCart
 import json
 import datetime
 
-
 def is_admin(user):
     return user.is_staff or user.is_superuser
 
@@ -41,7 +40,6 @@ def subcategories(request, category_id):
         'subcategories': subcategories
     })
 
-
 def products_by_subcategory(request, subcategory_id):
     subcategory = get_object_or_404(SubCategory, id=subcategory_id)
     products = subcategory.products.all()
@@ -49,7 +47,6 @@ def products_by_subcategory(request, subcategory_id):
         'products': products,
         'subcategory': subcategory
     })
-
 
 # ---------------------------
 # AUTH VIEWS

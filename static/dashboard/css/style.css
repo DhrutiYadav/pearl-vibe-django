@@ -1,0 +1,44 @@
+.stats-container {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.stat-card {
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+}
+
+.stat-icon {
+    font-size: 40px;
+}
+
+.stat-info h3 {
+    margin: 0;
+    font-size: 28px;
+}
+
+.stat-info p {
+    margin: 0;
+    color: #666;
+}
+
+.sidebar-logo {
+    display: flex;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.sidebar-logo img {
+    width: 190px;      /* adjust size as needed */
+    height: 40px;     /* keep it square or auto */
+    margin-right: 10px;
+    border-radius: 5px; /* optional rounded corners */
+}
+
