@@ -34,7 +34,8 @@ class Product(models.Model):
     description = models.TextField(blank=True)
     # ✅ ADD THESE TWO LINES
     colors = models.JSONField(default=list, blank=True)  # multiple colors
-    sizes = models.JSONField(default=default_sizes, blank=True)
+    # sizes = models.JSONField(default=default_sizes, blank=True)
+    sizes = models.JSONField(default=lambda: ["Free"], blank=True)
     # default_color = models.CharField(max_length=20, default="#8B4513")
 
     def __str__(self):
