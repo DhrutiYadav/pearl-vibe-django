@@ -13,9 +13,6 @@ html, body {
     flex: 1;
 }
 
-body {
-    padding-top: 20px;
-}
 
 .row-image {
     width: 80px; /* keep the larger width you want */

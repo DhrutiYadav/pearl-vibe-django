@@ -2,7 +2,7 @@ from django.contrib import admin
 from django import forms
 from django.utils.safestring import mark_safe
 from django.utils.html import format_html
-from .models import Category, SubCategory, Product
+from .models import Category, SubCategory, Product, Order, OrderItem
 
 
 class CategoryAdmin(admin.ModelAdmin):
@@ -135,11 +135,25 @@ class ProductAdmin(admin.ModelAdmin):
         'sizes',
     )
 
+# -------- Order Admin --------
+class OrderAdmin(admin.ModelAdmin):
+    list_display = ('id', 'customer', 'complete', 'date_ordered')
+    list_filter = ('complete',)
+    search_fields = ('customer__user__username',)
+
+
+# -------- OrderItem Admin --------
+class OrderItemAdmin(admin.ModelAdmin):
+    list_display = ('id', 'order', 'product', 'quantity', 'size', 'color')
+    list_filter = ('product', 'size', 'color')
+
 
 # -------- Register Models --------
 admin.site.register(Category, CategoryAdmin)
 admin.site.register(SubCategory, SubCategoryAdmin)
 admin.site.register(Product, ProductAdmin)
+admin.site.register(Order, OrderAdmin)
+admin.site.register(OrderItem, OrderItemAdmin)
 
 admin.site.site_header = "Pearl Vibe Admin Panel"
 admin.site.site_title = "Pearl Vibe Admin"

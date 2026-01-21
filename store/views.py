@@ -164,13 +164,57 @@ def checkout(request):
     })
 
 
+# def updateItem(request):
+#     data = json.loads(request.body)
+#
+#     productId = data['productId']
+#     action = data['action']
+#
+#     # ✅ NEW: get size & color from request
+#     size = data.get('size')
+#     color = data.get('color')
+#
+#     customer = request.user.customer
+#     product = Product.objects.get(id=productId)
+#
+#     order, created = Order.objects.get_or_create(
+#         customer=customer,
+#         complete=False
+#     )
+#
+#     # ✅ IMPORTANT: include size & color here
+#     orderItem, created = OrderItem.objects.get_or_create(
+#         order=order,
+#         product=product,
+#         size=size,
+#         color=color,
+#     )
+#
+#     if action == 'add':
+#         orderItem.quantity += 1
+#         orderItem.save()
+#     elif action == 'remove':
+#         orderItem.quantity -= 1
+#
+#         if orderItem.quantity <= 0:
+#             orderItem.delete()
+#         else:
+#             orderItem.save()
+#
+#
+#     elif action == 'delete':
+#         orderItem.delete()
+#         return JsonResponse('Item deleted', safe=False)
+#
+#     return JsonResponse('Item updated', safe=False)
+
 def updateItem(request):
     data = json.loads(request.body)
 
     productId = data['productId']
     action = data['action']
 
-    # ✅ NEW: get size & color from request
+    # get size & color
     size = data.get('size')
     color = data.get('color')
 
@@ -182,7 +226,7 @@ def updateItem(request):
         complete=False
     )
 
-    # ✅ IMPORTANT: include size & color here
+    # IMPORTANT: include size & color
     orderItem, created = OrderItem.objects.get_or_create(
         order=order,
         product=product,
@@ -190,14 +234,24 @@ def updateItem(request):
         color=color,
     )
 
+    # 🔥 VERY IMPORTANT FIX
+    # If new row created, start quantity at 0
+    if created:
+        orderItem.quantity = 0
+
     if action == 'add':
         orderItem.quantity += 1
+        orderItem.save()
+
     elif action == 'remove':
         orderItem.quantity -= 1
 
-    orderItem.save()
+        if orderItem.quantity <= 0:
+            orderItem.delete()
+        else:
+            orderItem.save()
 
-    if orderItem.quantity <= 0:
+    elif action == 'delete':
         orderItem.delete()
 
     return JsonResponse('Item updated', safe=False)

@@ -36,51 +36,120 @@
 
         <div class="box-element">
             <div class="cart-row">
-                <div style="flex:2"></div>
                 <div style="flex:2"><strong>Item</strong></div>
+                <div style="flex:2"><strong>Item Name</strong></div>
                 <div style="flex:1"><strong>Price</strong></div>
                 <div style="flex:1"><strong>Quantity</strong></div>
                 <div style="flex:1"><strong>Total</strong></div>
+                <div style="flex:0.5"><strong>Action</strong></div>
             </div>
 
             {% for item in items %}
             <div class="cart-row">
+
+                <!-- FIRST COLUMN : IMAGE + DETAILS (JS SAFE) -->
                 <div style="flex:2">
-                    <img class="row-image" src="{{ item.product.imageURL }}">
+
+                    <!-- IMAGE ADDED HERE (SAFE POSITION) -->
+                    {% if item.product.image %}
+                    <img src="{{ item.product.image.url }}"
+                         style="width:80px; height:80px; object-fit:cover; border-radius:8px; margin-bottom:8px;">
+                    {% else %}
+                    <img src="{% static 'images/placeholder.png' %}"
+                         style="width:80px; height:80px; object-fit:cover; margin-bottom:8px;">
+                    {% endif %}
+
+                    <!-- Size -->
+                    {% if item.size %}
+                    <p class="mb-1"><small>Size: {{ item.size }}</small></p>
+                    {% endif %}
+
+                    <!-- Color -->
+                    {% if item.color %}
+                    <p class="mb-1">
+                        <small>Color:</small>
+                        <span
+                                style="
+                                width: 14px;
+                                height: 14px;
+                                border-radius: 50%;
+                                background-color: {{ item.color }};
+                                border: 1px solid #000;
+                                display: inline-block;
+                            ">
+                        </span>
+                    </p>
+                    {% endif %}
                 </div>
 
+                <!-- ITEM NAME COLUMN -->
                 <div style="flex:2">
                     <p>{{ item.product.name }}</p>
                 </div>
 
+                <!-- PRICE -->
                 <div style="flex:1">
                     <p>₹{{ item.product.price }}</p>
                 </div>
 
+                <!-- QUANTITY COLUMN -->
                 <div style="flex:1">
                     <div class="quantity-wrapper">
+
                         <span class="quantity-value">{{ item.quantity }}</span>
 
                         <div class="arrow-wrapper">
+
+                            <!-- ADD BUTTON (ALWAYS ENABLED) -->
                             <img
                                     data-product="{{ item.product.id }}"
                                     data-action="add"
+                                    data-size="{{ item.size }}"
+                                    data-color="{{ item.color }}"
                                     class="chg-quantity update-cart"
                                     src="{% static 'images/arrow-up.png' %}">
 
+                            <!-- REMOVE / DELETE LOGIC -->
+                            {% if item.quantity > 1 %}
                             <img
                                     data-product="{{ item.product.id }}"
                                     data-action="remove"
+                                    data-size="{{ item.size }}"
+                                    data-color="{{ item.color }}"
                                     class="chg-quantity update-cart"
                                     src="{% static 'images/arrow-down.png' %}">
+                            {% else %}
+                            <!-- DISABLED REMOVE WHEN QTY = 1 -->
+                            <img
+                                    src="{% static 'images/arrow-down.png' %}"
+                                    class="chg-quantity update-cart"
+                                    style="opacity:0.3; pointer-events:none;">
+                            {% endif %}
+
+
                         </div>
                     </div>
                 </div>
 
 
+                <!-- TOTAL -->
                 <div style="flex:1">
                     <p>₹{{ item.get_total }}</p>
                 </div>
+
+                <!-- ACTION COLUMN (DELETE BUTTON AT END) -->
+                <div style="flex:0.5; text-align:center;">
+                    <button
+                            data-product="{{ item.product.id }}"
+                            data-action="delete"
+                            data-size="{{ item.size }}"
+                            data-color="{{ item.color }}"
+                            class="btn btn-sm btn-danger update-cart">
+                        ❌
+                    </button>
+                </div>
+
+
             </div>
             {% endfor %}
 
