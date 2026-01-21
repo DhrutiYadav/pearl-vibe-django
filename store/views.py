@@ -215,8 +215,8 @@ def updateItem(request):
     action = data['action']
 
     # get size & color
-    size = data.get('size')
-    color = data.get('color')
+    size = data.get('size') or None
+    color = data.get('color') or None
 
     customer = request.user.customer
     product = Product.objects.get(id=productId)
@@ -226,13 +226,29 @@ def updateItem(request):
         complete=False
     )
 
-    # IMPORTANT: include size & color
-    orderItem, created = OrderItem.objects.get_or_create(
+    # Try to get item first
+    orderItem = OrderItem.objects.filter(
         order=order,
         product=product,
         size=size,
         color=color,
-    )
+    ).first()
+
+    # DELETE should not create new row
+    if action == 'delete':
+        if orderItem:
+            orderItem.delete()
+        return JsonResponse('Item deleted', safe=False)
+
+    # For add/remove, create if missing
+    if not orderItem:
+        orderItem = OrderItem.objects.create(
+            order=order,
+            product=product,
+            size=size,
+            color=color,
+            quantity=0
+        )
 
     # 🔥 VERY IMPORTANT FIX
     # If new row created, start quantity at 0

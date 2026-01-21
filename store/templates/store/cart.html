@@ -104,18 +104,20 @@
                             <img
                                     data-product="{{ item.product.id }}"
                                     data-action="add"
-                                    data-size="{{ item.size }}"
-                                    data-color="{{ item.color }}"
+                                    data-size="{{ item.size|default_if_none:'' }}"
+                                    data-color="{{ item.color|default_if_none:'' }}"
                                     class="chg-quantity update-cart"
                                     src="{% static 'images/arrow-up.png' %}">
+
 
                             <!-- REMOVE / DELETE LOGIC -->
                             {% if item.quantity > 1 %}
                             <img
                                     data-product="{{ item.product.id }}"
                                     data-action="remove"
-                                    data-size="{{ item.size }}"
-                                    data-color="{{ item.color }}"
+                                    data-size="{{ item.size|default_if_none:'' }}"
+                                    data-color="{{ item.color|default_if_none:'' }}"
+
                                     class="chg-quantity update-cart"
                                     src="{% static 'images/arrow-down.png' %}">
                             {% else %}
@@ -142,11 +144,13 @@
                     <button
                             data-product="{{ item.product.id }}"
                             data-action="delete"
-                            data-size="{{ item.size }}"
-                            data-color="{{ item.color }}"
-                            class="btn btn-sm btn-danger update-cart">
+                            data-size="{{ item.size|default_if_none:'' }}"
+                            data-color="{{ item.color|default_if_none:'' }}"
+                            class="btn btn-danger btn-sm update-cart">
                         ❌
                     </button>
+
+
                 </div>
 
 

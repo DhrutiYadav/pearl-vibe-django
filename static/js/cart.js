@@ -1,3 +1,4 @@
+document.addEventListener('DOMContentLoaded', function () {
 var updateBtns = document.getElementsByClassName('update-cart');
 
 for (var i = 0; i < updateBtns.length; i++) {
@@ -10,15 +11,24 @@ for (var i = 0; i < updateBtns.length; i++) {
 		var size = this.dataset.size || "";
         var color = this.dataset.color || "";
 
+        // 🔒 Fix Django None → JS string issue
+        if (size === "None") size = "";
+        if (color === "None") color = "";
+
+        if (user === 'AnonymousUser') {
+			alert("Please login to manage cart");
+			return;
+		}
 
 		// ✅ If not found, get from selected inputs (product detail page)
 		if (!size) {
 	        var sizeInput = document.getElementById("selected-size");
 	        if (sizeInput && sizeInput.value) {
 		        size = sizeInput.value;
-	        } else {
-		        size = "";
 	        }
+//          else {
+//		        size = "";
+//	        }
         }
 
 
@@ -26,21 +36,16 @@ for (var i = 0; i < updateBtns.length; i++) {
 	        var colorInput = document.getElementById("selected-color");
 	        if (colorInput && colorInput.value) {
 		        color = colorInput.value;
-	        } else {
-		        color = "";
 	        }
-        }
+//	        else {
+//		        color = "";
+//	        }
         }
 
 
 		console.log('productId:', productId, 'Action:', action, 'Size:', size, 'Color:', color);
 		console.log('USER:', user);
-
-		if (user === 'AnonymousUser') {
-			addCookieItem(productId, action, size, color);
-		} else {
-			updateUserOrder(productId, action, size, color);
-		}
+		updateUserOrder(productId, action, size, color);
 	});
 }
 
@@ -69,28 +74,31 @@ function updateUserOrder(productId, action, size, color) {
 		console.log('Data:', data);
 		location.reload();
 	});
+
 }
+
 
 /* ---------- ANONYMOUS USER ---------- */
-
-function addCookieItem(productId, action, size, color) {
-	console.log('User is not logged in');
-
-	var key = productId + "_" + size + "_" + color;   // ✅ unique per variant
-
-	if(action == 'add'){
-        updateUserOrder(productId, action, size, color)
-    }
-    else if(action == 'remove'){
-        updateUserOrder(productId, action, size, color)
-    }
-    else if(action == 'delete'){
-        // send remove until item disappears
-        updateUserOrder(productId, 'remove', size, color)
-    }
-
-
-
-	document.cookie = 'cart=' + JSON.stringify(cart) + ";domain=;path=/";
-	location.reload();
-}
+//
+//function addCookieItem(productId, action, size, color) {
+//	console.log('User is not logged in');
+//
+//	var key = productId + "_" + size + "_" + color;   // ✅ unique per variant
+//
+//	if(action == 'add'){
+//        updateUserOrder(productId, action, size, color)
+//    }
+//    else if(action == 'remove'){
+//        updateUserOrder(productId, action, size, color)
+//    }
+//    else if(action == 'delete'){
+//        // send remove until item disappears
+//        updateUserOrder(productId, 'remove', size, color)
+//    }
+//
+//
+//
+//	document.cookie = 'cart=' + JSON.stringify(cart) + ";domain=;path=/";
+//	location.reload();
+//}
+});
