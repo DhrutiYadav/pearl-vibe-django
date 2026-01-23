@@ -5,24 +5,46 @@
 {% block content %}
 <h1>Orders</h1>
 
-<table border="1" cellpadding="10" cellspacing="0">
+<table border="1" cellpadding="10" cellspacing="0" width="100%">
     <tr>
         <th>Order ID</th>
         <th>Customer</th>
         <th>Total</th>
+        <th>Items</th>
         <th>Status</th>
+        <th>Date</th>
     </tr>
+
+    {% for order in orders %}
     <tr>
-        <td>#1001</td>
-        <td>Rahul</td>
-        <td>₹1,499</td>
-        <td>Paid</td>
+        <td>#{{ order.id }}</td>
+
+        <td>
+            {% if order.customer %}
+                {{ order.customer.name }}
+            {% else %}
+                Guest
+            {% endif %}
+        </td>
+
+        <td>₹{{ order.get_cart_total }}</td>
+
+        <td>{{ order.get_cart_items }}</td>
+
+        <td>
+            {% if order.complete %}
+                <span style="color: green;">Paid</span>
+            {% else %}
+                <span style="color: orange;">Pending</span>
+            {% endif %}
+        </td>
+
+        <td>{{ order.date_ordered|date:"d M Y" }}</td>
     </tr>
+    {% empty %}
     <tr>
-        <td>#1002</td>
-        <td>Amit</td>
-        <td>₹2,299</td>
-        <td>Pending</td>
+        <td colspan="6">No orders found</td>
     </tr>
+    {% endfor %}
 </table>
 {% endblock %}

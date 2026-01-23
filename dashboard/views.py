@@ -7,6 +7,7 @@ from store.models import Product, Category
 from store.forms import CategoryForm
 from django.contrib.auth.models import User
 from store.forms import SubCategoryForm
+from store.models import Order
 
 def is_admin(user):
     return user.is_staff or user.is_superuser
@@ -50,13 +51,6 @@ def dashboard_products(request):
     return render(request, 'dashboard/products.html', {
         'products': products
     })
-
-
-@login_required(login_url='/admin/login/')
-@user_passes_test(is_admin)
-def dashboard_orders(request):
-    return render(request, 'dashboard/orders.html')
-
 
 @login_required(login_url='/admin/login/')
 @user_passes_test(is_admin)
@@ -168,3 +162,20 @@ def add_subcategory(request):
     return render(request, 'dashboard/subcategory_form.html', {
         'form': form
     })
+
+# FILE: dashboard/views.py
+
+from django.shortcuts import render
+from store.models import Order   # Order model is in store app
+
+def dashboard_home(request):
+    return render(request, 'dashboard/home.html')
+
+
+def dashboard_orders(request):
+    orders = Order.objects.all().order_by('-date_ordered')
+
+    context = {
+        'orders': orders
+    }
+    return render(request, 'dashboard/orders.html', context)
