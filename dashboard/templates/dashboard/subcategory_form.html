@@ -14,18 +14,50 @@
             {{ form.category }}
         </div>
 
-        <div class="mb-3">
-            <label>Subcategory Name</label>
-            {{ form.name }}
-        </div>
+        <div class="mb-3"> <label>Subcategory Name</label> {{ form.name }} </div>
 
         <div class="mb-3">
             <label>Image</label>
             {{ form.image }}
+
+            <!-- Image Preview -->
+            <div class="mt-2">
+                <img id="imagePreview" src="#" alt="Image Preview" style="max-height:150px; display:none; border:1px solid #ddd; padding:5px;" />
+            </div>
         </div>
+
+
+
 
         <button type="submit" class="btn btn-success">Save</button>
         <a href="{% url 'dashboard:dashboard_subcategories' %}" class="btn btn-secondary">Cancel</a>
     </form>
 </div>
+
+<script>
+    const imageInput = document.getElementById("id_image");  // Django auto id
+    const preview = document.getElementById("imagePreview");
+
+    imageInput.addEventListener("change", function(event) {
+        const file = event.target.files[0];
+
+        if (file) {
+            const reader = new FileReader();
+
+            reader.onload = function(e) {
+                preview.src = e.target.result;
+                preview.style.display = "block";
+            }
+
+            reader.readAsDataURL(file);
+        }
+    });
+</script>
+<style>
+    #imagePreview {
+        border-radius: 8px;
+        background: #f8f9fa;
+    }
+</style>
+
 {% endblock %}

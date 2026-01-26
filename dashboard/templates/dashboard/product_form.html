@@ -1,10 +1,123 @@
 {% extends 'dashboard/base.html' %}
 {% block content %}
+
 <h2>{{ title }}</h2>
+
 <form method="POST" enctype="multipart/form-data">
     {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit" class="btn btn-primary">Save</button>
+
+    <!-- Subcategory -->
+    <div class="mb-3">
+        <label>Subcategory</label>
+        {{ form.subcategory }}
+    </div>
+
+    <!-- Name -->
+    <div class="mb-3">
+        <label>Name</label>
+        {{ form.name }}
+    </div>
+
+    <!-- Price -->
+    <div class="mb-3">
+        <label>Price</label>
+        {{ form.price }}
+    </div>
+
+    <!-- Image Upload -->
+    <div class="mb-3">
+        <label>Product Image</label>
+        {{ form.image }}
+        <br><br>
+        <img id="imagePreview" src="#" style="display:none; width:120px; height:120px; object-fit:cover; border-radius:10px; border:1px solid #ddd;">
+    </div>
+
+    <!-- Description -->
+    <div class="mb-3">
+        <label>Description</label>
+        {{ form.description }}
+    </div>
+
+    <!-- 🎨 COLOR PICKER SECTION -->
+    <div class="mb-3">
+        <label>Add Colors</label><br>
+
+        <input type="color" id="colorPicker">
+        <button type="button" class="btn btn-sm btn-dark" onclick="addColor()">Add</button>
+
+        <div id="colorPreviewBox" style="margin-top:10px;"></div>
+
+        <!-- Hidden field that will store colors -->
+        <input type="hidden" name="colors" id="colorsInput">
+    </div>
+
+    <!-- 📏 Sizes -->
+    <div class="mb-3">
+        <label>Sizes</label>
+        {{ form.sizes }}
+        <small class="text-muted d-block">Hold CTRL to select multiple</small>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Save Product</button>
     <a href="{% url 'dashboard:dashboard_products' %}" class="btn btn-secondary">Cancel</a>
 </form>
+
+
+
+
+<script>
+    //================= IMAGE PREVIEW SCRIPT =================
+    document.getElementById("id_image").onchange = evt => {
+    const [file] = evt.target.files;
+    if (file) {
+        const preview = document.getElementById("imagePreview");
+        preview.src = URL.createObjectURL(file);
+        preview.style.display = "block";
+    }
+};
+    // ================= COLOR PICKER SCRIPT =================
+let colors = [];
+
+function addColor() {
+    const picker = document.getElementById("colorPicker");
+    const color = picker.value;
+
+    if (!colors.includes(color)) {
+        colors.push(color);
+        updateColorUI();
+    }
+}
+
+function removeColor(color) {
+    colors = colors.filter(c => c !== color);
+    updateColorUI();
+}
+
+function updateColorUI() {
+    const box = document.getElementById("colorPreviewBox");
+    const input = document.getElementById("colorsInput");
+
+    box.innerHTML = "";
+
+    colors.forEach(color => {
+        const circle = document.createElement("span");
+        circle.style = `
+            display:inline-block;
+            width:24px;
+            height:24px;
+            border-radius:50%;
+            background:${color};
+            margin-right:6px;
+            cursor:pointer;
+            border:1px solid #aaa;
+        `;
+        circle.title = "Click to remove";
+        circle.onclick = () => removeColor(color);
+        box.appendChild(circle);
+    });
+
+    input.value = colors.join(",");
+}
+</script>
+
 {% endblock %}

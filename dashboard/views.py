@@ -29,7 +29,8 @@ def dashboard_edit_product(request, pk):
 
     return render(request, 'dashboard/product_form.html', {
         'form': form,
-        'title': 'Edit Product'
+        'title': 'Edit Product',
+        'existing_colors': json.dumps(product.colors)  # 👈 send colors
     })
 
 
@@ -82,7 +83,7 @@ def dashboard_add_product(request):
     else:
         form = ProductForm()
 
-    return render(request, 'dashboard/add_product.html', {'form': form})
+    return render(request, 'dashboard/product_form.html', {'form': form})
 
 @login_required(login_url='/admin/login/')
 @user_passes_test(is_admin)
