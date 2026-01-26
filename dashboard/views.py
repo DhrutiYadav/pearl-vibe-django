@@ -22,7 +22,7 @@ def dashboard_edit_product(request, pk):
         form = ProductForm(request.POST, request.FILES, instance=product)
         if form.is_valid():
             form.save()
-            return redirect('dashboard_products')
+            return redirect('dashboard:dashboard_products')
     else:
         form = ProductForm(instance=product)
 
@@ -36,13 +36,6 @@ def dashboard_edit_product(request, pk):
 # admin/staff check
 def is_admin(user):
     return user.is_staff or user.is_superuser
-
-
-@login_required(login_url='/admin/login/')
-@user_passes_test(is_admin)
-def dashboard_home(request):
-    return render(request, 'dashboard/home.html')
-
 
 @login_required(login_url='/admin/login/')
 @user_passes_test(is_admin)
@@ -64,7 +57,7 @@ def dashboard_add_product(request):
         form = ProductForm(request.POST, request.FILES)
         if form.is_valid():
             form.save()
-            return redirect('dashboard_products')
+            return redirect('dashboard:dashboard_products')
     else:
         form = ProductForm()
 
@@ -78,7 +71,7 @@ def dashboard_subcategories(request):
         'subcategories': subcategories
     })
 
-@login_required(login_url='/admin/login/')
+@login_required(login_url='/admain/login/')
 @user_passes_test(is_admin)
 def dashboard_categories(request):
     categories = Category.objects.all()  # Fetch all categories
@@ -114,10 +107,10 @@ def dashboard_delete_product(request, pk):
 
     if request.method == 'POST':
         product.delete()
-        return redirect('dashboard_products')
+        return redirect('dashboard:dashboard_products')
 
     # optional safety fallback
-    return redirect('dashboard_products')
+    return redirect('dashboard:dashboard_products')
 
 @login_required(login_url='/admin/login/')
 @user_passes_test(is_admin)
@@ -155,21 +148,13 @@ def add_subcategory(request):
         form = SubCategoryForm(request.POST, request.FILES)
         if form.is_valid():
             form.save()
-            return redirect('dashboard_subcategories')
+            return redirect('dashboard:dashboard_subcategories')
     else:
         form = SubCategoryForm()
 
     return render(request, 'dashboard/subcategory_form.html', {
         'form': form
     })
-
-# FILE: dashboard/views.py
-
-from django.shortcuts import render
-from store.models import Order   # Order model is in store app
-
-def dashboard_home(request):
-    return render(request, 'dashboard/home.html')
 
 
 def dashboard_orders(request):
@@ -179,3 +164,25 @@ def dashboard_orders(request):
         'orders': orders
     }
     return render(request, 'dashboard/orders.html', context)
+
+
+@login_required
+@user_passes_test(is_admin)
+def users_list(request):
+    users = User.objects.all()
+    return render(request, 'dashboard/users.html', {'users': users})
+
+@login_required
+@user_passes_test(is_admin)
+def edit_subcategory(request, pk):
+    subcategory = get_object_or_404(SubCategory, pk=pk)
+
+    if request.method == 'POST':
+        form = SubCategoryForm(request.POST, instance=subcategory)
+        if form.is_valid():
+            form.save()
+            return redirect('dashboard:dashboard_subcategories')
+    else:
+        form = SubCategoryForm(instance=subcategory)
+
+    return render(request, 'dashboard/subcategory_form.html', {'form': form})

@@ -5,9 +5,33 @@
 {% block content %}
 <h1>Users</h1>
 
-<ul>
-    <li>Admin – admin@pearlvibe.com</li>
-    <li>Customer – user1@gmail.com</li>
-    <li>Customer – user2@gmail.com</li>
-</ul>
+<table border="1" cellpadding="10" cellspacing="0" width="100%">
+    <tr>
+        <th>#</th>
+        <th>Username</th>
+        <th>Email</th>
+        <th>Role</th>
+    </tr>
+
+    {% for user in users %}
+    <tr>
+        <td>{{ forloop.counter }}</td>
+        <td>{{ user.username }}</td>
+        <td>{{ user.email }}</td>
+        <td>
+            {% if user.is_superuser %}
+                Admin
+            {% elif user.is_staff %}
+                Staff
+            {% else %}
+                Customer
+            {% endif %}
+        </td>
+    </tr>
+    {% empty %}
+    <tr>
+        <td colspan="4">No users found</td>
+    </tr>
+    {% endfor %}
+</table>
 {% endblock %}

@@ -128,12 +128,12 @@
 
     <!-- SIDEBAR -->
     <div class="sidebar">
-        <a href="/dashboard/">Dashboard</a>
-        <a href="#">Products</a>
-        <a href="#">Categories</a>
-        <a href="#">Orders</a>
-        <a href="#">Users</a>
-    </div>
+    <a href="{% url 'dashboard:home' %}">Dashboard</a>
+    <a href="{% url 'dashboard:products' %}">Products</a>
+    <a href="{% url 'dashboard:categories' %}">Categories</a>
+    <a href="{% url 'dashboard:orders' %}">Orders</a>
+    <a href="{% url 'dashboard:users' %}">Users</a>
+</div>
 
     <!-- MAIN CONTENT -->
     <div class="content">
