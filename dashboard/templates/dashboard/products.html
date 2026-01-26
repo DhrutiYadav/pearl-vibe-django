@@ -18,10 +18,12 @@
             <tr>
                 <th>ID</th>
                 <th>Image</th>
+                <th>Subcategory</th>
                 <th>Name</th>
                 <th>Price</th>
                 <th>Description</th>
                 <th>Colors</th>
+                <th>Sizes</th>
                 <th>Actions</th>
             </tr>
             </thead>
@@ -40,6 +42,15 @@
                     <span class="text-muted">No Image</span>
                     {% endif %}
                 </td>
+
+                <td>
+                    {% if product.subcategory %}
+                    {{ product.subcategory.name }}
+                    {% else %}
+                    <span class="text-muted">No subcategory</span>
+                    {% endif %}
+                </td>
+
 
                 <!-- Name -->
                 <td>{{ product.name }}</td>
@@ -70,6 +81,19 @@
                     <span class="text-muted">No colors</span>
                     {% endif %}
                 </td>
+                <td>
+                    {% if product.size_list %}
+                        {% for size in product.size_list %}
+                            <span class="badge bg-info text-dark">{{ size }}</span>
+                        {% endfor %}
+                    {% else %}
+                        <span class="text-muted">No sizes</span>
+                    {% endif %}
+                </td>
+
+
+
+
 
                 <!-- Actions -->
                 <td>

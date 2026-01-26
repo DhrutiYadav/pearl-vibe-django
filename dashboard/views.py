@@ -8,6 +8,7 @@ from store.forms import CategoryForm
 from django.contrib.auth.models import User
 from store.forms import SubCategoryForm
 from store.models import Order
+import json
 
 def is_admin(user):
     return user.is_staff or user.is_superuser
@@ -37,10 +38,30 @@ def dashboard_edit_product(request, pk):
 def is_admin(user):
     return user.is_staff or user.is_superuser
 
+
 @login_required(login_url='/admin/login/')
 @user_passes_test(is_admin)
 def dashboard_products(request):
-    products = Product.objects.all()
+    products = Product.objects.select_related('subcategory')
+
+    for product in products:
+        if not product.sizes:
+            product.size_list = []
+
+        # If sizes is already a list (best case)
+        elif isinstance(product.sizes, list):
+            product.size_list = product.sizes
+
+        # If sizes is a JSON string like '["L", "XL"]'
+        elif isinstance(product.sizes, str):
+            try:
+                product.size_list = json.loads(product.sizes)
+            except json.JSONDecodeError:
+                product.size_list = []
+
+        else:
+            product.size_list = []
+
     return render(request, 'dashboard/products.html', {
         'products': products
     })
