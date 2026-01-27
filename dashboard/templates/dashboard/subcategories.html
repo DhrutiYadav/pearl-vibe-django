@@ -42,9 +42,11 @@
                     Edit
                 </a>
 
-                <a href="/admin/store/subcategory/{{ subcategory.id }}/delete/"
-                   onclick="return confirm('Are you sure you want to delete this subcategory?');"
-                   class="btn btn-sm btn-danger">Delete</a>
+                <a href="{% url 'dashboard:delete_subcategory' subcategory.id %}"
+                    class="btn btn-sm btn-danger">
+                    Delete
+                </a>
+
             </td>
 
         </tr>

@@ -2,12 +2,12 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from store.models import SubCategory
 from django.shortcuts import get_object_or_404, redirect, render
 from store.forms import ProductForm
-from django.contrib.auth.decorators import login_required, user_passes_test
 from store.models import Product, Category
 from store.forms import CategoryForm
 from django.contrib.auth.models import User
 from store.forms import SubCategoryForm
 from store.models import Order
+from django.contrib import messages
 import json
 
 def is_admin(user):
@@ -143,7 +143,7 @@ def dashboard_add_category(request):
         form = CategoryForm(request.POST)
         if form.is_valid():
             form.save()
-            return redirect('dashboard_categories')
+            return redirect('dashboard:dashboard_categories')
 
     return render(request, 'dashboard/category_form.html', {
         'form': form,
@@ -208,3 +208,29 @@ def edit_subcategory(request, pk):
         form = SubCategoryForm(instance=subcategory)
 
     return render(request, 'dashboard/subcategory_form.html', {'form': form})
+
+@login_required(login_url='/admin/login/')
+@user_passes_test(is_admin)
+def dashboard_delete_category(request, pk):
+    category = get_object_or_404(Category, pk=pk)
+
+    if request.method == 'POST':
+        category.delete()
+        return redirect('dashboard:dashboard_categories')
+
+    return render(request, 'dashboard/category_confirm_delete.html', {
+        'category': category
+    })
+
+
+@login_required
+@user_passes_test(is_admin)
+def delete_subcategory(request, pk):
+    subcategory = get_object_or_404(SubCategory, pk=pk)
+
+    if request.method == "POST":
+        subcategory.delete()
+        messages.success(request, "Subcategory deleted successfully.")
+        return redirect("dashboard:dashboard_subcategories")
+
+    return render(request, "dashboard/delete_subcategory.html", {"subcategory": subcategory})
