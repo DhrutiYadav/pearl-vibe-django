@@ -1,7 +1,23 @@
+{% extends 'dashboard/base.html' %}
+{% load static %}
+
+{% block title %}Add Category{% endblock %}
+
+{% block content %}
+<div class="container mt-4 form-page">
+    <div class="form-card">
+        <h2 class="form-title mb-4">Add Category</h2>
 <form method="post">
     {% csrf_token %}
+    <div class="form-group mb-3">
+                <label for="id_name" class="form-label">Category Name</label>
     {{ form.as_p }}
-
-    <button type="submit" class="btn btn-success">Save</button>
-    <a href="{% url 'dashboard:dashboard_categories' %}" class="btn btn-secondary">Cancel</a>
+</div>
+     <div class="d-flex gap-2">
+    <button type="submit" class="btn btn-add">Save Category</button>
+    <a href="{% url 'dashboard:dashboard_categories' %}" class="btn btn-cancel">Cancel</a>
+         </div>
 </form>
+</div>
+</div>
+{% endblock %}

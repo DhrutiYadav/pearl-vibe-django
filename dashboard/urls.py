@@ -14,12 +14,15 @@ urlpatterns = [
     # path('users/', views.dashboard_users, name='dashboard_users'),
     path('categories/', views.dashboard_categories, name='dashboard_categories'),
     path('categories/add/', views.dashboard_add_category, name='dashboard_add_category'),
+    path('categories/edit/<int:pk>/', views.dashboard_edit_category, name='dashboard_edit_category'),
+
     path('categories/delete/<int:pk>/', views.dashboard_delete_category, name='dashboard_delete_category'),
 
     path('orders/', views.dashboard_orders, name='orders'),
-    path('subcategories/add/', views.add_subcategory, name='add_subcategory'),
+
 
     path('subcategories/', views.dashboard_subcategories, name='dashboard_subcategories'),
+    path('subcategories/add/', views.add_subcategory, name='add_subcategory'),
     path('subcategories/edit/<int:pk>/', views.edit_subcategory, name='edit_subcategory'),
     path("subcategory/delete/<int:pk>/", views.delete_subcategory, name="delete_subcategory"),
     path('users/', views.users_list, name='users'),

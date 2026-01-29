@@ -4,20 +4,20 @@
 
 {% block content %}
 <div class="container mt-4">
-    <h1 class="mb-4">Subcategories</h1>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="page-title">Subcategories</h1>
 
-    <a href="{% url 'dashboard:add_subcategory' %}" class="btn btn-primary mb-3">Add New Subcategory</a>
-
-
-    <table class="table table-bordered table-striped">
-        <thead class="table-dark">
+    <a href="{% url 'dashboard:add_subcategory' %}" class="btn btn-add">+ Add New Subcategory</a>
+    </div>
+<div class="table-card">
+    <table class="table custom-table align-middle">
+        <thead>
         <tr>
             <th>ID</th>
             <th>Image</th>
             <th>Name</th>
             <th>Category</th>
             <th>Actions</th>
-
         </tr>
         </thead>
         <tbody>
@@ -31,19 +31,20 @@
                      style="width:60px; height:60px; object-fit:cover; border-radius:8px;"
                      alt="{{ subcategory.name }}">
                 {% else %}
-                No Image
+                <span class="text-muted">No Image</span>
+
                 {% endif %}
             </td>
             <td>{{ subcategory.name }}</td>
             <td>{{ subcategory.category.name }}</td>
             <td>
                 <a href="{% url 'dashboard:edit_subcategory' subcategory.id %}"
-                           class="btn btn-sm btn-warning">
+                           class="btn btn-sm btn-edit">
                     Edit
                 </a>
 
                 <a href="{% url 'dashboard:delete_subcategory' subcategory.id %}"
-                    class="btn btn-sm btn-danger">
+                    class="btn btn-sm btn-delete">
                     Delete
                 </a>
 
@@ -58,4 +59,6 @@
         </tbody>
     </table>
 </div>
+
+    </div>
 {% endblock %}

@@ -1,0 +1,128 @@
+/* ===== Page Title ===== */
+.page-title {
+    font-weight: 700;
+    color: #0b3a8d;
+    letter-spacing: 0.5px;
+}
+
+/* ===== Add Button ===== */
+.btn-add {
+    background: linear-gradient(135deg, #1e5eac, #0b3a8d);
+    color: #fff;
+    border: none;
+    padding: 8px 16px;
+    font-weight: 600;
+    border-radius: 8px;
+    transition: 0.3s ease;
+}
+
+.btn-add:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.15);
+    color: #fff;
+}
+
+/* ===== Card Around Table ===== */
+.table-card {
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+    padding: 20px;
+}
+
+/* ===== Custom Table ===== */
+.custom-table {
+    margin-bottom: 0;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+.custom-table thead {
+    background: #0b3a8d;
+    color: #fff;
+}
+
+.custom-table thead th {
+    border: none;
+    padding: 14px;
+    font-weight: 600;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Rounded header corners */
+.custom-table thead th:first-child {
+    border-top-left-radius: 10px;
+}
+.custom-table thead th:last-child {
+    border-top-right-radius: 10px;
+}
+
+/* Table rows */
+.custom-table tbody tr {
+    transition: 0.2s ease;
+}
+
+.custom-table tbody tr:hover {
+    background-color: #f5f8ff;
+    transform: scale(1.01);
+}
+
+/* Table cells */
+.custom-table td {
+    padding: 12px 14px;
+    vertical-align: middle;
+    border-top: 1px solid #eef1f6;
+    font-size: 14px;
+}
+
+/* Empty row */
+.empty-row {
+    padding: 30px !important;
+    color: #888;
+    font-style: italic;
+}
+
+/* ===== Action Buttons ===== */
+.btn-edit {
+    background-color: #ffc107;
+    border: none;
+    color: #000;
+    font-weight: 600;
+    border-radius: 6px;
+    padding: 5px 10px;
+    margin-right: 6px;
+    transition: 0.2s;
+}
+
+.btn-edit:hover {
+    background-color: #e0a800;
+    transform: translateY(-1px);
+}
+
+.btn-delete {
+    background-color: #dc3545;
+    border: none;
+    color: #fff;
+    font-weight: 600;
+    border-radius: 6px;
+    padding: 5px 10px;
+    transition: 0.2s;
+}
+
+.btn-delete:hover {
+    background-color: #bb2d3b;
+    transform: translateY(-1px);
+}
+
+/* Product image hover zoom */
+td img {
+    transition: transform 0.3s ease;
+}
+
+td img:hover {
+    transform: scale(1.8);
+    z-index: 10;
+    position: relative;
+}

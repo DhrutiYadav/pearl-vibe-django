@@ -149,6 +149,18 @@ def dashboard_add_category(request):
         'form': form,
         'title': 'Add Category'
     })
+def dashboard_edit_category(request, pk):
+    category = Category.objects.get(pk=pk)
+    form = CategoryForm(instance=category)
+
+    if request.method == 'POST':
+        form = CategoryForm(request.POST, instance=category)
+        if form.is_valid():
+            form.save()
+            return redirect('dashboard:dashboard_categories')
+
+    return render(request, 'dashboard/category_form.html', {'form': form})
+
 
 
 @login_required(login_url='/admin/login/')
