@@ -119,8 +119,8 @@
         })
         .then((response) => response.json())
         .then((data) => {
-            alert('Transaction completed')
-            window.location.href = "{% url 'store:home' %}"
+               alert('Payment Successful!');
+               window.location.href = `/order-success/${data.order_id}/`;
         })
     }
 </script>
@@ -147,9 +147,11 @@
         },
         onApprove: function(data, actions) {
             return actions.order.capture().then(function(details){
-                submitFormData()
-            })
+                document.getElementById('payment-info').classList.add('hidden');
+                submitFormData();   // ✅ JUST CALL FUNCTION
+            });
         }
+
     }).render('#paypal-button-container')
 </script>
 

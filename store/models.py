@@ -35,7 +35,7 @@ class Product(models.Model):
     # ✅ ADD THESE TWO LINES
     colors = models.JSONField(default=list, blank=True)  # multiple colors
     # sizes = models.JSONField(default=default_sizes, blank=True)
-    sizes = models.JSONField(default=lambda: ["Free"], blank=True)
+    sizes = models.JSONField(default=default_sizes, blank=True)
     # default_color = models.CharField(max_length=20, default="#8B4513")
 
     def __str__(self):
@@ -135,3 +135,31 @@ class ShippingAddress(models.Model):
 
     def __str__(self):
         return self.address
+
+
+# -------------------------
+# ORDER SUMMARY MODEL
+# -------------------------
+class OrderSummary(models.Model):
+    order = models.OneToOneField(Order, on_delete=models.CASCADE, related_name="summary")
+    subtotal = models.FloatField(default=0)
+    tax = models.FloatField(default=0)
+    shipping_cost = models.FloatField(default=0)
+    total = models.FloatField(default=0)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"Summary for Order #{self.order.id}"
+
+
+# -------------------------
+# INVOICE MODEL
+# -------------------------
+class Invoice(models.Model):
+    order = models.OneToOneField(Order, on_delete=models.CASCADE, related_name="invoice")
+    invoice_number = models.CharField(max_length=100, unique=True)
+    issued_date = models.DateTimeField(auto_now_add=True)
+    paid = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"Invoice {self.invoice_number}"

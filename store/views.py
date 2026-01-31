@@ -8,6 +8,20 @@ from .models import *
 from .utils import cookieCart
 import json
 import datetime
+import uuid
+from .models import OrderSummary, Invoice
+from django.shortcuts import get_object_or_404
+from django.template.loader import get_template
+from django.http import HttpResponse
+from xhtml2pdf import pisa
+from django.conf import settings
+import os
+
+from reportlab.pdfbase import pdfmetrics
+from reportlab.pdfbase.ttfonts import TTFont
+
+font_path = os.path.join(settings.BASE_DIR, 'static/fonts/DejaVuSans.ttf')
+pdfmetrics.registerFont(TTFont('DejaVuSans', font_path))
 
 
 def is_admin(user):
@@ -218,7 +232,11 @@ def updateItem(request):
     size = data.get('size') or None
     color = data.get('color') or None
 
-    customer = request.user.customer
+    customer, created = Customer.objects.get_or_create(
+        user=request.user,
+        defaults={'name': request.user.username, 'email': request.user.email}
+    )
+
     product = Product.objects.get(id=productId)
 
     order, created = Order.objects.get_or_create(
@@ -275,34 +293,65 @@ def updateItem(request):
 
 def processOrder(request):
     transaction_id = datetime.datetime.now().timestamp()
-    data = json.loads(request.body)
+    data = json.loads(request.body or '{}')
 
     if request.user.is_authenticated:
-        customer = request.user.customer
+        customer, created = Customer.objects.get_or_create(
+            user=request.user,
+            defaults={'name': request.user.username, 'email': request.user.email}
+        )
+
         order, created = Order.objects.get_or_create(
             customer=customer,
             complete=False
         )
-
-        total = float(data['form']['total'])
         order.transaction_id = transaction_id
 
-        if total == order.get_cart_total:
-            order.complete = True
-
+        # ✅ Payment already confirmed by PayPal
+        order.complete = True
         order.save()
 
-        if order.shipping:
+        # -------------------------
+        # CREATE ORDER SUMMARY
+        # -------------------------
+        subtotal = order.get_cart_total
+        tax = subtotal * 0.05
+        shipping_cost = 50 if order.shipping else 0
+        grand_total = subtotal + tax + shipping_cost
+
+        OrderSummary.objects.update_or_create(
+            order=order,
+            defaults={
+                "subtotal": subtotal,
+                "tax": tax,
+                "shipping_cost": shipping_cost,
+                "total": grand_total
+            }
+        )
+
+        # -------------------------
+        # CREATE INVOICE
+        # -------------------------
+        Invoice.objects.get_or_create(
+            order=order,
+            defaults={
+                "invoice_number": f"PV-{uuid.uuid4().hex[:8].upper()}"
+            }
+        )
+
+        if order.shipping and 'shipping' in data:
             ShippingAddress.objects.create(
                 customer=customer,
                 order=order,
-                address=data['shipping']['address'],
-                city=data['shipping']['city'],
-                state=data['shipping']['state'],
-                zipcode=data['shipping']['zipcode'],
+                address=data['shipping'].get('address', ''),
+                city=data['shipping'].get('city', ''),
+                state=data['shipping'].get('state', ''),
+                zipcode=data['shipping'].get('zipcode', ''),
             )
 
-    return JsonResponse('Payment submitted', safe=False)
+    print("ORDER SAVED:", order.id, "COMPLETE:", order.complete)
+    return JsonResponse({'order_id': order.id if order else 0}, safe=False)
+
 
 
 def product_detail(request, product_id):
@@ -311,3 +360,58 @@ def product_detail(request, product_id):
     return render(request, 'store/product_detail.html', {
         'product': product
     })
+
+def order_success(request, order_id):
+    order = get_object_or_404(Order, id=order_id)
+    summary = getattr(order, "summary", None)
+    invoice = getattr(order, "invoice", None)
+
+    return render(request, 'store/order_success.html', {
+        'order': order,
+        'summary': summary,
+        'invoice': invoice
+    })
+
+
+def link_callback(uri, rel):
+    """
+    Convert HTML URIs to absolute system paths so xhtml2pdf can access them
+    """
+    if uri.startswith(settings.STATIC_URL):
+        path = os.path.join(settings.BASE_DIR, uri.replace(settings.STATIC_URL, "static/"))
+    elif uri.startswith(settings.MEDIA_URL):
+        path = os.path.join(settings.BASE_DIR, uri.replace(settings.MEDIA_URL, "media/"))
+    else:
+        return uri
+
+    if not os.path.isfile(path):
+        raise Exception('Media URI must start with STATIC_URL or MEDIA_URL')
+    return path
+
+def download_invoice(request, order_id):
+    order = get_object_or_404(Order, id=order_id)
+    summary = order.summary
+    invoice = order.invoice
+    items = order.orderitem_set.all()
+
+    template = get_template('store/invoice_pdf.html')
+    html = template.render({
+        'order': order,
+        'summary': summary,
+        'invoice': invoice,
+        'items': items,
+    })
+
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="Invoice_{invoice.invoice_number}.pdf"'
+
+    font_path = os.path.join(settings.BASE_DIR, 'static/fonts/DejaVuSans.ttf')
+
+    pisa.CreatePDF(
+        html,
+        dest=response,
+        encoding='utf-8',
+        link_callback=lambda uri, rel: font_path if uri == "DejaVuSans.ttf" else uri
+    )
+
+    return response

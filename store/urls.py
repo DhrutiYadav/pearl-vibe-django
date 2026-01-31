@@ -22,4 +22,8 @@ urlpatterns = [
     path('feedback/', views_extra.feedback, name='feedback'),
 
     path('product/<int:product_id>/', views.product_detail, name='product_detail'),
+
+    path('order-success/<int:order_id>/', views.order_success, name='order_success'),
+    path('invoice/<int:order_id>/', views.download_invoice, name='download_invoice'),
+
 ]
