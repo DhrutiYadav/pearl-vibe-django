@@ -140,3 +140,8 @@ body {
 .chg-quantity:hover {
     opacity: 0.6;
 }
+
+.input-group
+ {
+    width: 59%;
+}

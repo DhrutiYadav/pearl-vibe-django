@@ -42,7 +42,7 @@
 
             <div class="collapse navbar-collapse" id="navCollapse">
                 <form class="d-flex position-relative me-3" role="search" method="get" action="{% url 'store:home' %}"
-                      style="min-width:220px; max-width:220x; width:45%;">
+                      style="min-width:220px; max-width:220x; width:26%;">
                     <div class="input-group">
                         <input id="nav-search" name="q" autocomplete="off" type="search" class="form-control"
                                placeholder="Search products, brands and more..." value="{{ request.GET.q|default:'' }}">
@@ -76,6 +76,11 @@
 
                 <ul class="navbar-nav">
                     {% if user.is_authenticated %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'store:order_history' %}">My Orders</a>
+                    </li>
+
+
                     <li class="nav-item"><span class="nav-link">Hi, {{ user.first_name|default:user.username }}</span>
                     </li>
                     <li class="nav-item"><a class="nav-link" href="{% url 'store:logout' %}">Logout</a></li>

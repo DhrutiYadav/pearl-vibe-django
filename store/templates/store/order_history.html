@@ -1,0 +1,31 @@
+{% extends 'store/main.html' %}
+{% block content %}
+
+<h2>My Orders</h2>
+
+{% if orders %}
+    <table border="1" cellpadding="8">
+        <tr>
+            <th>Order ID</th>
+            <th>Date</th>
+            <th>Total</th>
+            <th>Invoice</th>
+        </tr>
+        {% for order in orders %}
+        <tr>
+            <td>#{{ order.id }}</td>
+            <td>{{ order.date_ordered }}</td>
+            <td>Rs {{ order.summary.total }}</td>
+            <td>
+                <a href="{% url 'store:download_invoice' order.id %}">
+                    Download Invoice
+                </a>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+{% else %}
+    <p>You have not placed any orders yet.</p>
+{% endif %}
+
+{% endblock %}

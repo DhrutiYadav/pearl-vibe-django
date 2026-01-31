@@ -415,3 +415,15 @@ def download_invoice(request, order_id):
     )
 
     return response
+
+
+from django.contrib.auth.decorators import login_required
+
+@login_required
+def order_history(request):
+    customer = request.user.customer
+    orders = Order.objects.filter(customer=customer, complete=True).order_by('-date_ordered')
+
+    return render(request, 'store/order_history.html', {
+        'orders': orders
+    })
