@@ -22,7 +22,19 @@ def dashboard_edit_product(request, pk):
     if request.method == 'POST':
         form = ProductForm(request.POST, request.FILES, instance=product)
         if form.is_valid():
-            form.save()
+            product = form.save(commit=False)
+
+            # 🔥 GET COLORS FROM HIDDEN INPUT
+            colors_json = request.POST.get("colors", "[]")
+
+            try:
+                product.colors = json.loads(colors_json)  # convert JSON string → Python list
+            except json.JSONDecodeError:
+                product.colors = []
+
+            product.save()
+            form.save_m2m()
+
             return redirect('dashboard:dashboard_products')
     else:
         form = ProductForm(instance=product)
@@ -30,9 +42,9 @@ def dashboard_edit_product(request, pk):
     return render(request, 'dashboard/product_form.html', {
         'form': form,
         'title': 'Edit Product',
-        'existing_colors': json.dumps(product.colors)  # 👈 send colors
-    })
+        'existing_colors': json.dumps(product.colors or [])
 
+    })
 
 
 # admin/staff check
@@ -78,12 +90,27 @@ def dashboard_add_product(request):
     if request.method == 'POST':
         form = ProductForm(request.POST, request.FILES)
         if form.is_valid():
-            form.save()
+            product = form.save(commit=False)
+
+            colors_json = request.POST.get("colors", "[]")
+            try:
+                product.colors = json.loads(colors_json)
+            except json.JSONDecodeError:
+                product.colors = []
+
+            product.save()
+            form.save_m2m()
             return redirect('dashboard:dashboard_products')
+
     else:
         form = ProductForm()
 
-    return render(request, 'dashboard/product_form.html', {'form': form})
+    return render(request, 'dashboard/product_form.html', {
+        'form': form,
+        'title': 'Add Product',
+        'existing_colors': '[]'  # 🔥 ADD THIS LINE
+    })
+
 
 @login_required(login_url='/admin/login/')
 @user_passes_test(is_admin)

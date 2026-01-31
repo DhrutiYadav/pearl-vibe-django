@@ -49,6 +49,7 @@
 
         <!-- Hidden field that will store colors -->
         <input type="hidden" name="colors" id="colorsInput">
+
     </div>
 
     <!-- 📏 Sizes -->
@@ -77,6 +78,17 @@
 };
     // ================= COLOR PICKER SCRIPT =================
 let colors = [];
+
+// 🔥 Load existing colors from Django JSON
+window.addEventListener("DOMContentLoaded", function () {
+    const existingColors = JSON.parse('{{ existing_colors|default:"[]"|escapejs }}');
+
+
+    if (Array.isArray(existingColors)) {
+        colors = existingColors;
+        updateColorUI();
+    }
+});
 
 function addColor() {
     const picker = document.getElementById("colorPicker");
@@ -116,7 +128,8 @@ function updateColorUI() {
         box.appendChild(circle);
     });
 
-    input.value = colors.join(",");
+    // 🔥 Save back as JSON string for Django
+    input.value = JSON.stringify(colors);
 }
 </script>
 
