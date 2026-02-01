@@ -1,0 +1,26 @@
+{% extends 'dashboard/base.html' %}
+
+{% block title %}Orders{% endblock %}
+
+{% block content %}
+<h2>Order Summaries</h2>
+
+<table>
+    <tr>
+        <th>Order</th>
+        <th>Subtotal</th>
+        <th>Tax</th>
+        <th>Shipping</th>
+        <th>Total</th>
+    </tr>
+    {% for s in summaries %}
+    <tr>
+        <td>#{{ s.order.id }}</td>
+        <td>₹{{ s.subtotal }}</td>
+        <td>₹{{ s.tax }}</td>
+        <td>₹{{ s.shipping_cost }}</td>
+        <td><strong>₹{{ s.total }}</strong></td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}

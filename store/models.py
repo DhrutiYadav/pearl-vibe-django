@@ -159,7 +159,7 @@ class Invoice(models.Model):
     order = models.OneToOneField(Order, on_delete=models.CASCADE, related_name="invoice")
     invoice_number = models.CharField(max_length=100, unique=True)
     issued_date = models.DateTimeField(auto_now_add=True)
-    paid = models.BooleanField(default=False)
+    paid = models.BooleanField(default=True)
 
     def __str__(self):
         return f"Invoice {self.invoice_number}"

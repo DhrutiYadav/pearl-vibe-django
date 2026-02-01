@@ -6,9 +6,18 @@ from store.models import Product, Category
 from store.forms import CategoryForm
 from django.contrib.auth.models import User
 from store.forms import SubCategoryForm
-from store.models import Order
 from django.contrib import messages
 import json
+from store.models import Customer, Invoice, OrderSummary, ShippingAddress
+
+from django.shortcuts import render
+from store.models import Order, OrderItem
+from django.db.models import Sum, Count
+from django.db.models import Sum, F, ExpressionWrapper, DecimalField
+
+from django.utils import timezone
+from datetime import timedelta
+
 
 def is_admin(user):
     return user.is_staff or user.is_superuser
@@ -273,3 +282,74 @@ def delete_subcategory(request, pk):
         return redirect("dashboard:dashboard_subcategories")
 
     return render(request, "dashboard/delete_subcategory.html", {"subcategory": subcategory})
+
+@login_required(login_url='/admin/login/')
+@user_passes_test(is_admin)
+def dashboard_customers(request):
+    customers = Customer.objects.select_related('user').all()
+
+    return render(request, 'dashboard/customers.html', {
+        'customers': customers
+    })
+
+@login_required(login_url='/admin/login/')
+@user_passes_test(is_admin)
+def dashboard_shipping_addresses(request):
+    addresses = ShippingAddress.objects.select_related('customer', 'order').all()
+
+    return render(request, 'dashboard/shipping_addresses.html', {
+        'addresses': addresses
+    })
+
+@login_required(login_url='/admin/login/')
+@user_passes_test(is_admin)
+def dashboard_order_summaries(request):
+    summaries = OrderSummary.objects.select_related('order').all()
+
+    return render(request, 'dashboard/order_summaries.html', {
+        'summaries': summaries
+    })
+
+@login_required(login_url='/admin/login/')
+@user_passes_test(is_admin)
+def dashboard_invoices(request):
+    invoices = Invoice.objects.select_related('order').all()
+
+    return render(request, 'dashboard/invoices.html', {
+        'invoices': invoices
+    })
+
+@login_required(login_url='/admin/login/')
+@user_passes_test(is_admin)
+def reports_dashboard(request):
+
+    total_orders = Order.objects.count()
+
+    # ✅ USE complete INSTEAD OF paid
+    paid_orders = Order.objects.filter(complete=True).count()
+    unpaid_orders = Order.objects.filter(complete=False).count()
+
+    # 💰 Revenue = sum of (product price × quantity) for completed orders
+    total_revenue = OrderItem.objects.filter(
+        order__complete=True
+    ).aggregate(
+        total=Sum(
+            ExpressionWrapper(
+                F('product__price') * F('quantity'),
+                output_field=DecimalField()
+            )
+        )
+    )['total'] or 0
+
+    # ✅ Your model uses date_ordered, not created_at
+    recent_orders = Order.objects.select_related('customer__user').order_by('-date_ordered')[:10]
+
+    context = {
+        'total_orders': total_orders,
+        'paid_orders': paid_orders,
+        'unpaid_orders': unpaid_orders,
+        'total_revenue': total_revenue,
+        'recent_orders': recent_orders,
+    }
+
+    return render(request, 'dashboard/reports.html', context)

@@ -2,30 +2,48 @@
 {% block content %}
 
 <h2>My Orders</h2>
-
 {% if orders %}
-    <table border="1" cellpadding="8">
-        <tr>
-            <th>Order ID</th>
-            <th>Date</th>
-            <th>Total</th>
-            <th>Invoice</th>
-        </tr>
-        {% for order in orders %}
-        <tr>
-            <td>#{{ order.id }}</td>
-            <td>{{ order.date_ordered }}</td>
-            <td>Rs {{ order.summary.total }}</td>
-            <td>
+    {% for order in orders %}
+        <div style="border:1px solid #ccc; padding:15px; margin-bottom:20px; border-radius:8px;">
+
+            <h3>Order #{{ order.id }}</h3>
+            <p><strong>Date:</strong> {{ order.date_ordered }}</p>
+            <p><strong>Total:</strong> Rs {{ order.summary.total }}</p>
+            <p>
                 <a href="{% url 'store:download_invoice' order.id %}">
                     Download Invoice
                 </a>
-            </td>
-        </tr>
-        {% endfor %}
-    </table>
+            </p>
+
+            <hr>
+
+            <h4>Items in this order:</h4>
+
+            <table width="100%" border="1" cellpadding="6">
+                <tr>
+                    <th>Product</th>
+                    <th>Size</th>
+                    <th>Color</th>
+                    <th>Quantity</th>
+                    <th>Price</th>
+                </tr>
+
+                {% for item in order.orderitem_set.all %}
+                <tr>
+                    <td>{{ item.product.name }}</td>
+                    <td>{{ item.size }}</td>
+                    <td>{{ item.color }}</td>
+                    <td>{{ item.quantity }}</td>
+                    <td>Rs {{ item.product.price }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+
+        </div>
+    {% endfor %}
 {% else %}
     <p>You have not placed any orders yet.</p>
 {% endif %}
+
 
 {% endblock %}

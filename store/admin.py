@@ -3,7 +3,7 @@ from django import forms
 from django.utils.safestring import mark_safe
 from django.utils.html import format_html
 from .models import Category, SubCategory, Product, Order, OrderItem
-
+from .models import Customer, ShippingAddress, OrderSummary, Invoice
 
 class CategoryAdmin(admin.ModelAdmin):
     list_display = ('id', 'name')
@@ -136,16 +136,40 @@ class ProductAdmin(admin.ModelAdmin):
     )
 
 # -------- Order Admin --------
+class OrderItemInline(admin.TabularInline):
+    model = OrderItem
+    extra = 0
+
+
 class OrderAdmin(admin.ModelAdmin):
     list_display = ('id', 'customer', 'complete', 'date_ordered')
     list_filter = ('complete',)
     search_fields = ('customer__user__username',)
+    inlines = [OrderItemInline]
 
 
 # -------- OrderItem Admin --------
 class OrderItemAdmin(admin.ModelAdmin):
     list_display = ('id', 'order', 'product', 'quantity', 'size', 'color')
     list_filter = ('product', 'size', 'color')
+
+class CustomerAdmin(admin.ModelAdmin):
+    list_display = ('id', 'user', 'name', 'email')
+    search_fields = ('name', 'email', 'user__username')
+
+class ShippingAddressAdmin(admin.ModelAdmin):
+    list_display = ('id', 'customer', 'order', 'city', 'state', 'zipcode')
+    list_filter = ('city', 'state')
+    search_fields = ('customer__name', 'city', 'zipcode')
+
+class OrderSummaryAdmin(admin.ModelAdmin):
+    list_display = ('order', 'subtotal', 'tax', 'shipping_cost', 'total', 'updated_at')
+    readonly_fields = ('updated_at',)
+
+class InvoiceAdmin(admin.ModelAdmin):
+    list_display = ('invoice_number', 'order', 'issued_date', 'paid')
+    list_filter = ('paid',)
+    search_fields = ('invoice_number',)
 
 
 # -------- Register Models --------
@@ -154,6 +178,11 @@ admin.site.register(SubCategory, SubCategoryAdmin)
 admin.site.register(Product, ProductAdmin)
 admin.site.register(Order, OrderAdmin)
 admin.site.register(OrderItem, OrderItemAdmin)
+
+admin.site.register(Customer, CustomerAdmin)
+admin.site.register(ShippingAddress, ShippingAddressAdmin)
+admin.site.register(OrderSummary, OrderSummaryAdmin)
+admin.site.register(Invoice, InvoiceAdmin)
 
 admin.site.site_header = "Pearl Vibe Admin Panel"
 admin.site.site_title = "Pearl Vibe Admin"

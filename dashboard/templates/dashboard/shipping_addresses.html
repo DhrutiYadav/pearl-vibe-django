@@ -1,0 +1,26 @@
+{% extends 'dashboard/base.html' %}
+
+{% block title %}Products{% endblock %}
+
+{% block content %}
+<h2>Shipping Addresses</h2>
+
+<table>
+    <tr>
+        <th>Order</th>
+        <th>Customer</th>
+        <th>City</th>
+        <th>State</th>
+        <th>Zip</th>
+    </tr>
+    {% for a in addresses %}
+    <tr>
+        <td>#{{ a.order.id }}</td>
+        <td>{{ a.customer.name }}</td>
+        <td>{{ a.city }}</td>
+        <td>{{ a.state }}</td>
+        <td>{{ a.zipcode }}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}

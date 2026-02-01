@@ -5,7 +5,7 @@
     <title>{% block title %}Dashboard{% endblock %}</title>
 
     <link rel="stylesheet" href="{% static 'dashboard/css/style.css' %}">
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'dashboard/css/dashboard.css' %}">
 
     <script src="{% static 'dashboard/js/script.js' %}"></script>
@@ -49,9 +49,17 @@
     <a href="/dashboard/categories/">Categories</a>
     <a href="/dashboard/subcategories/">Subcategories</a>
     <a href="/dashboard/products/">Products</a>
+<!--    <a href="/dashboard/orders/">Orders</a>-->
+<!--    <a href="/dashboard/users/">Users</a>-->
     <a href="/dashboard/orders/">Orders</a>
+    <a href="/dashboard/order-summaries/">Order Summary</a>
+    <a href="/dashboard/invoices/">Invoices</a>
+    <a href="/dashboard/shipping-addresses/">Shipping</a>
+    <a href="/dashboard/customers/">Customers</a>
     <a href="/dashboard/users/">Users</a>
-<!--    <a href="{% url 'dashboard:users' %}">Users</a>-->
+    <a href="{% url 'dashboard:reports_dashboard' %}">📊 Reports</a>
+
+
 
 </div>
 

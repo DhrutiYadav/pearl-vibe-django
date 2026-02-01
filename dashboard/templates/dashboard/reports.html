@@ -1,0 +1,73 @@
+{% extends 'dashboard/base.html' %}
+{% block content %}
+
+<h2>📊 Sales Reports</h2>
+
+<div class="stats-container">
+
+    <div class="stat-card">
+    <div class="stat-icon">📦</div>
+    <div class="stat-info">
+        <h3>{{ total_orders }}</h3>
+        <p>Total Orders</p>
+    </div>
+</div>
+
+<div class="stat-card">
+    <div class="stat-icon">💳</div>
+    <div class="stat-info">
+        <h3>{{ paid_orders }}</h3>
+        <p>Paid Orders</p>
+    </div>
+</div>
+
+<div class="stat-card">
+    <div class="stat-icon">🛒</div>
+    <div class="stat-info">
+        <h3>{{ unpaid_orders }}</h3>
+        <p>Unpaid Orders</p>
+    </div>
+</div>
+
+<div class="stat-card">
+    <div class="stat-icon">₹</div>
+    <div class="stat-info">
+        <h3>{{ total_revenue }}</h3>
+        <p>Total Revenue</p>
+    </div>
+</div>
+
+
+</div>
+
+<hr>
+
+<h3>🕒 Recent Orders</h3>
+
+<table>
+    <tr>
+        <th>Order ID</th>
+        <th>User</th>
+        <th>Date</th>
+        <th>Paid</th>
+        <th>Total</th>
+    </tr>
+
+    {% for order in recent_orders %}
+    <tr>
+        <td>#{{ order.id }}</td>
+        <td>{{ order.customer.user.username }}</td>
+        <td>{{ order.date_ordered|date:"d M Y" }}</td>
+        <td>
+            {% if order.complete %}
+                ✅
+            {% else %}
+                ❌
+            {% endif %}
+        </td>
+        <td>₹ {{ order.get_cart_total }}</td>
+    </tr>
+    {% endfor %}
+</table>
+
+{% endblock %}

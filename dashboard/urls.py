@@ -27,4 +27,10 @@ urlpatterns = [
     path("subcategory/delete/<int:pk>/", views.delete_subcategory, name="delete_subcategory"),
     path('users/', views.users_list, name='users'),
 
+    path('customers/', views.dashboard_customers, name='dashboard_customers'),
+    path('shipping-addresses/', views.dashboard_shipping_addresses, name='dashboard_shipping_addresses'),
+    path('order-summaries/', views.dashboard_order_summaries, name='dashboard_order_summaries'),
+    path('invoices/', views.dashboard_invoices, name='dashboard_invoices'),
+    path('reports/', views.reports_dashboard, name='reports_dashboard'),
+
 ]
