@@ -12,11 +12,17 @@ from store.models import Customer, Invoice, OrderSummary, ShippingAddress
 
 from django.shortcuts import render
 from store.models import Order, OrderItem
-from django.db.models import Sum, Count
+from django.db.models import Count
 from django.db.models import Sum, F, ExpressionWrapper, DecimalField
-
 from django.utils import timezone
+from datetime import datetime
+from django.db.models.functions import TruncMonth
+from django.db.models.functions import TruncYear
+from django.db.models.functions import ExtractMonth
+
 from datetime import timedelta
+from collections import defaultdict
+
 
 
 def is_admin(user):
@@ -344,12 +350,324 @@ def reports_dashboard(request):
     # ✅ Your model uses date_ordered, not created_at
     recent_orders = Order.objects.select_related('customer__user').order_by('-date_ordered')[:10]
 
+    # 🏆 Top Selling Products
+    top_products = OrderItem.objects.filter(order__complete=True) \
+        .values('product__id', 'product__name', 'product__price') \
+        .annotate(
+        total_sold=Sum('quantity'),
+        revenue=Sum(
+            ExpressionWrapper(
+                F('product__price') * F('quantity'),
+                output_field=DecimalField()
+            )
+        )
+    ).order_by('-total_sold')[:10]
+
+    # 📊 DATA FOR TOP SELLING PRODUCTS CHART
+    product_names = [item['product__name'] for item in top_products]
+    product_sales = [item['total_sold'] for item in top_products]
+
+    # 📆 SALES THIS MONTH
+    today = timezone.now()
+    first_day_of_month = today.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+
+    monthly_revenue = OrderItem.objects.filter(
+        order__complete=True,
+        order__date_ordered__gte=first_day_of_month
+    ).aggregate(
+        total=Sum(
+            ExpressionWrapper(
+                F('product__price') * F('quantity'),
+                output_field=DecimalField()
+            )
+        )
+    )['total'] or 0
+
+    # 📈 SALES OVER LAST 7 DAYS
+    today = timezone.now().date()
+    seven_days_ago = today - timedelta(days=6)
+
+    sales_data = OrderItem.objects.filter(
+        order__complete=True,
+        order__date_ordered__date__gte=seven_days_ago
+    ).annotate(
+        day=F('order__date_ordered__date')
+    ).values('day').annotate(
+        revenue=Sum(
+            ExpressionWrapper(
+                F('product__price') * F('quantity'),
+                output_field=DecimalField()
+            )
+        )
+    ).order_by('day')
+
+    # Fill missing days with 0 revenue
+    sales_dict = defaultdict(int)
+    for entry in sales_data:
+        sales_dict[entry['day']] = float(entry['revenue'])
+
+    dates = []
+    revenues = []
+
+    for i in range(7):
+        day = seven_days_ago + timedelta(days=i)
+        dates.append(day.strftime("%d %b"))
+        revenues.append(sales_dict.get(day, 0))
+
+    # 🥧 SALES BY CATEGORY
+    category_data = OrderItem.objects.filter(order__complete=True) \
+        .values('product__subcategory__category__name') \
+        .annotate(
+        revenue=Sum(
+            ExpressionWrapper(
+                F('product__price') * F('quantity'),
+                output_field=DecimalField()
+            )
+        )
+    ).order_by('-revenue')
+
+    category_labels = [item['product__subcategory__category__name'] for item in category_data]
+    category_revenues = [float(item['revenue']) for item in category_data]
+
+    # 📅 MONTHLY SALES COMPARISON (Last 6 Months)
+    today = timezone.now()
+    six_months_ago = today - timedelta(days=180)
+
+    monthly_data = OrderItem.objects.filter(
+        order__complete=True,
+        order__date_ordered__gte=six_months_ago
+    ).annotate(
+        month=TruncMonth('order__date_ordered')
+    ).values('month').annotate(
+        revenue=Sum(
+            ExpressionWrapper(
+                F('product__price') * F('quantity'),
+                output_field=DecimalField()
+            )
+        )
+    ).order_by('month')
+
+    month_labels = [entry['month'].strftime('%b %Y') for entry in monthly_data]
+    month_revenues = [float(entry['revenue']) for entry in monthly_data]
+
+    # 📆 YEARLY SALES COMPARISON
+    yearly_data = OrderItem.objects.filter(order__complete=True) \
+        .annotate(
+        year=TruncYear('order__date_ordered')
+    ).values('year').annotate(
+        revenue=Sum(
+            ExpressionWrapper(
+                F('product__price') * F('quantity'),
+                output_field=DecimalField()
+            )
+        )
+    ).order_by('year')
+
+    year_labels = [entry['year'].strftime('%Y') for entry in yearly_data]
+    year_revenues = [float(entry['revenue']) for entry in yearly_data]
+
+    # 📅 MONTHLY SALES (JAN–DEC FOR CURRENT YEAR)
+    selected_year = request.GET.get('year')
+
+    if selected_year:
+        selected_year = int(selected_year)
+    else:
+        selected_year = timezone.now().year
+
+    monthly_sales = OrderItem.objects.filter(
+        order__complete=True,
+        order__date_ordered__year=selected_year
+    ).annotate(
+        month=ExtractMonth('order__date_ordered')
+    ).values('month').annotate(
+        revenue=Sum(
+            ExpressionWrapper(
+                F('product__price') * F('quantity'),
+                output_field=DecimalField()
+            )
+        )
+    )
+
+    # Convert to dictionary {month_number: revenue}
+    sales_dict = {entry['month']: float(entry['revenue']) for entry in monthly_sales}
+
+    month_labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+                    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+
+    month_revenues = [sales_dict.get(i, 0) for i in range(1, 13)]
+
+    # 📈 REVENUE vs ORDERS TREND (Last 7 Days)
+    today = timezone.now().date()
+    seven_days_ago = today - timedelta(days=6)
+
+    orders_data = Order.objects.filter(
+        complete=True,
+        date_ordered__date__gte=seven_days_ago
+    ).values('date_ordered__date').annotate(
+        order_count=Count('id')
+    ).order_by('date_ordered__date')
+
+    revenue_data = OrderItem.objects.filter(
+        order__complete=True,
+        order__date_ordered__date__gte=seven_days_ago
+    ).annotate(
+        day=F('order__date_ordered__date')
+    ).values('day').annotate(
+        revenue=Sum(
+            ExpressionWrapper(
+                F('product__price') * F('quantity'),
+                output_field=DecimalField()
+            )
+        )
+    )
+
+    orders_dict = {entry['date_ordered__date']: entry['order_count'] for entry in orders_data}
+    revenue_dict = {entry['day']: float(entry['revenue']) for entry in revenue_data}
+
+    trend_dates = []
+    trend_orders = []
+    trend_revenue = []
+
+    for i in range(7):
+        day = seven_days_ago + timedelta(days=i)
+        trend_dates.append(day.strftime("%d %b"))
+        trend_orders.append(orders_dict.get(day, 0))
+        trend_revenue.append(revenue_dict.get(day, 0))
+
+    # 💰 REVENUE BY PRICE RANGE
+    price_ranges = {
+        "Under ₹500": OrderItem.objects.filter(
+            order__complete=True,
+            product__price__lt=500
+        ),
+        "₹500 - ₹1000": OrderItem.objects.filter(
+            order__complete=True,
+            product__price__gte=500,
+            product__price__lte=1000
+        ),
+        "Above ₹1000": OrderItem.objects.filter(
+            order__complete=True,
+            product__price__gt=1000
+        ),
+    }
+
+    range_labels = []
+    range_revenues = []
+
+    for label, queryset in price_ranges.items():
+        revenue = queryset.aggregate(
+            total=Sum(
+                ExpressionWrapper(
+                    F('product__price') * F('quantity'),
+                    output_field=DecimalField()
+                )
+            )
+        )['total'] or 0
+
+        range_labels.append(label)
+        range_revenues.append(float(revenue))
+
+        # 💳 AVERAGE ORDER VALUE (AOV) TREND – Last 7 Days
+        today = timezone.now().date()
+        seven_days_ago = today - timedelta(days=6)
+
+        # Orders per day
+        orders_per_day = Order.objects.filter(
+            complete=True,
+            date_ordered__date__gte=seven_days_ago
+        ).values('date_ordered__date').annotate(
+            count=Count('id')
+        )
+
+        # Revenue per day
+        revenue_per_day = OrderItem.objects.filter(
+            order__complete=True,
+            order__date_ordered__date__gte=seven_days_ago
+        ).annotate(
+            day=F('order__date_ordered__date')
+        ).values('day').annotate(
+            revenue=Sum(
+                ExpressionWrapper(
+                    F('product__price') * F('quantity'),
+                    output_field=DecimalField()
+                )
+            )
+        )
+
+        orders_dict = {entry['date_ordered__date']: entry['count'] for entry in orders_per_day}
+        revenue_dict = {entry['day']: float(entry['revenue']) for entry in revenue_per_day}
+
+        aov_dates = []
+        aov_values = []
+
+        for i in range(7):
+            day = seven_days_ago + timedelta(days=i)
+            orders = orders_dict.get(day, 0)
+            revenue = revenue_dict.get(day, 0)
+
+            aov = revenue / orders if orders > 0 else 0
+
+            aov_dates.append(day.strftime("%d %b"))
+            aov_values.append(round(aov, 2))
+
+    # 💎 CUSTOMER LIFETIME VALUE (CLV)
+
+    customer_clv = OrderItem.objects.filter(order__complete=True) \
+        .values(
+        'order__customer__id',
+        'order__customer__user__username'
+    ).annotate(
+        total_spent=Sum(
+            ExpressionWrapper(
+                F('product__price') * F('quantity'),
+                output_field=DecimalField()
+            )
+        ),
+        total_orders=Count('order', distinct=True)
+    ).order_by('-total_spent')[:10]  # Top 10 customers
+
+    # 📊 CLV CHART DATA (Top 5 Customers)
+    top_customers = list(customer_clv[:5])
+
+    clv_labels = [c['order__customer__user__username'] for c in top_customers]
+    clv_values = [float(c['total_spent']) for c in top_customers]
+
     context = {
         'total_orders': total_orders,
         'paid_orders': paid_orders,
         'unpaid_orders': unpaid_orders,
         'total_revenue': total_revenue,
+        'monthly_revenue': monthly_revenue,
         'recent_orders': recent_orders,
+        'top_products': top_products,
+        'sales_dates': dates,
+        'sales_revenues': revenues,
+        'chart_product_names': product_names,
+        'chart_product_sales': product_sales,
+        'category_labels': category_labels,
+        'category_revenues': category_revenues,
+        'month_labels': month_labels,
+        'month_revenues': month_revenues,
+        'year_labels': year_labels,
+        'year_revenues': year_revenues,
+        'year_month_labels': month_labels,
+        'year_month_revenues': month_revenues,
+        # 'current_year': current_year,
+        'year_month_labels': month_labels,
+        'year_month_revenues': month_revenues,
+        'selected_year': selected_year,
+        'available_years': range(timezone.now().year, timezone.now().year - 5, -1),
+        'revenue_orders_dates': trend_dates,
+        'revenue_orders_counts': trend_orders,
+        'revenue_orders_revenue': trend_revenue,
+        'price_range_labels': range_labels,
+        'price_range_revenues': range_revenues,
+        'aov_dates': aov_dates,
+        'aov_values': aov_values,
+        'customer_clv': customer_clv,
+        'clv_labels': clv_labels,
+        'clv_values': clv_values,
+
     }
 
     return render(request, 'dashboard/reports.html', context)

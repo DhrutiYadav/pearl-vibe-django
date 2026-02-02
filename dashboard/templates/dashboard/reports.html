@@ -1,6 +1,7 @@
 {% extends 'dashboard/base.html' %}
 {% block content %}
 
+
 <h2>📊 Sales Reports</h2>
 
 <div class="stats-container">
@@ -37,6 +38,15 @@
     </div>
 </div>
 
+<div class="stat-card">
+    <div class="stat-icon">📅</div>
+    <div class="stat-info">
+        <h3>₹ {{ monthly_revenue|floatformat:2 }}</h3>
+        <p>Sales This Month</p>
+    </div>
+</div>
+
+
 
 </div>
 
@@ -69,5 +79,443 @@
     </tr>
     {% endfor %}
 </table>
+
+<hr>
+
+<h3>🏆 Top Selling Products</h3>
+
+<table>
+    <tr>
+        <th>Product</th>
+        <th>Units Sold</th>
+        <th>Revenue</th>
+    </tr>
+
+    {% for item in top_products %}
+    <tr>
+        <td>{{ item.product__name }}</td>
+        <td>{{ item.total_sold }}</td>
+        <td>₹ {{ item.revenue|floatformat:2 }}</td>
+    </tr>
+    {% empty %}
+    <tr>
+        <td colspan="3" style="text-align:center; color:gray;">
+            No sales data yet
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+
+<h3 class="mt-5">📈 Sales Last 7 Days</h3>
+<canvas id="salesChart" height="100"></canvas>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const ctx = document.getElementById('salesChart').getContext('2d');
+
+    const salesChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: {{ sales_dates|safe }},
+            datasets: [{
+                label: 'Revenue (₹)',
+                data: {{ sales_revenues|safe }},
+                borderColor: '#28a745',
+                backgroundColor: 'rgba(40,167,69,0.1)',
+                tension: 0.3,
+                fill: true,
+                pointRadius: 4,
+                pointBackgroundColor: '#28a745'
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { display: true }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+</script>
+
+<h3 class="mt-5">📊 Top Selling Products (Chart)</h3>
+<canvas id="topProductsChart"></canvas>
+<script>
+
+    const topProductsCtx = document.getElementById('topProductsChart').getContext('2d');
+
+    new Chart(topProductsCtx, {
+        type: 'bar',
+        data: {
+            labels: {{ chart_product_names|safe }},
+            datasets: [{
+                label: 'Units Sold',
+                data: {{ chart_product_sales|safe }},
+                backgroundColor: 'rgba(255, 193, 7, 0.7)',
+                borderColor: '#ffc107',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            indexAxis: 'y',  // makes it horizontal
+            responsive: true,
+            plugins: {
+                legend: { display: false }
+            },
+            scales: {
+                x: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+</script>
+
+<h3 class="mt-5">📦 Sales by Category</h3>
+<div class="chart-container">
+    <canvas id="categoryChart"></canvas>
+</div>
+<style>
+.chart-container {
+    max-width: 600px;   /* controls pie size */
+    margin: 0 auto;     /* centers it */
+}
+</style>
+
+
+<script>
+    const categoryCtx = document.getElementById('categoryChart').getContext('2d');
+
+    new Chart(categoryCtx, {
+        type: 'pie',
+        data: {
+            labels: {{ category_labels|safe }},
+            datasets: [{
+                data: {{ category_revenues|safe }},
+                backgroundColor: [
+                    '#ff6384',
+                    '#36a2eb',
+                    '#ffcd56',
+                    '#4bc0c0',
+                    '#9966ff',
+                    '#ff9f40'
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+                legend: {
+                    position: 'right'
+                }
+            }
+        }
+    });
+</script>
+
+<h3 class="mt-5">📅 Monthly Sales Comparison</h3>
+<canvas id="monthlySalesChart" height="120"></canvas>
+
+<script>
+const monthlyCtx = document.getElementById('monthlySalesChart').getContext('2d');
+
+new Chart(monthlyCtx, {
+    type: 'bar',
+    data: {
+        labels: {{ month_labels|safe }},
+        datasets: [{
+            label: 'Monthly Revenue (₹)',
+            data: {{ month_revenues|safe }},
+            backgroundColor: 'rgba(54, 162, 235, 0.7)',
+            borderColor: '#36a2eb',
+            borderWidth: 1
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: { display: true }
+        },
+        scales: {
+            y: {
+                beginAtZero: true
+            }
+        }
+    }
+});
+</script>
+
+<h3 class="mt-5">📆 Yearly Sales Comparison</h3>
+<canvas id="yearlySalesChart" height="120"></canvas>
+
+<script>
+const yearlyCtx = document.getElementById('yearlySalesChart').getContext('2d');
+
+new Chart(yearlyCtx, {
+    type: 'bar',
+    data: {
+        labels: {{ year_labels|safe }},
+        datasets: [{
+            label: 'Yearly Revenue (₹)',
+            data: {{ year_revenues|safe }},
+            backgroundColor: 'rgba(153, 102, 255, 0.7)',
+            borderColor: '#9966ff',
+            borderWidth: 1
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: { display: true }
+        },
+        scales: {
+            y: {
+                beginAtZero: true
+            }
+        }
+    }
+});
+</script>
+<h3 class="mt-5">📅 Monthly Sales Breakdown</h3>
+
+<form method="get" style="margin-bottom: 15px;">
+    <label for="yearSelect"><strong>Select Year:</strong></label>
+    <select name="year" id="yearSelect" onchange="this.form.submit()">
+        {% for year in available_years %}
+            <option value="{{ year }}" {% if year == selected_year %}selected{% endif %}>
+                {{ year }}
+            </option>
+        {% endfor %}
+    </select>
+</form>
+
+<canvas id="yearMonthChart" height="120"></canvas>
+<h4>Monthly Sales Breakdown ({{ selected_year }})</h4>
+
+
+<!--<h3 class="mt-5">📅 Monthly Sales Breakdown ({{ current_year }})</h3>-->
+<canvas id="yearMonthChart" height="120"></canvas>
+
+<script>
+const yearMonthCtx = document.getElementById('yearMonthChart').getContext('2d');
+
+new Chart(yearMonthCtx, {
+    type: 'bar',
+    data: {
+        labels: {{ year_month_labels|safe }},
+        datasets: [{
+            label: 'Monthly Revenue (₹)',
+            data: {{ year_month_revenues|safe }},
+            backgroundColor: 'rgba(75, 192, 192, 0.7)',
+            borderColor: '#4bc0c0',
+            borderWidth: 1
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: { display: true }
+        },
+        scales: {
+            y: {
+                beginAtZero: true
+            }
+        }
+    }
+});
+</script>
+
+<h3 class="mt-5">📊 Revenue vs Orders Trend (Last 7 Days)</h3>
+<canvas id="revenueOrdersChart" height="120"></canvas>
+
+<script>
+const roCtx = document.getElementById('revenueOrdersChart').getContext('2d');
+
+new Chart(roCtx, {
+    type: 'line',
+    data: {
+        labels: {{ revenue_orders_dates|safe }},
+        datasets: [
+            {
+                label: 'Revenue (₹)',
+                data: {{ revenue_orders_revenue|safe }},
+                borderColor: '#28a745',
+                backgroundColor: 'rgba(40,167,69,0.1)',
+                tension: 0.3,
+                yAxisID: 'y'
+            },
+            {
+                label: 'Orders',
+                data: {{ revenue_orders_counts|safe }},
+                borderColor: '#007bff',
+                backgroundColor: 'rgba(0,123,255,0.1)',
+                tension: 0.3,
+                yAxisID: 'y1'
+            }
+        ]
+    },
+    options: {
+        responsive: true,
+        interaction: { mode: 'index', intersect: false },
+        stacked: false,
+        plugins: {
+            legend: { display: true }
+        },
+        scales: {
+            y: {
+                type: 'linear',
+                position: 'left',
+                beginAtZero: true,
+                title: { display: true, text: 'Revenue (₹)' }
+            },
+            y1: {
+                type: 'linear',
+                position: 'right',
+                beginAtZero: true,
+                grid: { drawOnChartArea: false },
+                title: { display: true, text: 'Orders' }
+            }
+        }
+    }
+});
+</script>
+
+<h3 class="mt-5">💰 Revenue by Price Range</h3>
+<div class="chart-container">
+<canvas id="priceRangeChart"></canvas>
+</div>
+<style>
+.chart-container {
+    max-width: 600px;   /* controls pie size */
+    margin: 0 auto;     /* centers it */
+}
+</style>
+<script>
+const priceRangeCtx = document.getElementById('priceRangeChart').getContext('2d');
+
+new Chart(priceRangeCtx, {
+    type: 'doughnut',
+    data: {
+        labels: {{ price_range_labels|safe }},
+        datasets: [{
+            data: {{ price_range_revenues|safe }},
+            backgroundColor: [
+                '#36a2eb',
+                '#ffcd56',
+                '#ff6384'
+            ],
+            borderWidth: 1
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: {
+                position: 'right'
+            }
+        }
+    }
+});
+</script>
+
+<h3 class="mt-5">💳 Average Order Value (AOV) Trend</h3>
+<canvas id="aovChart" height="120"></canvas>
+
+<script>
+const aovCtx = document.getElementById('aovChart').getContext('2d');
+
+new Chart(aovCtx, {
+    type: 'line',
+    data: {
+        labels: {{ aov_dates|safe }},
+        datasets: [{
+            label: 'AOV (₹)',
+            data: {{ aov_values|safe }},
+            borderColor: '#ff6384',
+            backgroundColor: 'rgba(255,99,132,0.1)',
+            tension: 0.3,
+            fill: true,
+            pointRadius: 4,
+            pointBackgroundColor: '#ff6384'
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: { display: true }
+        },
+        scales: {
+            y: {
+                beginAtZero: true
+            }
+        }
+    }
+});
+</script>
+
+<hr>
+
+<h3 class="mt-5">💎 Top Customers by Lifetime Value (CLV)</h3>
+
+<table>
+    <tr>
+        <th>Customer</th>
+        <th>Total Orders</th>
+        <th>Total Spent (₹)</th>
+    </tr>
+
+    {% for c in customer_clv %}
+    <tr>
+        <td>{{ c.order__customer__user__username }}</td>
+        <td>{{ c.total_orders }}</td>
+        <td>₹ {{ c.total_spent|floatformat:2 }}</td>
+    </tr>
+    {% empty %}
+    <tr>
+        <td colspan="3" style="text-align:center; color:gray;">
+            No customer data yet
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+
+<h3 class="mt-5">💎 Customer Lifetime Value (Top Customers)</h3>
+<canvas id="clvChart" height="120"></canvas>
+
+<script>
+const clvCtx = document.getElementById('clvChart').getContext('2d');
+
+new Chart(clvCtx, {
+    type: 'bar',
+    data: {
+        labels: {{ clv_labels|safe }},
+        datasets: [{
+            label: 'Lifetime Value (₹)',
+            data: {{ clv_values|safe }},
+            backgroundColor: 'rgba(255, 99, 132, 0.7)',
+            borderColor: '#ff6384',
+            borderWidth: 1
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: { display: true }
+        },
+        scales: {
+            y: {
+                beginAtZero: true
+            }
+        }
+    }
+});
+</script>
+
 
 {% endblock %}

@@ -19,6 +19,8 @@ import os
 
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
+from django.db.models import Sum
+
 
 font_path = os.path.join(settings.BASE_DIR, 'static/fonts/DejaVuSans.ttf')
 pdfmetrics.registerFont(TTFont('DejaVuSans', font_path))
@@ -46,7 +48,16 @@ def dashboard_home(request):
 
 def store(request):
     products = Product.objects.all()
-    return render(request, 'store/product_list.html', {'products': products})
+    # 🔥 Top Selling Products (only from completed orders)
+    top_products = Product.objects.filter(orderitem__order__complete=True) \
+        .annotate(total_sold=Sum('orderitem__quantity')) \
+        .order_by('-total_sold')[:8]
+
+    context = {
+        'products': products,
+        'top_products': top_products,
+    }
+    return render(request, 'store/product_list.html', context)
 
 
 def subcategories(request, category_id):

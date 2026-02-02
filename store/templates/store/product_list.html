@@ -3,9 +3,42 @@
 
 {% block content %}
 {% if subcategory %}
+
 <h2 class="mb-3">{{ subcategory.name }}</h2>
 {% else %}
+
+<!-- 🔥 TOP SELLING PRODUCTS (Only on main store page) -->
+<h2 class="section-title mt-4">🔥 Top Selling Products</h2>
+
+<div class="row mb-5">
+    {% for product in top_products %}
+    <div class="col-md-3 mb-4">
+        <div class="card h-100 border-warning">
+            <span class="badge bg-warning text-dark position-absolute m-2">
+                Best Seller
+            </span>
+
+            {% if product.image %}
+            <img src="{{ product.image.url }}" class="card-img-top product-img-rect">
+            {% endif %}
+            <div class="card-body text-center">
+                <h6 class="card-title">{{ product.name }}</h6>
+                <p class="fw-bold mb-1">₹{{ product.price }}</p>
+                <small class="text-muted">Sold: {{ product.total_sold }}</small>
+                <br>
+                <a href="{% url 'store:product_detail' product.id %}" class="btn btn-sm btn-warning mt-2">
+                    View Product
+                </a>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <p class="text-muted">No top-selling products yet.</p>
+    {% endfor %}
+</div>
+
 <h2 class="mb-3">All Products</h2>
+
 {% endif %}
 
 <div class="row">
