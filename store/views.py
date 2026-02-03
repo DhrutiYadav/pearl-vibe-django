@@ -85,27 +85,45 @@ def products_by_subcategory(request, subcategory_id):
 def register_view(request):
     if request.method == 'POST':
         username = request.POST.get('username')
-        password = request.POST.get('password')
+        email = request.POST.get('email')
+        contact_no = request.POST.get('contact_no')
+        country = request.POST.get('country')
+        address = request.POST.get('address')
 
-        if not username or not password:
-            messages.error(request, 'Please provide username and password.')
+        password1 = request.POST.get('password1')
+        password2 = request.POST.get('password2')
+
+        # Basic validation
+        if not username or not password1 or not password2:
+            messages.error(request, 'Please fill all required fields.')
+            return redirect('store:register')
+
+        if password1 != password2:
+            messages.error(request, 'Passwords do not match.')
             return redirect('store:register')
 
         if User.objects.filter(username=username).exists():
             messages.error(request, 'Username already exists.')
             return redirect('store:register')
 
+        # Create user
         user = User.objects.create_user(
             username=username,
-            password=password
+            email=email,
+            password=password1
         )
 
+        # Create customer profile
         Customer.objects.create(
             user=user,
-            name=username
+            name=username,
+            email=email,
+            contact_no=contact_no,
+            country=country,
+            address=address
         )
 
-        messages.success(request, 'Account created! Please log in.')
+        messages.success(request, 'Account created successfully! Please log in.')
         return redirect('store:login')
 
     return render(request, 'store/register.html')
