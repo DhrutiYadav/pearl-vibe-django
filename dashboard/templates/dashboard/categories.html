@@ -1,47 +1,55 @@
-{% extends 'dashboard/base.html' %}
-
-{% block title %}Categories{% endblock %}
-
+{% extends 'dashboard/base.html' %} 
+{% block title %}Categories{% endblock %} 
 {% block content %}
 <div class="container mt-4 category-page">
     <div class="d-flex justify-content-between align-items-center mb-3">
-    <h1 class="page-title">Categories</h1>
+        <h1 class="page-title">Categories</h1>
 
-    <a href="{% url 'dashboard:dashboard_add_category' %}" class="btn btn-add">
-        + Add Category
-    </a>
-</div>
-<div class="table-card">
-    <table class="table custom-table">
-        <thead>
-        <tr>
-            <th>ID</th>
-            <th>Name</th>
-            <th>Actions</th>
-        </tr>
-        </thead>
-        <tbody>
-        {% for category in categories %}
-        <tr>
-            <td>{{ category.id }}</td>
-            <td class="fw-semibold">{{ category.name }}</td>
-            <td class="text-center">
-                <a href="{% url 'dashboard:dashboard_edit_category' category.id %}" class="btn btn-sm btn-edit">Edit</a>
+        <a
+            href="{% url 'dashboard:dashboard_add_category' %}"
+            class="btn btn-add"
+        >
+            + Add Category
+        </a>
+    </div>
+    <div class="table-card">
+        <table class="table custom-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for category in categories %}
+                <tr>
+                    <td>{{ category.id }}</td>
+                    <td class="fw-semibold">{{ category.name }}</td>
+                    <td class="text-center">
+                        <a
+                            href="{% url 'dashboard:dashboard_edit_category' category.id %}"
+                            class="btn btn-sm btn-edit"
+                            >Edit</a
+                        >
 
-                <a href="{% url 'dashboard:dashboard_delete_category' category.id %}"
-                    class="btn btn-sm btn-delete">
-                    Delete
-                </a>
-
-            </td>
-        </tr>
-        {% empty %}
-        <tr>
-            <td colspan="3" class="text-center empty-row">No categories found.</td>
-        </tr>
-        {% endfor %}
-        </tbody>
-    </table>
-</div>
+                        <a
+                            href="{% url 'dashboard:dashboard_delete_category' category.id %}"
+                            class="btn btn-sm btn-delete"
+                        >
+                            Delete
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="3" class="text-center empty-row">
+                        No categories found.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 </div>
 {% endblock %}

@@ -11,6 +11,8 @@
         <th>Username</th>
         <th>Name</th>
         <th>Email</th>
+        <th>Actions</th>
+
     </tr>
     {% for c in customers %}
     <tr>
@@ -18,6 +20,16 @@
         <td>{{ c.user.username }}</td>
         <td>{{ c.name }}</td>
         <td>{{ c.email }}</td>
+        <td>
+        <a href="{% url 'dashboard:edit_customer' c.id %}" class="btn btn-sm btn-primary">Edit</a>
+
+<a href="{% url 'dashboard:delete_customer' c.id %}"
+   class="btn btn-sm btn-danger"
+   onclick="return confirm('Delete this customer?');">
+   Delete
+</a>
+
+    </td>
     </tr>
     {% endfor %}
 </table>

@@ -1,0 +1,15 @@
+{% extends 'dashboard/base.html' %}
+
+{% block content %}
+<h2>Edit Order Summary</h2>
+
+<form method="POST">
+    {% csrf_token %}
+    {{ form.as_p }}
+
+    <button type="submit">Save Changes</button>
+</form>
+
+<br>
+<a href="{% url 'dashboard:dashboard_order_summaries' %}">Back to Summaries</a>
+{% endblock %}

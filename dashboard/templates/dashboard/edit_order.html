@@ -1,0 +1,21 @@
+{% extends 'dashboard/base.html' %}
+
+{% block content %}
+<h2>Edit Order #{{ order.id }}</h2>
+
+<form method="POST">
+    {% csrf_token %}
+
+    <label>Status:</label>
+    <select name="complete">
+        <option value="true" {% if order.complete %}selected{% endif %}>Paid</option>
+        <option value="false" {% if not order.complete %}selected{% endif %}>Pending</option>
+    </select>
+
+    <br><br>
+    <button type="submit">Save Changes</button>
+</form>
+
+<br>
+<a href="{% url 'dashboard:orders' %}">Back to Orders</a>
+{% endblock %}

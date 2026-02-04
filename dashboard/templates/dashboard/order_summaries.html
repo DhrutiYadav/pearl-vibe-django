@@ -12,6 +12,8 @@
         <th>Tax</th>
         <th>Shipping</th>
         <th>Total</th>
+        <th>Actions</th>
+
     </tr>
     {% for s in summaries %}
     <tr>
@@ -20,6 +22,11 @@
         <td>₹{{ s.tax }}</td>
         <td>₹{{ s.shipping_cost }}</td>
         <td><strong>₹{{ s.total }}</strong></td>
+        <td>
+        <a href="{% url 'dashboard:edit_order_summary' s.id %}"
+   class="btn btn-sm btn-primary">Edit</a>
+
+    </td>
     </tr>
     {% endfor %}
 </table>

@@ -19,6 +19,9 @@ urlpatterns = [
     path('categories/delete/<int:pk>/', views.dashboard_delete_category, name='dashboard_delete_category'),
 
     path('orders/', views.dashboard_orders, name='orders'),
+    path('orders/edit/<int:order_id>/', views.edit_order, name='edit_order'),
+    path('orders/delete/<int:order_id>/', views.delete_order, name='delete_order'),
+
 
 
     path('subcategories/', views.dashboard_subcategories, name='dashboard_subcategories'),
@@ -28,8 +31,15 @@ urlpatterns = [
     path('users/', views.users_list, name='users'),
 
     path('customers/', views.dashboard_customers, name='dashboard_customers'),
+    path('customers/edit/<int:customer_id>/', views.edit_customer, name='edit_customer'),
+    path('customers/delete/<int:customer_id>/', views.delete_customer, name='delete_customer'),
+
     path('shipping-addresses/', views.dashboard_shipping_addresses, name='dashboard_shipping_addresses'),
+
     path('order-summaries/', views.dashboard_order_summaries, name='dashboard_order_summaries'),
+    path('order-summaries/edit/<int:summary_id>/', views.edit_order_summary, name='edit_order_summary'),
+
+
     path('invoices/', views.dashboard_invoices, name='dashboard_invoices'),
     path('reports/', views.reports_dashboard, name='reports_dashboard'),
 

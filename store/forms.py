@@ -1,6 +1,7 @@
 from django import forms
 from .models import Product, Category, SubCategory
-
+from store.models import Customer
+from store.models import OrderSummary
 
 # class ProductForm(forms.ModelForm):
 #     class Meta:
@@ -35,3 +36,13 @@ class SubCategoryForm(forms.ModelForm):
     class Meta:
         model = SubCategory
         fields = ['category', 'name', 'image']
+
+class CustomerForm(forms.ModelForm):
+    class Meta:
+        model = Customer
+        fields = ['name', 'email']
+
+class OrderSummaryForm(forms.ModelForm):
+     class Meta:
+        model = OrderSummary
+        fields = ['subtotal', 'tax', 'shipping_cost', 'total']  # adjust fields based on your model

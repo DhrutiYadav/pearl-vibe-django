@@ -22,8 +22,15 @@ from django.db.models.functions import ExtractMonth
 
 from datetime import timedelta
 from collections import defaultdict
+from django.db.models import Q
+from django.shortcuts import get_object_or_404, redirect, render
+from store.models import Order   # change app name if your Order model is elsewhere
 
+from store.forms import CustomerForm
+from store.models import Customer
 
+from store.forms import OrderSummaryForm
+from store.models import OrderSummary
 
 def is_admin(user):
     return user.is_staff or user.is_superuser
@@ -234,7 +241,15 @@ def add_subcategory(request):
 
 
 def dashboard_orders(request):
+    query = request.GET.get('q')
+
     orders = Order.objects.all().order_by('-date_ordered')
+
+    if query:
+        orders = orders.filter(
+            Q(id__icontains=query) |
+            Q(customer__name__icontains=query)
+        )
 
     context = {
         'orders': orders
@@ -671,3 +686,58 @@ def reports_dashboard(request):
     }
 
     return render(request, 'dashboard/reports.html', context)
+
+
+def edit_order(request, order_id):
+    order = get_object_or_404(Order, id=order_id)
+
+    if request.method == 'POST':
+        order.complete = request.POST.get('complete') == 'true'
+        order.save()
+        return redirect('dashboard:orders')
+
+    return render(request, 'dashboard/edit_order.html', {'order': order})
+
+
+def delete_order(request, order_id):
+    order = get_object_or_404(Order, id=order_id)
+    order.delete()
+    return redirect('dashboard:orders')
+
+@login_required(login_url='/admin/login/')
+@user_passes_test(is_admin)
+def edit_customer(request, customer_id):
+    customer = get_object_or_404(Customer, id=customer_id)
+
+    if request.method == 'POST':
+        form = CustomerForm(request.POST, instance=customer)
+        if form.is_valid():
+            form.save()
+            return redirect('dashboard:dashboard_customers')
+    else:
+        form = CustomerForm(instance=customer)
+
+    return render(request, 'dashboard/edit_customer.html', {'form': form})
+
+
+@login_required(login_url='/admin/login/')
+@user_passes_test(is_admin)
+def delete_customer(request, customer_id):
+    customer = get_object_or_404(Customer, id=customer_id)
+    customer.delete()
+    return redirect('dashboard:dashboard_customers')
+
+@login_required(login_url='/admin/login/')
+@user_passes_test(is_admin)
+def edit_order_summary(request, summary_id):
+    summary = get_object_or_404(OrderSummary, id=summary_id)
+
+    if request.method == 'POST':
+        form = OrderSummaryForm(request.POST, instance=summary)
+        if form.is_valid():
+            form.save()
+            return redirect('dashboard:dashboard_order_summaries')
+    else:
+        form = OrderSummaryForm(instance=summary)
+
+    return render(request, 'dashboard/edit_order_summary.html', {'form': form})
