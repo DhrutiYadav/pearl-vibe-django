@@ -11,6 +11,7 @@
         <th>Order</th>
         <th>Issued</th>
         <th>Paid</th>
+        <th>Actions</th>
     </tr>
     {% for i in invoices %}
     <tr>
@@ -19,6 +20,15 @@
         <td>{{ i.issued_date }}</td>
         <td>
             {% if i.paid %} ✅ {% else %} ❌ {% endif %}
+        </td>
+        <td>
+            <a href="{% url 'dashboard:edit_invoice' i.id %}"
+                class="btn btn-sm btn-primary">Edit</a>
+            <a href="{% url 'dashboard:delete_invoice' i.id %}"
+       class="btn btn-sm btn-danger"
+       onclick="return confirm('Delete this invoice?');">
+       Delete
+    </a>
         </td>
     </tr>
     {% endfor %}

@@ -28,19 +28,32 @@ urlpatterns = [
     path('subcategories/add/', views.add_subcategory, name='add_subcategory'),
     path('subcategories/edit/<int:pk>/', views.edit_subcategory, name='edit_subcategory'),
     path("subcategory/delete/<int:pk>/", views.delete_subcategory, name="delete_subcategory"),
+
     path('users/', views.users_list, name='users'),
+    path('users/edit/<int:user_id>/', views.edit_user, name='edit_user'),
+    path('users/delete/<int:user_id>/', views.delete_user, name='delete_user'),
+
 
     path('customers/', views.dashboard_customers, name='dashboard_customers'),
     path('customers/edit/<int:customer_id>/', views.edit_customer, name='edit_customer'),
     path('customers/delete/<int:customer_id>/', views.delete_customer, name='delete_customer'),
 
     path('shipping-addresses/', views.dashboard_shipping_addresses, name='dashboard_shipping_addresses'),
+    path('shipping-addresses/edit/<int:address_id>/', views.edit_shipping_address, name='edit_shipping_address'),
+    path('shipping-addresses/delete/<int:address_id>/', views.delete_shipping_address, name='delete_shipping_address'),
+
+
 
     path('order-summaries/', views.dashboard_order_summaries, name='dashboard_order_summaries'),
     path('order-summaries/edit/<int:summary_id>/', views.edit_order_summary, name='edit_order_summary'),
 
 
     path('invoices/', views.dashboard_invoices, name='dashboard_invoices'),
+    path('invoices/edit/<int:invoice_id>/', views.edit_invoice, name='edit_invoice'),
+    path('invoices/delete/<int:invoice_id>/', views.delete_invoice, name='delete_invoice'),
+
+
+
     path('reports/', views.reports_dashboard, name='reports_dashboard'),
 
 ]

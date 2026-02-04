@@ -2,6 +2,10 @@ from django import forms
 from .models import Product, Category, SubCategory
 from store.models import Customer
 from store.models import OrderSummary
+from store.models import Invoice
+from store.models import ShippingAddress
+from django.contrib.auth.models import User
+from django import forms
 
 # class ProductForm(forms.ModelForm):
 #     class Meta:
@@ -46,3 +50,19 @@ class OrderSummaryForm(forms.ModelForm):
      class Meta:
         model = OrderSummary
         fields = ['subtotal', 'tax', 'shipping_cost', 'total']  # adjust fields based on your model
+
+class InvoiceForm(forms.ModelForm):
+    class Meta:
+        model = Invoice
+        fields = ['invoice_number', 'paid']
+
+
+class ShippingAddressForm(forms.ModelForm):
+    class Meta:
+        model = ShippingAddress
+        fields = ['address', 'city', 'state', 'zipcode']
+
+class UserEditForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ['username', 'email', 'is_staff', 'is_active']

@@ -32,6 +32,15 @@ from store.models import Customer
 from store.forms import OrderSummaryForm
 from store.models import OrderSummary
 
+from store.forms import InvoiceForm
+from store.models import Invoice
+
+from store.forms import ShippingAddressForm
+
+from django.contrib.auth.models import User
+from store.forms import UserEditForm
+
+
 def is_admin(user):
     return user.is_staff or user.is_superuser
 
@@ -741,3 +750,78 @@ def edit_order_summary(request, summary_id):
         form = OrderSummaryForm(instance=summary)
 
     return render(request, 'dashboard/edit_order_summary.html', {'form': form})
+
+
+@login_required(login_url='/admin/login/')
+@user_passes_test(is_admin)
+def edit_invoice(request, invoice_id):
+    invoice = get_object_or_404(Invoice, id=invoice_id)
+
+    if request.method == 'POST':
+        form = InvoiceForm(request.POST, instance=invoice)
+        if form.is_valid():
+            form.save()
+            return redirect('dashboard:dashboard_invoices')
+    else:
+        form = InvoiceForm(instance=invoice)
+
+    return render(request, 'dashboard/edit_invoice.html', {'form': form})
+
+@login_required(login_url='/admin/login/')
+@user_passes_test(is_admin)
+def delete_invoice(request, invoice_id):
+    invoice = get_object_or_404(Invoice, id=invoice_id)
+    invoice.delete()
+    return redirect('dashboard:dashboard_invoices')
+
+
+@login_required(login_url='/admin/login/')
+@user_passes_test(is_admin)
+def edit_shipping_address(request, address_id):
+    address = get_object_or_404(ShippingAddress, id=address_id)
+
+    if request.method == 'POST':
+        form = ShippingAddressForm(request.POST, instance=address)
+        if form.is_valid():
+            form.save()
+            return redirect('dashboard:dashboard_shipping_addresses')
+    else:
+        form = ShippingAddressForm(instance=address)
+
+    return render(request, 'dashboard/edit_shipping_address.html', {'form': form})
+
+@login_required(login_url='/admin/login/')
+@user_passes_test(is_admin)
+def delete_shipping_address(request, address_id):
+    address = get_object_or_404(ShippingAddress, id=address_id)
+    address.delete()
+    return redirect('dashboard:dashboard_shipping_addresses')
+
+@login_required(login_url='/admin/login/')
+@user_passes_test(is_admin)
+def edit_user(request, user_id):
+    user_obj = get_object_or_404(User, id=user_id)
+
+    if request.method == 'POST':
+        form = UserEditForm(request.POST, instance=user_obj)
+        if form.is_valid():
+            form.save()
+            return redirect('dashboard:users')
+    else:
+        form = UserEditForm(instance=user_obj)
+
+    return render(request, 'dashboard/edit_user.html', {'form': form})
+
+
+@login_required(login_url='/admin/login/')
+@user_passes_test(is_admin)
+def delete_user(request, user_id):
+    user_obj = get_object_or_404(User, id=user_id)
+
+    # prevent deleting yourself (important safety)
+    if request.user == user_obj:
+        messages.error(request, "You cannot delete your own account.")
+        return redirect('dashboard:users')
+
+    user_obj.delete()
+    return redirect('dashboard:users')

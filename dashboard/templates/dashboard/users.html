@@ -11,6 +11,8 @@
         <th>Username</th>
         <th>Email</th>
         <th>Role</th>
+        <th>Actions</th>
+
     </tr>
 
     {% for user in users %}
@@ -27,6 +29,16 @@
                 Customer
             {% endif %}
         </td>
+        <td>
+        <a href="{% url 'dashboard:edit_user' user.id %}"
+           class="btn btn-sm btn-primary">Edit</a>
+
+        <a href="{% url 'dashboard:delete_user' user.id %}"
+           class="btn btn-sm btn-danger"
+           onclick="return confirm('Delete this user?');">
+           Delete
+        </a>
+    </td>
     </tr>
     {% empty %}
     <tr>
