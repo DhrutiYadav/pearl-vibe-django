@@ -1,6 +1,5 @@
 from django.contrib.auth.decorators import login_required, user_passes_test
 from store.models import SubCategory
-from django.shortcuts import get_object_or_404, redirect, render
 from store.forms import ProductForm
 from store.models import Product, Category
 from store.forms import CategoryForm
@@ -10,7 +9,6 @@ from django.contrib import messages
 import json
 from store.models import Customer, Invoice, OrderSummary, ShippingAddress
 
-from django.shortcuts import render
 from store.models import Order, OrderItem
 from django.db.models import Count
 from django.db.models import Sum, F, ExpressionWrapper, DecimalField
@@ -24,20 +22,15 @@ from datetime import timedelta
 from collections import defaultdict
 from django.db.models import Q
 from django.shortcuts import get_object_or_404, redirect, render
-from store.models import Order   # change app name if your Order model is elsewhere
 
 from store.forms import CustomerForm
-from store.models import Customer
 
 from store.forms import OrderSummaryForm
-from store.models import OrderSummary
 
 from store.forms import InvoiceForm
-from store.models import Invoice
 
 from store.forms import ShippingAddressForm
 
-from django.contrib.auth.models import User
 from store.forms import UserEditForm
 
 

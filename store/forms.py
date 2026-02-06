@@ -7,6 +7,40 @@ from store.models import ShippingAddress
 from django.contrib.auth.models import User
 from django import forms
 
+from django.contrib.auth.forms import UserCreationForm
+
+class RegisterForm(UserCreationForm):
+    email = forms.EmailField(required=True)
+    contact_no = forms.CharField(max_length=15, required=True)
+    country = forms.CharField(max_length=100, required=True)
+    address = forms.CharField(widget=forms.Textarea, required=False)
+
+    class Meta:
+        model = User
+        fields = [
+            "username",
+            "email",
+            "contact_no",
+            "country",
+            "address",
+            "password1",
+            "password2"
+        ]
+
+    def save(self, commit=True):
+        user = super().save(commit)
+
+        Customer.objects.create(
+            user=user,
+            name=user.username,
+            email=self.cleaned_data["email"],
+            contact_no=self.cleaned_data["contact_no"],
+            country=self.cleaned_data["country"],
+            address=self.cleaned_data["address"],
+        )
+        return user
+
+
 # class ProductForm(forms.ModelForm):
 #     class Meta:
 #         model = Product

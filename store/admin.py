@@ -185,6 +185,6 @@ admin.site.register(ShippingAddress, ShippingAddressAdmin)
 admin.site.register(OrderSummary, OrderSummaryAdmin)
 admin.site.register(Invoice, InvoiceAdmin)
 
-admin.site.site_header = "Pearl Vibe Admin Panel"
-admin.site.site_title = "Pearl Vibe Admin"
+admin.site.site_header = "Pearl Vibe"
+admin.site.site_title = "Pearl Vibe"
 admin.site.index_title = "Administration"
