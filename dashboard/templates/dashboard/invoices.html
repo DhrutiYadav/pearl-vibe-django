@@ -7,17 +7,17 @@
 
 <table>
     <tr>
-        <th>Invoice #</th>
-        <th>Order</th>
-        <th>Issued</th>
+        <th>Invoice </th>
+        <th>&nbsp;Order</th>
+        <th>&nbsp;&nbsp;Issued</th>
         <th>Paid</th>
         <th>Actions</th>
     </tr>
     {% for i in invoices %}
     <tr>
         <td>{{ i.invoice_number }}</td>
-        <td>#{{ i.order.id }}</td>
-        <td>{{ i.issued_date }}</td>
+        <td>&nbsp;&nbsp; {{ i.order.id }}</td>
+        <td>&nbsp;&nbsp;{{ i.issued_date }}</td>
         <td>
             {% if i.paid %} ✅ {% else %} ❌ {% endif %}
         </td>

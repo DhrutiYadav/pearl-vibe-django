@@ -451,7 +451,8 @@ def reports_dashboard(request):
     ).order_by('-revenue')
 
     category_labels = [item['product__subcategory__category__name'] for item in category_data]
-    category_revenues = [float(item['revenue']) for item in category_data]
+    category_revenues = [float(item['revenue'] or 0) for item in category_data]
+
 
     # 📅 MONTHLY SALES COMPARISON (Last 6 Months)
     today = timezone.now()
