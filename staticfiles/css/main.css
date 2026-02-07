@@ -145,3 +145,9 @@ body {
  {
     width: 59%;
 }
+
+mark {
+    background-color: #ffe066;
+    /*padding: 2px 4px; */
+    border-radius: 4px;
+}

@@ -22,7 +22,17 @@
 
             <!-- Image Preview -->
             <div class="mt-2">
-                <img id="imagePreview" src="#" alt="Image Preview" style="max-height:150px; display:none; border:1px solid #ddd; padding:5px;" />
+                {% if form.instance.image %}
+        <img id="imagePreview"
+             src="{{ form.instance.image.url }}"
+             alt="Image Preview"
+             style="max-height:150px; border:1px solid #ddd; padding:5px;">
+    {% else %}
+        <img id="imagePreview"
+             src="#"
+             alt="Image Preview"
+             style="max-height:150px; display:none; border:1px solid #ddd; padding:5px;">
+    {% endif %}
             </div>
         </div>
 

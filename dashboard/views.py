@@ -271,7 +271,7 @@ def edit_subcategory(request, pk):
     subcategory = get_object_or_404(SubCategory, pk=pk)
 
     if request.method == 'POST':
-        form = SubCategoryForm(request.POST, instance=subcategory)
+        form = SubCategoryForm(request.POST, request.FILES, instance=subcategory)
         if form.is_valid():
             form.save()
             return redirect('dashboard:dashboard_subcategories')

@@ -16,11 +16,13 @@ from django.http import HttpResponse
 from xhtml2pdf import pisa
 from django.conf import settings
 import os
+from django.db.models import Q, Sum
+
+from django.http import JsonResponse
 
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
-from django.db.models import Sum
-
+from .forms import RegisterForm
 
 font_path = os.path.join(settings.BASE_DIR, 'static/fonts/DejaVuSans.ttf')
 pdfmetrics.registerFont(TTFont('DejaVuSans', font_path))
@@ -47,15 +49,27 @@ def dashboard_home(request):
 # ---------------------------
 
 def store(request):
-    products = Product.objects.all()
+    query = request.GET.get('q')  # get search text
+
+    all_products = Product.objects.all()
+    search_results = None
+
+    if query:
+        search_results = Product.objects.filter(
+            Q(name__icontains=query) |
+            Q(description__icontains=query)
+        )
+
     # 🔥 Top Selling Products (only from completed orders)
     top_products = Product.objects.filter(orderitem__order__complete=True) \
         .annotate(total_sold=Sum('orderitem__quantity')) \
         .order_by('-total_sold')[:8]
 
     context = {
-        'products': products,
+        'products': all_products,
         'top_products': top_products,
+        'search_results': search_results,
+        'search_query': query,
     }
     return render(request, 'store/product_list.html', context)
 
@@ -77,56 +91,47 @@ def products_by_subcategory(request, subcategory_id):
         'subcategory': subcategory
     })
 
+def search_suggestions(request):
+    query = request.GET.get('q', '')
+    results = []
+
+    if query:
+        products = Product.objects.filter(
+            Q(name__icontains=query)
+        )[:5]
+
+        for product in products:
+            results.append({
+                'id': product.id,
+                'name': product.name,
+                'price': str(product.price),
+            })
+
+    return JsonResponse(results, safe=False)
+
 
 # ---------------------------
 # AUTH VIEWS
 # ---------------------------
 
+from .forms import RegisterForm  # make sure this import is at the top
+
+
 def register_view(request):
     if request.method == 'POST':
-        username = request.POST.get('username')
-        email = request.POST.get('email')
-        contact_no = request.POST.get('contact_no')
-        country = request.POST.get('country')
-        address = request.POST.get('address')
+        form = RegisterForm(request.POST)
 
-        password1 = request.POST.get('password1')
-        password2 = request.POST.get('password2')
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Account created successfully! Please log in.')
+            return redirect('store:login')
+        else:
+            messages.error(request, 'Please correct the errors below.')
+    else:
+        form = RegisterForm()
 
-        # Basic validation
-        if not username or not password1 or not password2:
-            messages.error(request, 'Please fill all required fields.')
-            return redirect('store:register')
+    return render(request, 'store/register.html', {'form': form})
 
-        if password1 != password2:
-            messages.error(request, 'Passwords do not match.')
-            return redirect('store:register')
-
-        if User.objects.filter(username=username).exists():
-            messages.error(request, 'Username already exists.')
-            return redirect('store:register')
-
-        # Create user
-        user = User.objects.create_user(
-            username=username,
-            email=email,
-            password=password1
-        )
-
-        # Create customer profile
-        Customer.objects.create(
-            user=user,
-            name=username,
-            email=email,
-            contact_no=contact_no,
-            country=country,
-            address=address
-        )
-
-        messages.success(request, 'Account created successfully! Please log in.')
-        return redirect('store:login')
-
-    return render(request, 'store/register.html')
 
 
 def login_view(request):

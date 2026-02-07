@@ -15,6 +15,11 @@ class RegisterForm(UserCreationForm):
     country = forms.CharField(max_length=100, required=True)
     address = forms.CharField(widget=forms.Textarea, required=False)
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field in self.fields.values():
+            field.widget.attrs.update({'class': 'form-control'})
+
     class Meta:
         model = User
         fields = [
@@ -100,3 +105,4 @@ class UserEditForm(forms.ModelForm):
     class Meta:
         model = User
         fields = ['username', 'email', 'is_staff', 'is_active']
+

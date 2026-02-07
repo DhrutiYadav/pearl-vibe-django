@@ -23,31 +23,45 @@
     {% endif %}
 
     <div class="mb-3">
-        <input type="text" name="username" class="form-control" placeholder="Username" required>
+        {{ form.username.label_tag }}
+        {{ form.username }}
+        <div class="text-danger small">{{ form.username.errors }}</div>
     </div>
 
     <div class="mb-3">
-        <input type="email" name="email" class="form-control" placeholder="Email" required>
+        {{ form.email.label_tag }}
+        {{ form.email }}
+        <div class="text-danger small">{{ form.email.errors }}</div>
     </div>
 
     <div class="mb-3">
-        <input type="text" name="contact_no" class="form-control" placeholder="Contact No" required>
+        {{ form.contact_no.label_tag }}
+        {{ form.contact_no }}
+        <div class="text-danger small">{{ form.contact_no.errors }}</div>
     </div>
 
     <div class="mb-3">
-        <input type="text" name="country" class="form-control" placeholder="Country" required>
+        {{ form.country.label_tag }}
+        {{ form.country }}
+        <div class="text-danger small">{{ form.country.errors }}</div>
     </div>
 
     <div class="mb-3">
-        <input type="text" name="address" class="form-control" placeholder="Address">
+        {{ form.address.label_tag }}
+        {{ form.address }}
+        <div class="text-danger small">{{ form.address.errors }}</div>
     </div>
 
     <div class="mb-3">
-        <input type="password" name="password1" class="form-control" placeholder="Password" required>
+        {{ form.password1.label_tag }}
+        {{ form.password1 }}
+        <div class="text-danger small">{{ form.password1.errors }}</div>
     </div>
 
     <div class="mb-3">
-        <input type="password" name="password2" class="form-control" placeholder="Confirm Password" required>
+        {{ form.password2.label_tag }}
+        {{ form.password2 }}
+        <div class="text-danger small">{{ form.password2.errors }}</div>
     </div>
 
     <button type="submit" class="btn btn-primary w-100">Register</button>
