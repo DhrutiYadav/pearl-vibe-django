@@ -144,7 +144,7 @@ def dashboard_subcategories(request):
         'subcategories': subcategories
     })
 
-@login_required(login_url='/admain/login/')
+@login_required(login_url='/admin/login/')
 @user_passes_test(is_admin)
 def dashboard_categories(request):
     categories = Category.objects.all()  # Fetch all categories
@@ -585,52 +585,52 @@ def reports_dashboard(request):
         range_labels.append(label)
         range_revenues.append(float(revenue))
 
-        # 💳 AVERAGE ORDER VALUE (AOV) TREND – Last 7 Days
-        today = timezone.now().date()
-        seven_days_ago = today - timedelta(days=6)
+    # 💳 AVERAGE ORDER VALUE (AOV) TREND – Last 7 Days
+    today = timezone.now().date()
+    seven_days_ago = today - timedelta(days=6)
 
-        # Orders per day
-        orders_per_day = Order.objects.filter(
-            complete=True,
-            date_ordered__date__gte=seven_days_ago
-        ).values('date_ordered__date').annotate(
-            count=Count('id')
-        )
+    # Orders per day
+    orders_per_day = Order.objects.filter(
+        complete=True,
+        date_ordered__date__gte=seven_days_ago
+    ).values('date_ordered__date').annotate(
+        count=Count('id')
+    )
 
-        # Revenue per day
-        revenue_per_day = OrderItem.objects.filter(
-            order__complete=True,
-            order__date_ordered__date__gte=seven_days_ago
-        ).annotate(
-            day=F('order__date_ordered__date')
-        ).values('day').annotate(
-            revenue=Sum(
-                ExpressionWrapper(
-                    F('product__price') * F('quantity'),
-                    output_field=DecimalField()
-                )
+    # Revenue per day
+    revenue_per_day = OrderItem.objects.filter(
+        order__complete=True,
+        order__date_ordered__date__gte=seven_days_ago
+    ).annotate(
+        day=F('order__date_ordered__date')
+    ).values('day').annotate(
+        revenue=Sum(
+            ExpressionWrapper(
+                F('product__price') * F('quantity'),
+                output_field=DecimalField()
             )
         )
+    )
 
-        orders_dict = {entry['date_ordered__date']: entry['count'] for entry in orders_per_day}
-        revenue_dict = {entry['day']: float(entry['revenue']) for entry in revenue_per_day}
+    orders_dict = {entry['date_ordered__date']: entry['count'] for entry in orders_per_day}
+    revenue_dict = {entry['day']: float(entry['revenue']) for entry in revenue_per_day}
 
-        aov_dates = []
-        aov_values = []
+    aov_dates = []
+    aov_values = []
 
-        for i in range(7):
-            day = seven_days_ago + timedelta(days=i)
-            orders = orders_dict.get(day, 0)
-            revenue = revenue_dict.get(day, 0)
+    for i in range(7):
+        day = seven_days_ago + timedelta(days=i)
+        orders = orders_dict.get(day, 0)
+        revenue = revenue_dict.get(day, 0)
 
-            aov = revenue / orders if orders > 0 else 0
+        aov = revenue / orders if orders > 0 else 0
 
-            aov_dates.append(day.strftime("%d %b"))
-            aov_values.append(round(aov, 2))
+        aov_dates.append(day.strftime("%d %b"))
+        aov_values.append(round(aov, 2))
 
     # 💎 CUSTOMER LIFETIME VALUE (CLV)
 
-    customer_clv = OrderItem.objects.filter(order__complete=True) \
+    customer_clv = OrderItem.objects.filter(order__complete=True, order__customer__user__isnull=False) \
         .values(
         'order__customer__id',
         'order__customer__user__username'
@@ -658,33 +658,33 @@ def reports_dashboard(request):
         'monthly_revenue': monthly_revenue,
         'recent_orders': recent_orders,
         'top_products': top_products,
-        'sales_dates': dates,
-        'sales_revenues': revenues,
-        'chart_product_names': product_names,
-        'chart_product_sales': product_sales,
-        'category_labels': category_labels,
-        'category_revenues': category_revenues,
-        'month_labels': month_labels,
-        'month_revenues': month_revenues,
-        'year_labels': year_labels,
-        'year_revenues': year_revenues,
-        'year_month_labels': month_labels,
-        'year_month_revenues': month_revenues,
+        'sales_dates': json.dumps(dates),
+        'sales_revenues': json.dumps(revenues),
+        'chart_product_names': json.dumps(product_names),
+        'chart_product_sales': json.dumps(product_sales),
+        'category_labels': json.dumps(category_labels),
+        'category_revenues': json.dumps(category_revenues),
+        'month_labels': json.dumps(month_labels),
+        'month_revenues': json.dumps(month_revenues),
+        'year_labels': json.dumps(year_labels),
+        'year_revenues': json.dumps(year_revenues),
+        'year_month_labels': json.dumps(month_labels),
+        'year_month_revenues': json.dumps(month_revenues),
         # 'current_year': current_year,
-        'year_month_labels': month_labels,
-        'year_month_revenues': month_revenues,
+        #'year_month_labels': month_labels,
+        #'year_month_revenues': month_revenues,
         'selected_year': selected_year,
         'available_years': range(timezone.now().year, timezone.now().year - 5, -1),
-        'revenue_orders_dates': trend_dates,
-        'revenue_orders_counts': trend_orders,
-        'revenue_orders_revenue': trend_revenue,
-        'price_range_labels': range_labels,
-        'price_range_revenues': range_revenues,
-        'aov_dates': aov_dates,
-        'aov_values': aov_values,
+        'revenue_orders_dates': json.dumps(trend_dates),
+        'revenue_orders_counts': json.dumps(trend_orders),
+        'revenue_orders_revenue': json.dumps(trend_revenue),
+        'price_range_labels': json.dumps(range_labels),
+        'price_range_revenues': json.dumps(range_revenues),
+        'aov_dates': json.dumps(aov_dates),
+        'aov_values': json.dumps(aov_values),
         'customer_clv': customer_clv,
-        'clv_labels': clv_labels,
-        'clv_values': clv_values,
+        'clv_labels': json.dumps(clv_labels),
+        'clv_values': json.dumps(clv_values),
 
     }
 

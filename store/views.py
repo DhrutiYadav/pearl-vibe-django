@@ -18,7 +18,6 @@ from django.conf import settings
 import os
 from django.db.models import Q, Sum
 
-from django.http import JsonResponse
 
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
@@ -114,7 +113,6 @@ def search_suggestions(request):
 # AUTH VIEWS
 # ---------------------------
 
-from .forms import RegisterForm  # make sure this import is at the top
 
 
 def register_view(request):

@@ -66,7 +66,14 @@
     {% for order in recent_orders %}
     <tr>
         <td>#{{ order.id }}</td>
-        <td>{{ order.customer.user.username }}</td>
+        <td>
+    {% if order.customer and order.customer.user %}
+        {{ order.customer.user.username }}
+    {% else %}
+        Guest
+    {% endif %}
+</td>
+
         <td>{{ order.date_ordered|date:"d M Y" }}</td>
         <td>
             {% if order.complete %}
@@ -151,10 +158,10 @@
     new Chart(topProductsCtx, {
         type: 'bar',
         data: {
-            labels: {{ chart_product_names|safe }},
+            labels: JSON.parse('{{ chart_product_names|escapejs }}'),
             datasets: [{
                 label: 'Units Sold',
-                data: {{ chart_product_sales|safe }},
+                data: JSON.parse('{{ chart_product_sales|escapejs }}'),
                 backgroundColor: 'rgba(255, 193, 7, 0.7)',
                 borderColor: '#ffc107',
                 borderWidth: 1
@@ -193,9 +200,9 @@
     new Chart(categoryCtx, {
         type: 'pie',
         data: {
-            labels: {{ category_labels|safe }},
+            labels: JSON.parse('{{ category_labels|escapejs }}'),
             datasets: [{
-                data: {{ category_revenues|safe }},
+                data: JSON.parse('{{ category_revenues|escapejs }}'),
                 backgroundColor: [
                     '#ff6384',
                     '#36a2eb',
@@ -295,7 +302,6 @@ new Chart(yearlyCtx, {
     </select>
 </form>
 
-<canvas id="yearMonthChart" height="120"></canvas>
 <h4>Monthly Sales Breakdown ({{ selected_year }})</h4>
 
 
