@@ -437,13 +437,11 @@ def download_invoice(request, order_id):
     response = HttpResponse(content_type='application/pdf')
     response['Content-Disposition'] = f'attachment; filename="Invoice_{invoice.invoice_number}.pdf"'
 
-    font_path = os.path.join(settings.BASE_DIR, 'static/fonts/DejaVuSans.ttf')
-
     pisa.CreatePDF(
         html,
         dest=response,
         encoding='utf-8',
-        link_callback=lambda uri, rel: font_path if uri == "DejaVuSans.ttf" else uri
+        link_callback=link_callback  # 👈 THIS is the fix
     )
 
     return response

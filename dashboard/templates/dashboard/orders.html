@@ -3,63 +3,78 @@
 {% block title %}Orders{% endblock %}
 
 {% block content %}
-<h1 class="page-title">Orders</h1>
+<div class="container mt-4 d-flex justify-content-center">
 
-<table border="1" cellpadding="10" cellspacing="0" width="100%">
-    <tr>
-        <th>Order ID</th>
-        <th>Customer</th>
-        <th>Total</th>
-        <th>Items</th>
-        <th>Status</th>
-        <th>Date</th>
-        <th>Actions</th>
-    </tr>
+    <div class="w-100" style="max-width: 1200px;">
 
-    {% for order in orders %}
-    <tr>
-        <td>#{{ order.id }}</td>
+        <!-- Page Header -->
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h1 class="page-title">Orders</h1>
+        </div>
 
-        <td>
-            {% if order.customer %}
-                {{ order.customer.name }}
-            {% else %}
-                Guest
-            {% endif %}
-        </td>
+        <!-- Card Wrapper -->
+        <div class="card shadow-card">
+            <table class="table custom-table align-middle">
+                <thead>
+                    <tr>
+                        <th>Order ID</th>
+                        <th>Customer</th>
+                        <th>Total</th>
+                        <th>Items</th>
+                        <th>Status</th>
+                        <th>Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
 
-        <td>₹{{ order.get_cart_total }}</td>
+                <tbody>
 
-        <td>{{ order.get_cart_items }}</td>
+                    {% for order in orders %}
+                    <tr>
+                        <td><strong>{{ order.id }}</strong></td>
 
-        <td>
-            {% if order.complete %}
-                <span style="color: green;">Paid</span>
-            {% else %}
-                <span style="color: orange;">Pending</span>
-            {% endif %}
-        </td>
+                        <td>
+                            {% if order.customer %}
+                                {{ order.customer.name }}
+                            {% else %}
+                                <span class="text-muted">Guest</span>
+                            {% endif %}
+                        </td>
 
-        <td>{{ order.date_ordered|date:"d M Y" }}</td>
+                        <td>₹{{ order.get_cart_total }}</td>
 
-        <td>
-        <a href="{% url 'dashboard:edit_order' order.id %}" class="btn btn-sm btn-primary">Edit</a>
+                        <td>{{ order.get_cart_items }}</td>
 
-        <a href="{% url 'dashboard:delete_order' order.id %}"
-           class="btn btn-sm btn-danger"
-           onclick="return confirm('Are you sure you want to delete this order?');">
-           Delete
-        </a>
+                        <td>
+                            {% if order.complete %}
+                                <span style="color: green;">Paid</span>
+                            {% else %}
+                                <span style="color: orange;">Pending</span>
+                            {% endif %}
+                        </td>
 
-    </td>
-    </tr>
-    {% empty %}
-    <tr>
-        <td colspan="6">No orders found</td>
-    </tr>
+                        <td>{{ order.date_ordered|date:"d M Y" }}</td>
 
+                        <td>
+                            <a href="{% url 'dashboard:edit_order' order.id %}" class="btn btn-sm btn-primary">Edit</a>
 
+                            <a href="{% url 'dashboard:delete_order' order.id %}"
+                               class="btn btn-sm btn-danger"
+                               onclick="return confirm('Are you sure you want to delete this order?');">
+                               Delete
+                            </a>
 
-    {% endfor %}
-</table>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7" class="text-center text-muted">No orders found</td>
+                    </tr>
+                    {% endfor %}
+            </table>
+        </div>
+
+    </div>
+</div>
+
 {% endblock %}

@@ -90,7 +90,7 @@ class Order(models.Model):
         shipping = False
         orderitems = self.orderitem_set.all()
         for item in orderitems:
-            if item.product.digital is False:
+            if item.product and item.product.digital is False:
                 shipping = True
         return shipping
 
@@ -117,6 +117,8 @@ class OrderItem(models.Model):
 
     @property
     def get_total(self):
+        if self.product is None:
+            return 0  # 🔥 FIX
         return self.product.price * self.quantity
 
 

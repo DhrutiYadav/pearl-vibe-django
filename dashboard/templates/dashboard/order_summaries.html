@@ -1,27 +1,36 @@
 {% extends 'dashboard/base.html' %}
 
-{% block title %}Orders{% endblock %}
+{% block title %}Order Summaries{% endblock %}
 
 {% block content %}
-<h2>Order Summaries</h2>
+<div class="container mt-4">
+<!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h1 class="page-title">Order Summaries</h1>
+    </div>
 
-<table>
-    <tr>
-        <th>Order</th>
-        <th>Subtotal</th>
-        <th>Tax</th>
-        <th>Shipping</th>
-        <th>Total</th>
-        <th>Actions</th>
+        <!-- Card Wrapper  -->
+    <div class="card shadow-card">
+<table class="table custom-table align-middle">
+    <thead>
+        <tr>
+            <th>Order</th>
+            <th>Subtotal</th>
+            <th>Tax</th>
+            <th>Shipping</th>
+            <th>Total</th>
+            <th>Actions</th>
 
-    </tr>
+        </tr>
+    </thead>
+    <tbody>
     {% for s in summaries %}
     <tr>
-        <td>#{{ s.order.id }}</td>
+        <td><strong>{{ s.order.id }}</strong></td>
         <td>₹{{ s.subtotal }}</td>
         <td>₹{{ s.tax }}</td>
         <td>₹{{ s.shipping_cost }}</td>
-        <td><strong>₹{{ s.total }}</strong></td>
+        <td><span class="badge bg-success fs-6">₹{{ s.total }}</span></td>
         <td>
         <a href="{% url 'dashboard:edit_order_summary' s.id %}"
    class="btn btn-sm btn-primary">Edit</a>
@@ -29,5 +38,9 @@
     </td>
     </tr>
     {% endfor %}
+    </tbody>
+
 </table>
+</div>
+</div>
 {% endblock %}

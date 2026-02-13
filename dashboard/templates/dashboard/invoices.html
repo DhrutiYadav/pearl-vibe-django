@@ -1,36 +1,58 @@
 {% extends 'dashboard/base.html' %}
 
-{% block title %}Orders{% endblock %}
+{% block title %}Invoices{% endblock %}
 
 {% block content %}
-<h2>Invoices</h2>
+<div class="container mt-4 d-flex justify-content-center">
 
-<table>
-    <tr>
-        <th>Invoice </th>
-        <th>&nbsp;Order</th>
-        <th>&nbsp;&nbsp;Issued</th>
-        <th>Paid</th>
-        <th>Actions</th>
-    </tr>
-    {% for i in invoices %}
-    <tr>
-        <td>{{ i.invoice_number }}</td>
-        <td>&nbsp;&nbsp; {{ i.order.id }}</td>
-        <td>&nbsp;&nbsp;{{ i.issued_date }}</td>
-        <td>
-            {% if i.paid %} ✅ {% else %} ❌ {% endif %}
-        </td>
-        <td>
-            <a href="{% url 'dashboard:edit_invoice' i.id %}"
-                class="btn btn-sm btn-primary">Edit</a>
-            <a href="{% url 'dashboard:delete_invoice' i.id %}"
-       class="btn btn-sm btn-danger"
-       onclick="return confirm('Delete this invoice?');">
-       Delete
-    </a>
-        </td>
-    </tr>
-    {% endfor %}
-</table>
+    <div class="w-100" style="max-width: 1100px;">
+
+        <!-- Page Header -->
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h1 class="page-title">Invoices</h1>
+        </div>
+
+        <!-- Card Wrapper -->
+        <div class="card shadow-card">
+            <table class="table custom-table align-middle">
+                <thead>
+                    <tr>
+                        <th>Invoice </th>
+                        <th>&nbsp;Order</th>
+                        <th>&nbsp;&nbsp;Issued</th>
+                        <th>Paid</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for i in invoices %}
+                    <tr>
+                        <td><strong>{{ i.invoice_number }}</strong></td>
+                        <td>&nbsp;&nbsp; {{ i.order.id }}</td>
+                        <td>&nbsp;&nbsp;{{ i.issued_date }}</td>
+                        <td>
+                            {% if i.paid %}
+                                <span class="badge bg-success">Paid</span>
+                            {% else %}
+                                <span class="badge bg-warning text-dark">Pending</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{% url 'dashboard:edit_invoice' i.id %}"
+                                class="btn btn-sm btn-warning">Edit</a>
+                            <a href="{% url 'dashboard:delete_invoice' i.id %}"
+                               class="btn btn-sm btn-danger"
+                               onclick="return confirm('Delete this invoice?');">
+                               Delete
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+
+            </table>
+        </div>
+
+    </div>
+</div>
 {% endblock %}

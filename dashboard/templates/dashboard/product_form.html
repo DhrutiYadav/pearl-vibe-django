@@ -24,13 +24,26 @@
         {{ form.price }}
     </div>
 
-    <!-- Image Upload -->
-    <div class="mb-3">
-        <label>Product Image</label>
-        {{ form.image }}
-        <br><br>
-        <img id="imagePreview" src="#" style="display:none; width:120px; height:120px; object-fit:cover; border-radius:10px; border:1px solid #ddd;">
+<!-- Product Image -->
+<div class="mb-3">
+    <label>Product Image</label>
+    {{ form.image }}
+
+    <!-- Image Preview -->
+    <div class="mt-2">
+        {% if form.instance.image %}
+            <img id="imagePreview"
+                 src="{{ form.instance.image.url }}"
+                 alt="Image Preview"
+                 style="max-height:150px; border:1px solid #ddd; padding:5px; border-radius:8px;">
+        {% else %}
+            <img id="imagePreview"
+                 src="#"
+                 alt="Image Preview"
+                 style="max-height:150px; display:none; border:1px solid #ddd; padding:5px; border-radius:8px;">
+        {% endif %}
     </div>
+</div>
 
     <!-- Description -->
     <div class="mb-3">
@@ -68,14 +81,23 @@
 
 <script>
     //================= IMAGE PREVIEW SCRIPT =================
-    document.getElementById("id_image").onchange = evt => {
-    const [file] = evt.target.files;
+const imageInput = document.getElementById("id_image");
+const preview = document.getElementById("imagePreview");
+
+imageInput.addEventListener("change", function(event) {
+    const file = event.target.files[0];
+
     if (file) {
-        const preview = document.getElementById("imagePreview");
-        preview.src = URL.createObjectURL(file);
-        preview.style.display = "block";
+        const reader = new FileReader();
+
+        reader.onload = function(e) {
+            preview.src = e.target.result;
+            preview.style.display = "block";
+        }
+
+        reader.readAsDataURL(file);
     }
-};
+});
     // ================= COLOR PICKER SCRIPT =================
 let colors = [];
 

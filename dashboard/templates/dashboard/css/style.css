@@ -28,3 +28,47 @@
     margin: 0;
     color: #666;
 }
+
+.custom-table tbody tr:hover {
+    background-color: #f8f9fa;
+    transition: 0.2s ease-in-out;
+}
+
+.badge.fs-6 {
+    padding: 6px 10px;
+    border-radius: 8px;
+}
+
+
+
+
+.shadow-card {
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+    padding: 10px 15px;
+}
+
+.page-title {
+    font-weight: 600;
+    color: #1f2d3d;
+}
+
+.custom-table thead {
+    background-color: #0d6efd;
+    color: white;
+}
+
+.custom-table th {
+    font-weight: 500;
+    border: none;
+}
+
+.custom-table td {
+    vertical-align: middle;
+}
+
+.custom-table tbody tr:hover {
+    background-color: #f5f7fa;
+    transition: 0.2s ease-in-out;
+}
