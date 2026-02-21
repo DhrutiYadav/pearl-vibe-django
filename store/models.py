@@ -50,7 +50,7 @@ class Product(models.Model):
 
 
 # -------------------------
-# CART MODELS (REQUIRED)
+# CART MODELS
 # -------------------------
 
 class Customer(models.Model):
@@ -66,6 +66,9 @@ class Customer(models.Model):
     contact_no = models.CharField(max_length=15, null=True, blank=True)
     country = models.CharField(max_length=100, null=True, blank=True)
     address = models.TextField(null=True, blank=True)
+
+    security_question = models.CharField(max_length=255, null=True, blank=True)
+    security_answer = models.CharField(max_length=255, null=True, blank=True)
 
     def __str__(self):
         return self.name if self.name else str(self.user)

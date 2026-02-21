@@ -15,6 +15,9 @@ class RegisterForm(UserCreationForm):
     country = forms.CharField(max_length=100, required=True)
     address = forms.CharField(widget=forms.Textarea, required=False)
 
+    security_question = forms.CharField(max_length=255, required=True)
+    security_answer = forms.CharField(max_length=255, required=True)
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         for field in self.fields.values():
@@ -28,6 +31,8 @@ class RegisterForm(UserCreationForm):
             "contact_no",
             "country",
             "address",
+            "security_question",
+            "security_answer",
             "password1",
             "password2"
         ]
@@ -42,14 +47,11 @@ class RegisterForm(UserCreationForm):
             contact_no=self.cleaned_data["contact_no"],
             country=self.cleaned_data["country"],
             address=self.cleaned_data["address"],
+
+            security_question=self.cleaned_data["security_question"],
+            security_answer=self.cleaned_data["security_answer"],
         )
         return user
-
-
-# class ProductForm(forms.ModelForm):
-#     class Meta:
-#         model = Product
-#         fields = ['subcategory', 'name', 'price', 'image', 'description']
 
 class ProductForm(forms.ModelForm):
     # Hidden field that will receive colors from JS
