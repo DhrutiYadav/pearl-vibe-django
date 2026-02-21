@@ -32,7 +32,7 @@ from store.forms import InvoiceForm
 from store.forms import ShippingAddressForm
 
 from store.forms import UserEditForm
-
+from django.utils.dateparse import parse_datetime
 
 def is_admin(user):
     return user.is_staff or user.is_superuser
@@ -692,11 +692,33 @@ def reports_dashboard(request):
 
 
 def edit_order(request, order_id):
-    order = get_object_or_404(Order, id=order_id)
+    order = Order.objects.get(id=order_id)
 
     if request.method == 'POST':
-        order.complete = request.POST.get('complete') == 'true'
+        # ✅ Update status
+        complete_value = request.POST.get('complete')
+        order.complete = True if complete_value == 'true' else False
+
+        # ✅ Update date
+        date_str = request.POST.get('date_ordered')
+        if date_str:
+            new_date = parse_datetime(date_str)
+            order.date_ordered = new_date
+
         order.save()
+
+        # ✅ ALSO UPDATE RELATED MODELS
+        # 1. Invoice
+        if hasattr(order, 'invoice'):
+            order.invoice.issued_date = order.date_ordered
+            order.invoice.save()
+
+        # 2. Shipping Address
+        shipping = ShippingAddress.objects.filter(order=order).first()
+        if shipping:
+            shipping.date_added = order.date_ordered
+            shipping.save()
+
         return redirect('dashboard:orders')
 
     return render(request, 'dashboard/edit_order.html', {'order': order})
