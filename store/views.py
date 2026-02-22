@@ -30,6 +30,24 @@ pdfmetrics.registerFont(TTFont('DejaVuSans', font_path))
 def is_admin(user):
     return user.is_staff or user.is_superuser
 
+@login_required
+def change_password(request):
+    if request.method == "POST":
+        old_password = request.POST.get("old_password")
+        new_password = request.POST.get("new_password")
+
+        user = request.user
+
+        if user.check_password(old_password):
+            user.set_password(new_password)
+            user.save()
+
+            messages.success(request, "Password changed successfully")
+            return redirect("store:login")
+        else:
+            messages.error(request, "Old password is incorrect")
+
+    return render(request, "store/change_password.html")
 
 @login_required
 @user_passes_test(is_admin)
@@ -114,13 +132,22 @@ def search_suggestions(request):
 # ---------------------------
 
 
-
+SECURITY_QUESTIONS = [
+    ("website", "Which is the website you frequently visit?"),
+    ("school", "What is the name of your first school?"),
+    ("color", "What is your favourite colour?"),
+    ("vehicle", "What is the registration number of your first vehicle?"),
+    ("book", "Which is your favourite book?"),
+    ("sport", "What is your favourite sport?"),
+    ("birth", "What is your place of birth?"),
+]
 def register_view(request):
     if request.method == 'POST':
         form = RegisterForm(request.POST)
 
         if form.is_valid():
             form.save()
+
             messages.success(request, 'Account created successfully! Please log in.')
             return redirect('store:login')
         else:
@@ -129,7 +156,6 @@ def register_view(request):
         form = RegisterForm()
 
     return render(request, 'store/register.html', {'form': form})
-
 
 
 def login_view(request):
@@ -152,6 +178,52 @@ def logout_view(request):
     logout(request)
     return redirect('store:home')
 
+def forgot_password(request):
+    if request.method == "POST":
+        username = request.POST.get("username")
+
+        try:
+            user = User.objects.get(username=username)
+
+            # 🔥 SAFE WAY
+            customer, created = Customer.objects.get_or_create(
+                user=user,
+                defaults={"name": user.username}
+            )
+
+            if not customer.security_question:
+                messages.error(request, "Security question not set. Contact support.")
+                return redirect("store:forgot_password")
+
+            return render(request, "store/security_question.html", {
+                "user_id": user.id,
+                "question": customer.get_security_question_display()
+            })
+
+        except User.DoesNotExist:
+            messages.error(request, "User not found")
+
+    return render(request, "store/forgot_password.html")
+
+def reset_password(request):
+    if request.method == "POST":
+        user_id = request.POST.get("user_id")
+        answer = request.POST.get("answer")
+        new_password = request.POST.get("new_password")
+
+        user = User.objects.get(id=user_id)
+        customer = user.customer
+
+        if customer.security_answer.lower() == answer.lower():
+            user.set_password(new_password)
+            user.save()
+
+            messages.success(request, "Password reset successful! Please login.")
+            return redirect("store:login")
+        else:
+            messages.error(request, "Wrong security answer")
+
+    return redirect("store:forgot_password")
 
 # ---------------------------
 # CART & CHECKOUT
@@ -209,50 +281,6 @@ def checkout(request):
         'cartItems': cartItems
     })
 
-
-# def updateItem(request):
-#     data = json.loads(request.body)
-#
-#     productId = data['productId']
-#     action = data['action']
-#
-#     # ✅ NEW: get size & color from request
-#     size = data.get('size')
-#     color = data.get('color')
-#
-#     customer = request.user.customer
-#     product = Product.objects.get(id=productId)
-#
-#     order, created = Order.objects.get_or_create(
-#         customer=customer,
-#         complete=False
-#     )
-#
-#     # ✅ IMPORTANT: include size & color here
-#     orderItem, created = OrderItem.objects.get_or_create(
-#         order=order,
-#         product=product,
-#         size=size,
-#         color=color,
-#     )
-#
-#     if action == 'add':
-#         orderItem.quantity += 1
-#         orderItem.save()
-#     elif action == 'remove':
-#         orderItem.quantity -= 1
-#
-#         if orderItem.quantity <= 0:
-#             orderItem.delete()
-#         else:
-#             orderItem.save()
-#
-#
-#     elif action == 'delete':
-#         orderItem.delete()
-#         return JsonResponse('Item deleted', safe=False)
-#
-#     return JsonResponse('Item updated', safe=False)
 
 def updateItem(request):
     data = json.loads(request.body)

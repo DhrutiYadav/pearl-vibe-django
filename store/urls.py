@@ -13,6 +13,9 @@ urlpatterns = [
     path('register/', views.register_view, name='register'),
     path('login/', views.login_view, name='login'),
     path('logout/', views.logout_view, name='logout'),
+    path('forgot-password/', views.forgot_password, name='forgot_password'),
+    path('reset-password/', views.reset_password, name='reset_password'),
+    path('change-password/', views.change_password, name='change_password'),
 
     path('cart/', views.cart, name='cart'),
     path('checkout/', views.checkout, name='checkout'),

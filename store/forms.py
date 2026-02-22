@@ -7,6 +7,7 @@ from store.models import ShippingAddress
 from django.contrib.auth.models import User
 from django import forms
 
+from .models import SECURITY_QUESTIONS
 from django.contrib.auth.forms import UserCreationForm
 
 class RegisterForm(UserCreationForm):
@@ -15,7 +16,11 @@ class RegisterForm(UserCreationForm):
     country = forms.CharField(max_length=100, required=True)
     address = forms.CharField(widget=forms.Textarea, required=False)
 
-    security_question = forms.CharField(max_length=255, required=True)
+    security_question = forms.ChoiceField(
+        choices=[("", "--Select--")] + SECURITY_QUESTIONS,
+        required=True,
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
     security_answer = forms.CharField(max_length=255, required=True)
 
     def __init__(self, *args, **kwargs):

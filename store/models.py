@@ -52,6 +52,15 @@ class Product(models.Model):
 # -------------------------
 # CART MODELS
 # -------------------------
+SECURITY_QUESTIONS = [
+    ("website", "Which is the website you frequently visit?"),
+    ("school", "What is the name of your first school?"),
+    ("color", "What is your favourite colour?"),
+    ("vehicle", "What is the registration number of your first vehicle?"),
+    ("book", "Which is your favourite book?"),
+    ("sport", "What is your favourite sport?"),
+    ("birth", "What is your place of birth?"),
+]
 
 class Customer(models.Model):
     user = models.OneToOneField(
@@ -60,6 +69,8 @@ class Customer(models.Model):
         null=True,
         blank=True
     )
+
+
     name = models.CharField(max_length=200, null=True, blank=True)
     email = models.EmailField(null=True, blank=True)
 
@@ -67,7 +78,12 @@ class Customer(models.Model):
     country = models.CharField(max_length=100, null=True, blank=True)
     address = models.TextField(null=True, blank=True)
 
-    security_question = models.CharField(max_length=255, null=True, blank=True)
+    security_question = models.CharField(
+        max_length=50,
+        choices=SECURITY_QUESTIONS,
+        null=True,
+        blank=True
+    )
     security_answer = models.CharField(max_length=255, null=True, blank=True)
 
     def __str__(self):
@@ -121,7 +137,7 @@ class OrderItem(models.Model):
     @property
     def get_total(self):
         if self.product is None:
-            return 0  # 🔥 FIX
+            return 0
         return self.product.price * self.quantity
 
 

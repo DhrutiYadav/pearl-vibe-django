@@ -1,0 +1,21 @@
+{% extends 'store/main.html' %}
+{% block content %}
+<h3 class="text-center">Security Question</h3>
+
+<form method="post" action="{% url 'store:reset_password' %}" class="mx-auto" style="max-width:400px;">
+    {% csrf_token %}
+
+    <input type="hidden" name="user_id" value="{{ user_id }}">
+
+    <div class="mb-3">
+        <label>{{ question }}</label>
+        <input type="text" name="answer" class="form-control" required>
+    </div>
+
+    <div class="mb-3">
+        <input type="password" name="new_password" class="form-control" placeholder="New Password" required>
+    </div>
+
+    <button class="btn btn-success w-100">Reset Password</button>
+</form>
+{% endblock %}

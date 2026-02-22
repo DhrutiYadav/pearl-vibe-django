@@ -53,6 +53,16 @@
     </div>
 
     <div class="mb-3">
+        <label>Security Question</label>
+        {{ form.security_question }}
+    </div>
+
+    <div class="mb-3">
+        <label>Security Answer</label>
+        {{ form.security_answer }}
+    </div>
+
+    <div class="mb-3">
         {{ form.password1.label_tag }}
         {{ form.password1 }}
         <div class="text-danger small">{{ form.password1.errors }}</div>
