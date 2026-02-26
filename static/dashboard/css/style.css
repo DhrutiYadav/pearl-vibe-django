@@ -18,3 +18,33 @@
     border-radius: 5px; /* optional rounded corners */
 }
 
+.dashboard-ui .sidebar {
+    width: 230px;
+    height: 100vh;
+    background: linear-gradient(180deg, #0e3167, #062a63);
+    color: white;
+    position: fixed;
+    padding: 20px;
+}
+
+.dashboard-ui .sidebar a {
+    display: block;
+    padding: 10px 12px;
+    border-radius: 8px;
+    margin: 8px 0;
+    transition: 0.3s;
+}
+
+.dashboard-ui .sidebar a:hover {
+    background: rgba(255,255,255,0.15);
+    padding-left: 16px;
+}
+
+.dashboard-ui .content {
+    margin-left: 250px;
+    padding: 25px;
+}
+
+.dashboard-ui {
+    background: #f1f4f9;
+}

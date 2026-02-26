@@ -136,68 +136,124 @@ td img:hover {
 }
 
 /* ===== Individual Stat Card ===== */
-.stat-card {
+.dashboard-ui .stat-card {
     display: flex;
     align-items: center;
     padding: 20px;
-    border-radius: 14px;
-    color: #fff;
-    border-left: 6px solid #f5dd5d;
-    box-shadow: 0 6px 16px rgba(0,0,0,0.06);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border-radius: 16px;
+    background: #ffffff;
+    border-left: 5px solid #0b3a8d;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+    transition: all 0.3s ease;
 }
 
-.stat-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 10px 22px rgba(0,0,0,0.12);
+.dashboard-ui .stat-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 12px 26px rgba(0,0,0,0.15);
 }
 
 /* ===== Icon Style ===== */
-.stat-icon {
-    font-size: 38px;
-    margin-right: 18px;
-    /*opacity: 0.9;*/
-    background: #fff8cc;
-    color: #b89b00;
-    width: 60px;
-    height: 60px;
+.dashboard-ui .stat-icon {
+    font-size: 28px;
+    background: #eef3ff;
+    color: #0b3a8d;
+    width: 55px;
+    height: 55px;
     border-radius: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
-
 }
 
 /* ===== Text Section ===== */
-.stat-info h3 {
+.dashboard-ui .stat-info h3 {
     margin: 0;
-    font-size: 26px;
+    font-size: 24px;
     font-weight: 700;
-     color: #333;
+    color: #222;
 }
 
-.stat-info p {
-    margin: 3px 0 0;
-    font-size: 14px;
-    /*opacity: 0.9;*/
+.dashboard-ui .stat-info p {
+    margin: 4px 0 0;
+    font-size: 13px;
     color: #777;
 }
 
-/* ===== Different Colors for Each Card ===== */
-/*.stat-card.products {
-    background: linear-gradient(135deg, #667eea, #764ba2);
+
+.dashboard-ui .tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
 }
 
-.stat-card.categories {
-    background: linear-gradient(135deg, #43cea2, #185a9d);
+.dashboard-ui .tab-btn {
+    background: #e9ecf5;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 10px;
+    font-weight: 600;
+    transition: 0.3s;
 }
 
-.stat-card.subcategories {
-    background: linear-gradient(135deg, #f7971e, #ffd200);
-    color: #333;
+.dashboard-ui .tab-btn:hover {
+    background: #d6defc;
 }
 
-.stat-card.users {
-    background: linear-gradient(135deg, #ff6a00, #ee0979);
+.dashboard-ui .tab-btn.active {
+    background: #0b3a8d;
+    color: #fff;
 }
-*/
+
+/*.dashboard-ui .section-card {
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 14px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+}  I don't lile the ui */
+
+.dashboard-ui .chart-card {
+    background: #fff;
+    padding: 20px;
+    border-radius: 14px;
+    margin-top: 20px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+}
+
+.dashboard-ui .filter-card {
+    background: #fff;
+    padding: 18px;
+    border-radius: 12px;
+    margin-top: 20px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+}
+
+.dashboard-ui .filter-form {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.dashboard-ui .filter-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.dashboard-ui .filter-group input {
+    padding: 6px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+}
+
+.dashboard-ui button {
+    border-radius: 8px;
+    padding: 6px 14px;
+    border: none;
+    background: #0b3a8d;
+    color: #fff;
+    transition: 0.3s;
+}
+
+.dashboard-ui button:hover {
+    background: #082c6b;
+}
