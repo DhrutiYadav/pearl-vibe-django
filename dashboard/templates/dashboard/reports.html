@@ -9,7 +9,7 @@
     <button type="button" class="tab-btn" onclick="showTab(event, 'customers')">👥 Customers</button>
 </div>
 
-<div id="sales" class="tab-content">
+<div id="sales" class="tab-content" style="display:block;">
 <h2>📊 Sales Reports</h2>
 
 <div class="section-card">
@@ -732,20 +732,27 @@ new Chart(clvCtx, {
 </div>
 
 <script>
-function showTab(event, tabId) {
+document.addEventListener("DOMContentLoaded", function () {
 
-    document.querySelectorAll('.tab-content').forEach(tab => {
-        tab.style.display = 'none';
-    });
+    // Default tab show
+    document.getElementById("sales").style.display = "block";
 
-    document.querySelectorAll('.tab-btn').forEach(btn => {
-        btn.classList.remove('active');
-    });
+    window.showTab = function(event, tabId) {
 
-    document.getElementById(tabId).style.display = 'block';
+        document.querySelectorAll('.tab-content').forEach(tab => {
+            tab.style.display = 'none';
+        });
 
-    event.target.classList.add('active');
-}
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.classList.remove('active');
+        });
+
+        document.getElementById(tabId).style.display = 'block';
+
+        event.target.classList.add('active');
+    };
+
+});
 </script>
 
 {% endblock %}
