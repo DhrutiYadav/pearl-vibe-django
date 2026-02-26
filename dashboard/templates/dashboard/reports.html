@@ -1,8 +1,17 @@
 {% extends 'dashboard/base.html' %}
 {% block content %}
 
+<div class="tabs">
+    <button type="button" class="tab-btn active" onclick="showTab(event, 'sales')">📊 Sales</button>
 
+    <button type="button" class="tab-btn" onclick="showTab(event, 'products')">📦 Products</button>
+
+    <button type="button" class="tab-btn" onclick="showTab(event, 'customers')">👥 Customers</button>
+</div>
+
+<div id="sales" class="tab-content">
 <h2>📊 Sales Reports</h2>
+
 <div class="section-card">
     <div class="stats-container">
 
@@ -52,6 +61,106 @@
 </div>
 <hr>
 
+
+<h3>📅 Custom Date Report</h3>
+
+<div class="stats-container custom-stats">
+
+    <div class="stat-card">
+        <div class="stat-icon">📦</div>
+        <div class="stat-info">
+            <h3>{{ filtered_total_orders }}</h3>
+            <p>Total Orders</p>
+        </div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-icon">₹</div>
+        <div class="stat-info">
+            <h3>{{ filtered_revenue }}</h3>
+            <p>Total Revenue</p>
+        </div>
+    </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<h3 class="mt-5">📅 DAY-WISE REPORT</h3>
+
+<form method="get" style="margin-bottom: 15px;">
+
+    <label><strong>Select Month:</strong></label>
+    <select name="month" required>
+
+        <option value="">Select Month</option>
+        <option value="1" {% if selected_month == "1" %}selected{% endif %}>Jan</option>
+        <option value="2" {% if selected_month == "2" %}selected{% endif %}>Feb</option>
+        <option value="3" {% if selected_month == "3" %}selected{% endif %}>Mar</option>
+        <option value="4" {% if selected_month == "4" %}selected{% endif %}>Apr</option>
+        <option value="5" {% if selected_month == "5" %}selected{% endif %}>May</option>
+        <option value="6" {% if selected_month == "6" %}selected{% endif %}>Jun</option>
+        <option value="7" {% if selected_month == "7" %}selected{% endif %}>Jul</option>
+        <option value="8" {% if selected_month == "8" %}selected{% endif %}>Aug</option>
+        <option value="9" {% if selected_month == "9" %}selected{% endif %}>Sep</option>
+        <option value="10" {% if selected_month == "10" %}selected{% endif %}>Oct</option>
+        <option value="11" {% if selected_month == "11" %}selected{% endif %}>Nov</option>
+        <option value="12" {% if selected_month == "12" %}selected{% endif %}>Dec</option>
+    </select>
+
+    <label><strong>Select Year:</strong></label>
+    <select name="year">
+        {% for year in available_years %}
+            <option value="{{ year }}" {% if year == selected_year %}selected{% endif %}>
+                {{ year }}
+            </option>
+        {% endfor %}
+    </select>
+
+    <button type="submit">Get Report</button>
+</form>
+
+{% if selected_month and selected_year %}
+    <h4>
+        Day-wise Report ({{ selected_month_name }} {{ selected_year }})
+    </h4>
+{% endif %}
+
+<canvas id="dayWiseChart"></canvas>
+
+<script>
+const dayCtx = document.getElementById('dayWiseChart').getContext('2d');
+
+new Chart(dayCtx, {
+    type: 'bar',
+    data: {
+        labels: JSON.parse('{{ day_labels|escapejs }}'),
+        datasets: [
+            {
+                label: 'Orders',
+                data: JSON.parse('{{ day_orders|escapejs }}'),
+                backgroundColor: 'rgba(54, 162, 235, 0.7)'
+            },
+            {
+                label: 'Revenue',
+                data: JSON.parse('{{ day_revenues|escapejs }}'),
+                backgroundColor: 'rgba(255, 99, 132, 0.7)'
+            }
+        ]
+    },
+    options: {
+        responsive: true,
+        scales: {
+            y: {
+                beginAtZero: true
+            }
+        }
+    }
+});
+</script>
+
+
+
 <h3>🕒 Recent Orders</h3>
 
 <table class="custom-table">
@@ -92,105 +201,112 @@
 
 <hr>
 
-<h3>🏆 Top Selling Products</h3>
+<div class="chart-card">
+        <h3 class="mt-5">📈 Sales Last 7 Days</h3>
+        <canvas id="salesChart" height="100"></canvas>
 
-<table class="custom-table">
-    <thead>
-        <tr>
-            <th>Product</th>
-            <th>Units Sold</th>
-            <th>Revenue</th>
-        </tr>
-    </thead>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script>
+            const ctx = document.getElementById('salesChart').getContext('2d');
 
-    <tbody>
-        {% for item in top_products %}
-        <tr>
-            <td>{{ item.product__name }}</td>
-            <td>{{ item.total_sold }}</td>
-            <td>₹ {{ item.revenue|floatformat:2 }}</td>
-        </tr>
-        {% empty %}
-        <tr>
-            <td colspan="3" style="text-align:center; color:gray;">
-                No sales data yet
-            </td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
-<div class="chart-grid">
-
-    <h3 class="mt-5">📈 Sales Last 7 Days</h3>
-    <canvas id="salesChart" height="100"></canvas>
-
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script>
-        const ctx = document.getElementById('salesChart').getContext('2d');
-
-        const salesChart = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: {{ sales_dates|safe }},
-                datasets: [{
-                    label: 'Revenue (₹)',
-                    data: {{ sales_revenues|safe }},
-                    borderColor: '#28a745',
-                    backgroundColor: 'rgba(40,167,69,0.1)',
-                    tension: 0.3,
-                    fill: true,
-                    pointRadius: 4,
-                    pointBackgroundColor: '#28a745'
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: { display: true }
+            const salesChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: {{ sales_dates|safe }},
+                    datasets: [{
+                        label: 'Revenue (₹)',
+                        data: {{ sales_revenues|safe }},
+                        borderColor: '#28a745',
+                        backgroundColor: 'rgba(40,167,69,0.1)',
+                        tension: 0.3,
+                        fill: true,
+                        pointRadius: 4,
+                        pointBackgroundColor: '#28a745'
+                    }]
                 },
-                scales: {
-                    y: {
-                        beginAtZero: true
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { display: true }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
                     }
                 }
-            }
-        });
-    </script>
-
-
-    <h3 class="mt-5">📊 Top Selling Products (Chart)</h3>
-    <canvas id="topProductsChart"></canvas>
-    <script>
-
-        const topProductsCtx = document.getElementById('topProductsChart').getContext('2d');
-
-        new Chart(topProductsCtx, {
-            type: 'bar',
-            data: {
-                labels: JSON.parse('{{ chart_product_names|escapejs }}'),
-                datasets: [{
-                    label: 'Units Sold',
-                    data: JSON.parse('{{ chart_product_sales|escapejs }}'),
-                    backgroundColor: 'rgba(255, 193, 7, 0.7)',
-                    borderColor: '#ffc107',
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                indexAxis: 'y',  // makes it horizontal
-                responsive: true,
-                plugins: {
-                    legend: { display: false }
-                },
-                scales: {
-                    x: {
-                        beginAtZero: true
-                    }
-                }
-            }
-        });
-    </script>
+            });
+        </script>
 </div>
+
+
+<h3>📊 Sales Chart (Filtered)</h3>
+
+<div class="filter-card">
+    <form method="get" class="filter-form">
+        <div class="filter-group">
+            <label>From:</label>
+            <input type="date" name="from_date">
+        </div>
+
+        <div class="filter-group">
+            <label>To:</label>
+            <input type="date" name="to_date">
+        </div>
+        <button type="submit" class="btn-primary">Apply Filter</button>
+    </form>
+
+    <div class="quick-filters">
+        <a href="?range=today">
+            <button type="button">Today</button>
+        </a>
+
+        <a href="?range=week">
+            <button type="button">This Week</button>
+        </a>
+
+        <a href="?range=month">
+            <button type="button">This Month</button>
+        </a>
+    </div>
+
+</div>
+{% if selected_from_date and selected_to_date %}
+    <p style="margin-top:10px; font-weight:500; color:#555;">
+        Showing data from
+        <strong>{{ selected_from_date }}</strong>
+        to
+        <strong>{{ selected_to_date }}</strong>
+    </p>
+{% endif %}
+
+<canvas id="filteredSalesChart" height="120"></canvas>
+<script>
+const filteredCtx = document.getElementById('filteredSalesChart').getContext('2d');
+
+const labels = {{ filtered_dates|safe }};
+const revenues = {{ filtered_revenues|safe }};
+
+if (labels.length > 0) {
+    new Chart(filteredCtx, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Revenue',
+                data: revenues,
+                borderWidth: 2,
+                tension: 0.3
+            }]
+        },
+        options: {
+            responsive: true
+        }
+    });
+}
+</script>
+
+
 <h3 class="mt-5">📦 Sales by Category</h3>
 <div class="chart-container">
     <canvas id="categoryChart"></canvas>
@@ -311,6 +427,43 @@ new Chart(yearMonthCtx, {
 });
 </script>
 
+<h3 class="mt-5">💳 Average Order Value (AOV) Trend</h3>
+<canvas id="aovChart" height="120"></canvas>
+
+<script>
+const aovCtx = document.getElementById('aovChart').getContext('2d');
+
+new Chart(aovCtx, {
+    type: 'line',
+    data: {
+        labels: {{ aov_dates|safe }},
+        datasets: [{
+            label: 'AOV (₹)',
+            data: {{ aov_values|safe }},
+            borderColor: '#ff6384',
+            backgroundColor: 'rgba(255,99,132,0.1)',
+            tension: 0.3,
+            fill: true,
+            pointRadius: 4,
+            pointBackgroundColor: '#ff6384'
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: { display: true }
+        },
+        scales: {
+            y: {
+                beginAtZero: true
+            }
+        }
+    }
+});
+</script>
+
+<hr>
+
 <h3 class="mt-5">📊 Revenue vs Orders Trend (Last 7 Days)</h3>
 <canvas id="revenueOrdersChart" height="120"></canvas>
 
@@ -366,6 +519,75 @@ new Chart(roCtx, {
 });
 </script>
 
+</div>
+
+<div id="products" class="tab-content" style="display:none;">
+<h3>🏆 Top Selling Products</h3>
+
+<table class="custom-table">
+    <thead>
+        <tr>
+            <th>Product</th>
+            <th>Units Sold</th>
+            <th>Revenue</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        {% for item in top_products %}
+        <tr>
+            <td>{{ item.product__name }}</td>
+            <td>{{ item.total_sold }}</td>
+            <td>₹ {{ item.revenue|floatformat:2 }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="3" style="text-align:center; color:gray;">
+                No sales data yet
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<div class="chart-grid">
+
+
+    <div class="chart-card">
+        <h3 class="mt-5">📊 Top Selling Products (Chart)</h3>
+        <canvas id="topProductsChart"></canvas>
+        <script>
+
+            const topProductsCtx = document.getElementById('topProductsChart').getContext('2d');
+
+            new Chart(topProductsCtx, {
+                type: 'bar',
+                data: {
+                    labels: JSON.parse('{{ chart_product_names|escapejs }}'),
+                    datasets: [{
+                        label: 'Units Sold',
+                        data: JSON.parse('{{ chart_product_sales|escapejs }}'),
+                        backgroundColor: 'rgba(255, 193, 7, 0.7)',
+                        borderColor: '#ffc107',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',  // makes it horizontal
+                    responsive: true,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        x: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        </script>
+    </div>
+</div>
+
 <h3 class="mt-5">💰 Revenue by Price Range</h3>
 <div class="chart-container">
 <canvas id="priceRangeChart"></canvas>
@@ -403,44 +625,9 @@ new Chart(priceRangeCtx, {
     }
 });
 </script>
+</div>
 
-<h3 class="mt-5">💳 Average Order Value (AOV) Trend</h3>
-<canvas id="aovChart" height="120"></canvas>
-
-<script>
-const aovCtx = document.getElementById('aovChart').getContext('2d');
-
-new Chart(aovCtx, {
-    type: 'line',
-    data: {
-        labels: {{ aov_dates|safe }},
-        datasets: [{
-            label: 'AOV (₹)',
-            data: {{ aov_values|safe }},
-            borderColor: '#ff6384',
-            backgroundColor: 'rgba(255,99,132,0.1)',
-            tension: 0.3,
-            fill: true,
-            pointRadius: 4,
-            pointBackgroundColor: '#ff6384'
-        }]
-    },
-    options: {
-        responsive: true,
-        plugins: {
-            legend: { display: true }
-        },
-        scales: {
-            y: {
-                beginAtZero: true
-            }
-        }
-    }
-});
-</script>
-
-<hr>
-
+<div id="customers" class="tab-content" style="display:none;">
 <h3 class="mt-5">💎 Top Customers by Lifetime Value (CLV)</h3>
 
 <table class="custom-table">
@@ -500,163 +687,6 @@ new Chart(clvCtx, {
 });
 </script>
 
-<h3 class="mt-5">📅 DAY-WISE REPORT</h3>
-
-<form method="get" style="margin-bottom: 15px;">
-
-    <label><strong>Select Month:</strong></label>
-    <select name="month" required>
-        <option value="">Select Month</option>
-        <option value="1" {% if selected_month == "1" %}selected{% endif %}>Jan</option>
-        <option value="2" {% if selected_month == "2" %}selected{% endif %}>Feb</option>
-        <option value="3" {% if selected_month == "3" %}selected{% endif %}>Mar</option>
-        <option value="4" {% if selected_month == "4" %}selected{% endif %}>Apr</option>
-        <option value="5" {% if selected_month == "5" %}selected{% endif %}>May</option>
-        <option value="6" {% if selected_month == "6" %}selected{% endif %}>Jun</option>
-        <option value="7" {% if selected_month == "7" %}selected{% endif %}>Jul</option>
-        <option value="8" {% if selected_month == "8" %}selected{% endif %}>Aug</option>
-        <option value="9" {% if selected_month == "9" %}selected{% endif %}>Sep</option>
-        <option value="10" {% if selected_month == "10" %}selected{% endif %}>Oct</option>
-        <option value="11" {% if selected_month == "11" %}selected{% endif %}>Nov</option>
-        <option value="12" {% if selected_month == "12" %}selected{% endif %}>Dec</option>
-    </select>
-
-    <label><strong>Select Year:</strong></label>
-    <select name="year">
-        {% for year in available_years %}
-            <option value="{{ year }}" {% if year == selected_year %}selected{% endif %}>
-                {{ year }}
-            </option>
-        {% endfor %}
-    </select>
-
-    <button type="submit">Get Report</button>
-</form>
-
-{% if selected_month and selected_year %}
-    <h4>
-        Day-wise Report ({{ selected_month_name }} {{ selected_year }})
-    </h4>
-{% endif %}
-
-<canvas id="dayWiseChart"></canvas>
-
-<script>
-const dayCtx = document.getElementById('dayWiseChart').getContext('2d');
-
-new Chart(dayCtx, {
-    type: 'bar',
-    data: {
-        labels: JSON.parse('{{ day_labels|escapejs }}'),
-        datasets: [
-            {
-                label: 'Orders',
-                data: JSON.parse('{{ day_orders|escapejs }}'),
-                backgroundColor: 'rgba(54, 162, 235, 0.7)'
-            },
-            {
-                label: 'Revenue',
-                data: JSON.parse('{{ day_revenues|escapejs }}'),
-                backgroundColor: 'rgba(255, 99, 132, 0.7)'
-            }
-        ]
-    },
-    options: {
-        responsive: true,
-        scales: {
-            y: {
-                beginAtZero: true
-            }
-        }
-    }
-});
-</script>
-
-
-<h3>📅 Custom Date Report</h3>
-
-<div class="stats-container custom-stats">
-
-    <div class="stat-card">
-        <div class="stat-icon">📦</div>
-        <div class="stat-info">
-            <h3>{{ filtered_total_orders }}</h3>
-            <p>Total Orders</p>
-        </div>
-    </div>
-
-    <div class="stat-card">
-        <div class="stat-icon">₹</div>
-        <div class="stat-info">
-            <h3>{{ filtered_revenue }}</h3>
-            <p>Total Revenue</p>
-        </div>
-    </div>
-
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-<h3>📊 Sales Chart (Filtered)</h3>
-
-
-<form method="get">
-    <label>From:</label>
-    <input type="date" name="from_date">
-
-    <label>To:</label>
-    <input type="date" name="to_date">
-
-    <button type="submit">Filter</button>
-</form>
-
-<a href="?range=today">
-    <button type="button">Today</button>
-</a>
-
-<a href="?range=week">
-    <button type="button">This Week</button>
-</a>
-
-<a href="?range=month">
-    <button type="button">This Month</button>
-</a>
-{% if selected_from_date and selected_to_date %}
-    <p style="margin-top:10px; font-weight:500; color:#555;">
-        Showing data from
-        <strong>{{ selected_from_date }}</strong>
-        to
-        <strong>{{ selected_to_date }}</strong>
-    </p>
-{% endif %}
-
-<canvas id="filteredSalesChart" height="120"></canvas>
-<script>
-const filteredCtx = document.getElementById('filteredSalesChart').getContext('2d');
-
-const labels = {{ filtered_dates|safe }};
-const revenues = {{ filtered_revenues|safe }};
-
-if (labels.length > 0) {
-    new Chart(filteredCtx, {
-        type: 'line',
-        data: {
-            labels: labels,
-            datasets: [{
-                label: 'Revenue',
-                data: revenues,
-                borderWidth: 2,
-                tension: 0.3
-            }]
-        },
-        options: {
-            responsive: true
-        }
-    });
-}
-</script>
-
-
 <h3 class="mt-5">👤 User-wise Report</h3>
 
 <table class="custom-table">
@@ -699,4 +729,23 @@ if (labels.length > 0) {
         }
     });
 </script>
+</div>
+
+<script>
+function showTab(event, tabId) {
+
+    document.querySelectorAll('.tab-content').forEach(tab => {
+        tab.style.display = 'none';
+    });
+
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+
+    document.getElementById(tabId).style.display = 'block';
+
+    event.target.classList.add('active');
+}
+</script>
+
 {% endblock %}
