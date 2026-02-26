@@ -139,18 +139,25 @@ td img:hover {
 .dashboard-ui .stat-card {
     display: flex;
     align-items: center;
-    padding: 20px;
-    border-radius: 16px;
-    background: #ffffff;
-    border-left: 5px solid #0b3a8d;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+    justify-content: space-between;
+    padding: 22px;
+    border-radius: 18px;
+    background: linear-gradient(135deg, #ffffff, #f5f8ff);
+    border: 1px solid #e3e9f7;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.06);
     transition: all 0.3s ease;
 }
 
 .dashboard-ui .stat-card:hover {
-    transform: translateY(-6px);
-    box-shadow: 0 12px 26px rgba(0,0,0,0.15);
+    transform: translateY(-6px) scale(1.02);
 }
+
+/* ICON COLORS DIFFERENT */
+.stat-card:nth-child(1) .stat-icon { background: #e3f2fd; color: #2196f3; }
+.stat-card:nth-child(2) .stat-icon { background: #e8f5e9; color: #4caf50; }
+.stat-card:nth-child(3) .stat-icon { background: #ffebee; color: #f44336; }
+.stat-card:nth-child(4) .stat-icon { background: #fff3e0; color: #ff9800; }
+.stat-card:nth-child(5) .stat-icon { background: #f3e5f5; color: #9c27b0; }
 
 /* ===== Icon Style ===== */
 .dashboard-ui .stat-icon {
@@ -182,15 +189,15 @@ td img:hover {
 
 .dashboard-ui .tabs {
     display: flex;
-    gap: 10px;
-    margin-bottom: 20px;
+    gap: 12px;
+    margin-bottom: 25px;
 }
 
 .dashboard-ui .tab-btn {
-    background: #e9ecf5;
-    border: none;
-    padding: 10px 18px;
-    border-radius: 10px;
+    background: #f1f4f9;
+    border: 1px solid #e0e6f1;
+    padding: 10px 20px;
+    border-radius: 12px;
     font-weight: 600;
     transition: 0.3s;
 }
@@ -200,23 +207,24 @@ td img:hover {
 }
 
 .dashboard-ui .tab-btn.active {
-    background: #0b3a8d;
-    color: #fff;
+    background: linear-gradient(135deg, #0b3a8d, #1e5eac);
+    color: white;
+    box-shadow: 0 6px 16px rgba(11,58,141,0.3);
 }
 
-/*.dashboard-ui .section-card {
-    background: #ffffff;
-    padding: 20px;
-    border-radius: 14px;
-    box-shadow: 0 6px 18px rgba(0,0,0,0.06);
-}  I don't lile the ui */
-
 .dashboard-ui .chart-card {
-    background: #fff;
-    padding: 20px;
-    border-radius: 14px;
-    margin-top: 20px;
-    box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+    background: #ffffff;
+    padding: 22px;
+    border-radius: 18px;
+    margin-top: 25px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+    border: 1px solid #eef1f6;
+}
+
+.chart-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 20px;
 }
 
 .dashboard-ui .filter-card {
@@ -256,4 +264,87 @@ td img:hover {
 
 .dashboard-ui button:hover {
     background: #082c6b;
+}
+
+.dashboard-ui canvas {
+    width: 100% !important;
+    max-height: 400px;
+}
+
+.dashboard-ui .chart-container {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.dashboard-ui h3 {
+    margin-top: 30px;
+    margin-bottom: 15px;
+}
+
+/* ===== FULL WIDTH CHART (NEW) ===== */
+.full-chart {
+    margin-top: 25px;
+}
+
+.full-chart .chart-card {
+    width: 100%;
+    padding: 25px;
+}
+
+/* Bigger Chart */
+.full-chart canvas {
+    width: 100% !important;
+    height: 420px !important;
+}
+
+/* Chart Header */
+.chart-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+/* Filter UI Upgrade */
+.filter-form {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.filter-group label {
+    font-size: 12px;
+    color: #666;
+}
+
+.filter-group input,
+.filter-group select {
+    padding: 8px 10px;
+    border-radius: 8px;
+    border: 1px solid #dcdfe6;
+    background: #f9fbff;
+}
+
+/* Buttons modern */
+.btn-primary {
+    background: linear-gradient(135deg, #0b3a8d, #1e5eac);
+    color: white;
+    padding: 8px 16px;
+    border-radius: 10px;
+    font-weight: 600;
+}
+
+.quick-filters button {
+    border-radius: 20px;
+    padding: 6px 14px;
+    background: #eef3ff;
+    color: #0b3a8d;
+    border: none;
+    font-weight: 500;
+}
+
+.quick-filters button:hover {
+    background: #0b3a8d;
+    color: white;
 }

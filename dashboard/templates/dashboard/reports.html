@@ -1,133 +1,143 @@
 {% extends 'dashboard/base.html' %}
 {% block content %}
+<div class="dashboard-ui">
+    <!-- 🔷 HEADER -->
+    <div class="section-card">
+        <h2>📊 Sales Reports</h2>
+        <p style="color:#666;">Overview of your store performance</p>
+    </div>
+    <!-- 🔷 TABS -->
+    <div class="tabs">
+        <button class="tab-btn active" data-tab="sales">📊 Sales</button>
+        <button class="tab-btn" data-tab="products">📦 Products</button>
+        <button class="tab-btn" data-tab="customers">👥 Customers</button>
+    </div>
 
-<div class="tabs">
-    <button type="button" class="tab-btn active" onclick="showTab(event, 'sales')">📊 Sales</button>
+     <!-- ================= SALES TAB ================= -->
+    <div id="sales" class="tab-content" style="display:block;">
+    <h2>📊 Sales Reports</h2>
+                    <!-- 🔷 STATS -->
 
-    <button type="button" class="tab-btn" onclick="showTab(event, 'products')">📦 Products</button>
+        <div class="section-card">
+            <div class="stats-container">
 
-    <button type="button" class="tab-btn" onclick="showTab(event, 'customers')">👥 Customers</button>
-</div>
+                <div class="stat-card">
+                    <div class="stat-icon">📦</div>
+                    <div class="stat-info">
+                    <h3>{{ total_orders }}</h3>
+                    <p>Total Orders</p>
+                </div>
+            </div>
 
-<div id="sales" class="tab-content" style="display:block;">
-<h2>📊 Sales Reports</h2>
+            <div class="stat-card">
+                <div class="stat-icon">💳</div>
+                <div class="stat-info">
+                    <h3>{{ paid_orders }}</h3>
+                    <p>Paid Orders</p>
+                </div>
+            </div>
 
-<div class="section-card">
-    <div class="stats-container">
+            <div class="stat-card">
+                <div class="stat-icon">🛒</div>
+                <div class="stat-info">
+                    <h3>{{ unpaid_orders }}</h3>
+                    <p>Unpaid Orders</p>
+                </div>
+            </div>
 
-        <div class="stat-card">
-        <div class="stat-icon">📦</div>
-        <div class="stat-info">
-            <h3>{{ total_orders }}</h3>
-            <p>Total Orders</p>
+            <div class="stat-card">
+                <div class="stat-icon">₹</div>
+                <div class="stat-info">
+                    <h3>{{ total_revenue }}</h3>
+                    <p>Total Revenue</p>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">📅</div>
+                <div class="stat-info">
+                    <h3>₹ {{ monthly_revenue|floatformat:2 }}</h3>
+                    <p>Sales This Month</p>
+                </div>
+            </div>
         </div>
     </div>
-
-    <div class="stat-card">
-        <div class="stat-icon">💳</div>
-        <div class="stat-info">
-            <h3>{{ paid_orders }}</h3>
-            <p>Paid Orders</p>
-        </div>
-    </div>
-
-    <div class="stat-card">
-        <div class="stat-icon">🛒</div>
-        <div class="stat-info">
-            <h3>{{ unpaid_orders }}</h3>
-            <p>Unpaid Orders</p>
-        </div>
-    </div>
-
-    <div class="stat-card">
-        <div class="stat-icon">₹</div>
-        <div class="stat-info">
-            <h3>{{ total_revenue }}</h3>
-            <p>Total Revenue</p>
-        </div>
-    </div>
-
-    <div class="stat-card">
-        <div class="stat-icon">📅</div>
-        <div class="stat-info">
-            <h3>₹ {{ monthly_revenue|floatformat:2 }}</h3>
-            <p>Sales This Month</p>
-        </div>
-    </div>
-
-
-
-    </div>
-</div>
 <hr>
 
+<div class="full-chart">
+        <!-- 🔷 CUSTOM REPORT -->
+    <div class="section-card">
+        <h3>📅 Custom Date Report</h3>
 
-<h3>📅 Custom Date Report</h3>
+        <div class="stats-container custom-stats">
 
-<div class="stats-container custom-stats">
+            <div class="stat-card">
+                <div class="stat-icon">📦</div>
+                <div class="stat-info">
+                    <h3>{{ filtered_total_orders }}</h3>
+                    <p>Total Orders</p>
+                </div>
+            </div>
 
-    <div class="stat-card">
-        <div class="stat-icon">📦</div>
-        <div class="stat-info">
-            <h3>{{ filtered_total_orders }}</h3>
-            <p>Total Orders</p>
+            <div class="stat-card">
+                <div class="stat-icon">₹</div>
+                <div class="stat-info">
+                    <h3>{{ filtered_revenue }}</h3>
+                    <p>Total Revenue</p>
+                </div>
+            </div>
+
         </div>
     </div>
-
-    <div class="stat-card">
-        <div class="stat-icon">₹</div>
-        <div class="stat-info">
-            <h3>{{ filtered_revenue }}</h3>
-            <p>Total Revenue</p>
-        </div>
-    </div>
-
 </div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <div class="section-card">
+    <h3 class="mt-5">📅 DAY-WISE REPORT</h3>
 
-<h3 class="mt-5">📅 DAY-WISE REPORT</h3>
+    <form method="get" style="margin-bottom: 15px;">
+    <div class="filter-group">
+        <label>Select Month:</label>
+        <select name="month" required>
 
-<form method="get" style="margin-bottom: 15px;">
-
-    <label><strong>Select Month:</strong></label>
-    <select name="month" required>
-
-        <option value="">Select Month</option>
-        <option value="1" {% if selected_month == "1" %}selected{% endif %}>Jan</option>
-        <option value="2" {% if selected_month == "2" %}selected{% endif %}>Feb</option>
-        <option value="3" {% if selected_month == "3" %}selected{% endif %}>Mar</option>
-        <option value="4" {% if selected_month == "4" %}selected{% endif %}>Apr</option>
-        <option value="5" {% if selected_month == "5" %}selected{% endif %}>May</option>
-        <option value="6" {% if selected_month == "6" %}selected{% endif %}>Jun</option>
-        <option value="7" {% if selected_month == "7" %}selected{% endif %}>Jul</option>
-        <option value="8" {% if selected_month == "8" %}selected{% endif %}>Aug</option>
-        <option value="9" {% if selected_month == "9" %}selected{% endif %}>Sep</option>
-        <option value="10" {% if selected_month == "10" %}selected{% endif %}>Oct</option>
-        <option value="11" {% if selected_month == "11" %}selected{% endif %}>Nov</option>
-        <option value="12" {% if selected_month == "12" %}selected{% endif %}>Dec</option>
-    </select>
-
-    <label><strong>Select Year:</strong></label>
-    <select name="year">
-        {% for year in available_years %}
-            <option value="{{ year }}" {% if year == selected_year %}selected{% endif %}>
-                {{ year }}
-            </option>
-        {% endfor %}
-    </select>
+            {% for i in "123456789101112"|make_list %}
+                            {% endfor %}
+                            <option value="1">Jan</option>
+                            <option value="2">Feb</option>
+                            <option value="3">Mar</option>
+                            <option value="4">Apr</option>
+                            <option value="5">May</option>
+                            <option value="6">Jun</option>
+                            <option value="7">Jul</option>
+                            <option value="8">Aug</option>
+                            <option value="9">Sep</option>
+                            <option value="10">Oct</option>
+                            <option value="11">Nov</option>
+                            <option value="12">Dec</option>
+        </select>
+    </div>
+    <div class="filter-group">
+        <label>Select Year:</label>
+        <select name="year">
+            {% for year in available_years %}
+                <option value="{{ year }}" {% if year == selected_year %}selected{% endif %}>
+                    {{ year }}
+                </option>
+            {% endfor %}
+        </select>
+    </div>
 
     <button type="submit">Get Report</button>
-</form>
+    </form>
 
-{% if selected_month and selected_year %}
-    <h4>
-        Day-wise Report ({{ selected_month_name }} {{ selected_year }})
-    </h4>
-{% endif %}
+    {% if selected_month and selected_year %}
+        <h4>
+            Day-wise Report ({{ selected_month_name }} {{ selected_year }})
+        </h4>
+    {% endif %}
 
-<canvas id="dayWiseChart"></canvas>
-
+    <canvas id="dayWiseChart"></canvas>
+</div>
 <script>
 const dayCtx = document.getElementById('dayWiseChart').getContext('2d');
 
@@ -160,156 +170,179 @@ new Chart(dayCtx, {
 </script>
 
 
-
+<!-- 🔷 TABLE -->
+<div class="section-card">
 <h3>🕒 Recent Orders</h3>
+<div class="table-card">
+    <table class="custom-table">
+        <thead>
+            <tr>
+                <th>Order ID</th>
+                <th>User</th>
+                <th>Date</th>
+                <th>Paid</th>
+                <th>Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for order in recent_orders %}
+            <tr>
+                <td>#{{ order.id }}</td>
+                <td>
+                    {% if order.customer and order.customer.user %}
+                        {{ order.customer.user.username }}
+                    {% else %}
+                        Guest
+                    {% endif %}
+                </td>
 
-<table class="custom-table">
-    <thead>
-        <tr>
-            <th>Order ID</th>
-            <th>User</th>
-            <th>Date</th>
-            <th>Paid</th>
-            <th>Total</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for order in recent_orders %}
-        <tr>
-            <td>#{{ order.id }}</td>
-            <td>
-                {% if order.customer and order.customer.user %}
-                    {{ order.customer.user.username }}
-                {% else %}
-                    Guest
-                {% endif %}
-            </td>
-
-            <td>{{ order.date_ordered|date:"d M Y" }}</td>
-            <td>
-                {% if order.complete %}
-                    <span class="badge bg-success">Paid</span>
-                {% else %}
-                    <span class="badge bg-danger">Unpaid</span>
-                {% endif %}
-            </td>
-            <td>₹ {{ order.get_cart_total }}</td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
-
-<hr>
-
-<div class="chart-card">
-        <h3 class="mt-5">📈 Sales Last 7 Days</h3>
-        <canvas id="salesChart" height="100"></canvas>
-
-        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-        <script>
-            const ctx = document.getElementById('salesChart').getContext('2d');
-
-            const salesChart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: {{ sales_dates|safe }},
-                    datasets: [{
-                        label: 'Revenue (₹)',
-                        data: {{ sales_revenues|safe }},
-                        borderColor: '#28a745',
-                        backgroundColor: 'rgba(40,167,69,0.1)',
-                        tension: 0.3,
-                        fill: true,
-                        pointRadius: 4,
-                        pointBackgroundColor: '#28a745'
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        legend: { display: true }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true
-                        }
-                    }
-                }
-            });
-        </script>
-</div>
-
-
-<h3>📊 Sales Chart (Filtered)</h3>
-
-<div class="filter-card">
-    <form method="get" class="filter-form">
-        <div class="filter-group">
-            <label>From:</label>
-            <input type="date" name="from_date">
+                <td>{{ order.date_ordered|date:"d M Y" }}</td>
+                <td>
+                    {% if order.complete %}
+                        <span class="badge bg-success">Paid</span>
+                    {% else %}
+                        <span class="badge bg-danger">Unpaid</span>
+                    {% endif %}
+                </td>
+                <td>₹ {{ order.get_cart_total }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+  </div>
         </div>
 
-        <div class="filter-group">
-            <label>To:</label>
-            <input type="date" name="to_date">
-        </div>
-        <button type="submit" class="btn-primary">Apply Filter</button>
-    </form>
 
-    <div class="quick-filters">
-        <a href="?range=today">
-            <button type="button">Today</button>
-        </a>
 
-        <a href="?range=week">
-            <button type="button">This Week</button>
-        </a>
 
-        <a href="?range=month">
-            <button type="button">This Month</button>
-        </a>
+<!-- 🔷 CHART GRID START -->
+<div class="chart-grid">
+
+    <!-- SALES LAST 7 DAYS -->
+    <div class="chart-card">
+        <h3>📈 Sales Last 7 Days</h3>
+        <canvas id="salesChart"></canvas>
+    </div>
+    <!-- FILTERED SALES -->
+    <div class="chart-card">
+        <h3>📊 Filtered Sales</h3>
+        <canvas id="filteredSalesChart"></canvas>
     </div>
 
 </div>
-{% if selected_from_date and selected_to_date %}
-    <p style="margin-top:10px; font-weight:500; color:#555;">
-        Showing data from
-        <strong>{{ selected_from_date }}</strong>
-        to
-        <strong>{{ selected_to_date }}</strong>
-    </p>
-{% endif %}
+<!-- 🔷 CHART GRID END -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const ctx = document.getElementById('salesChart').getContext('2d');
 
-<canvas id="filteredSalesChart" height="120"></canvas>
-<script>
-const filteredCtx = document.getElementById('filteredSalesChart').getContext('2d');
+            const salesChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: {{ sales_dates|safe }},
+                datasets: [{
+                    label: 'Revenue (₹)',
+                    data: {{ sales_revenues|safe }},
+                    borderColor: '#28a745',
+                    backgroundColor: 'rgba(40,167,69,0.1)',
+                    tension: 0.3,
+                    fill: true,
+                    pointRadius: 4,
+                    pointBackgroundColor: '#28a745'
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: true }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    </script>
 
-const labels = {{ filtered_dates|safe }};
-const revenues = {{ filtered_revenues|safe }};
+<!-- 🔷 FILTER SECTION -->
+<div class="full-chart">
+<div class="section-card">
+    <h3>📊 Sales Chart (Filtered)</h3>
 
-if (labels.length > 0) {
-    new Chart(filteredCtx, {
-        type: 'line',
-        data: {
-            labels: labels,
-            datasets: [{
-                label: 'Revenue',
-                data: revenues,
-                borderWidth: 2,
-                tension: 0.3
-            }]
-        },
-        options: {
-            responsive: true
-        }
-    });
-}
-</script>
+    <div class="filter-card">
+        <form method="get" class="filter-form">
+            <div class="filter-group">
+                <label>From:</label>
+                <input type="date" name="from_date">
+            </div>
 
+            <div class="filter-group">
+                <label>To:</label>
+                <input type="date" name="to_date">
+            </div>
+            <button type="submit" class="btn-primary">Apply Filter</button>
+        </form>
 
-<h3 class="mt-5">📦 Sales by Category</h3>
-<div class="chart-container">
-    <canvas id="categoryChart"></canvas>
+        <div class="quick-filters">
+            <a href="?range=today">
+                <button type="button">Today</button>
+            </a>
+
+            <a href="?range=week">
+                <button type="button">This Week</button>
+            </a>
+
+            <a href="?range=month">
+                <button type="button">This Month</button>
+            </a>
+        </div>
+    </div>
+    {% if selected_from_date and selected_to_date %}
+        <p style="margin-top:10px; color:#555;">
+            Showing from <strong>{{ selected_from_date }}</strong> to <strong>{{ selected_to_date }}</strong>
+        </p>
+    {% endif %}
+
+</div>
+    <script>
+    const filteredCtx = document.getElementById('filteredSalesChart').getContext('2d');
+
+    const labels = {{ filtered_dates|safe }};
+    const revenues = {{ filtered_revenues|safe }};
+
+    if (labels.length > 0) {
+        new Chart(filteredCtx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Revenue',
+                    data: revenues,
+                    borderWidth: 2,
+                    tension: 0.3
+                }]
+            },
+            options: {
+                responsive: true
+            }
+        });
+    }
+    </script>
+</div>
+<div class="chart-grid">
+
+    <!-- CATEGORY -->
+    <div class="chart-card">
+        <h3>📦 Sales by Category</h3>
+        <canvas id="categoryChart"></canvas>
+    </div>
+
+    <!-- YEARLY -->
+    <div class="chart-card">
+        <h3>📆 Yearly Sales</h3>
+        <canvas id="yearlySalesChart"></canvas>
+    </div>
+
 </div>
 <style>
 .chart-container {
@@ -350,8 +383,6 @@ if (labels.length > 0) {
         }
     });
 </script>
-<h3 class="mt-5">📆 Yearly Sales Comparison</h3>
-<canvas id="yearlySalesChart" height="120"></canvas>
 
 <script>
 const yearlyCtx = document.getElementById('yearlySalesChart').getContext('2d');
@@ -381,9 +412,11 @@ new Chart(yearlyCtx, {
     }
 });
 </script>
+<div class="section-card full-chart">
+        <div class="chart-header">
 <h3 class="mt-5">📅 Monthly Sales Breakdown</h3>
 
-<form method="get" style="margin-bottom: 15px;">
+<form method="get">
     <label for="yearSelect"><strong>Select Year:</strong></label>
     <select name="year" id="yearSelect" onchange="this.form.submit()">
         {% for year in available_years %}
@@ -394,10 +427,13 @@ new Chart(yearlyCtx, {
     </select>
 </form>
 
-<h4>Monthly Sales Breakdown ({{ selected_year }})</h4>
-
-<canvas id="yearMonthChart" height="120"></canvas>
-
+</div>
+     <!-- SUBTITLE -->
+    <p class="chart-subtitle">
+        Showing data for <strong>{{ selected_year }}</strong>
+    </p>
+<canvas id="yearMonthChart"></canvas>
+</div>
 <script>
 const yearMonthCtx = document.getElementById('yearMonthChart').getContext('2d');
 
@@ -426,10 +462,21 @@ new Chart(yearMonthCtx, {
     }
 });
 </script>
+<div class="chart-grid">
 
-<h3 class="mt-5">💳 Average Order Value (AOV) Trend</h3>
-<canvas id="aovChart" height="120"></canvas>
+    <!-- AOV -->
+    <div class="chart-card">
+        <h3>💳 Average Order Value (AOV)</h3>
+        <canvas id="aovChart"></canvas>
+    </div>
 
+    <!-- REVENUE VS ORDERS -->
+    <div class="chart-card">
+        <h3>📊 Revenue vs Orders (Last 7 Days)</h3>
+        <canvas id="revenueOrdersChart"></canvas>
+    </div>
+
+</div>
 <script>
 const aovCtx = document.getElementById('aovChart').getContext('2d');
 
@@ -461,11 +508,6 @@ new Chart(aovCtx, {
     }
 });
 </script>
-
-<hr>
-
-<h3 class="mt-5">📊 Revenue vs Orders Trend (Last 7 Days)</h3>
-<canvas id="revenueOrdersChart" height="120"></canvas>
 
 <script>
 const roCtx = document.getElementById('revenueOrdersChart').getContext('2d');
@@ -522,109 +564,108 @@ new Chart(roCtx, {
 </div>
 
 <div id="products" class="tab-content" style="display:none;">
-<h3>🏆 Top Selling Products</h3>
+    <h3>🏆 Top Selling Products</h3>
 
-<table class="custom-table">
-    <thead>
-        <tr>
-            <th>Product</th>
-            <th>Units Sold</th>
-            <th>Revenue</th>
-        </tr>
-    </thead>
+    <table class="custom-table">
+        <thead>
+            <tr>
+                <th>Product</th>
+                <th>Units Sold</th>
+                <th>Revenue</th>
+            </tr>
+        </thead>
 
-    <tbody>
-        {% for item in top_products %}
-        <tr>
-            <td>{{ item.product__name }}</td>
-            <td>{{ item.total_sold }}</td>
-            <td>₹ {{ item.revenue|floatformat:2 }}</td>
-        </tr>
-        {% empty %}
-        <tr>
-            <td colspan="3" style="text-align:center; color:gray;">
-                No sales data yet
-            </td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
-<div class="chart-grid">
+        <tbody>
+            {% for item in top_products %}
+            <tr>
+                <td>{{ item.product__name }}</td>
+                <td>{{ item.total_sold }}</td>
+                <td>₹ {{ item.revenue|floatformat:2 }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="3" style="text-align:center; color:gray;">
+                    No sales data yet
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <div class="chart-grid">
 
+        <div class="chart-card">
+            <h3 class="mt-5">📊 Top Selling Products (Chart)</h3>
+            <canvas id="topProductsChart"></canvas>
+            <script>
 
-    <div class="chart-card">
-        <h3 class="mt-5">📊 Top Selling Products (Chart)</h3>
-        <canvas id="topProductsChart"></canvas>
-        <script>
+                const topProductsCtx = document.getElementById('topProductsChart').getContext('2d');
 
-            const topProductsCtx = document.getElementById('topProductsChart').getContext('2d');
-
-            new Chart(topProductsCtx, {
-                type: 'bar',
-                data: {
-                    labels: JSON.parse('{{ chart_product_names|escapejs }}'),
-                    datasets: [{
-                        label: 'Units Sold',
-                        data: JSON.parse('{{ chart_product_sales|escapejs }}'),
-                        backgroundColor: 'rgba(255, 193, 7, 0.7)',
-                        borderColor: '#ffc107',
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    indexAxis: 'y',  // makes it horizontal
-                    responsive: true,
-                    plugins: {
-                        legend: { display: false }
+                new Chart(topProductsCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: JSON.parse('{{ chart_product_names|escapejs }}'),
+                        datasets: [{
+                            label: 'Units Sold',
+                            data: JSON.parse('{{ chart_product_sales|escapejs }}'),
+                            backgroundColor: 'rgba(255, 193, 7, 0.7)',
+                            borderColor: '#ffc107',
+                            borderWidth: 1
+                        }]
                     },
-                    scales: {
-                        x: {
-                            beginAtZero: true
+                    options: {
+                        indexAxis: 'y',  // makes it horizontal
+                        responsive: true,
+                        plugins: {
+                            legend: { display: false }
+                        },
+                        scales: {
+                            x: {
+                                beginAtZero: true
+                            }
                         }
                     }
-                }
-            });
-        </script>
+                });
+            </script>
+        </div>
     </div>
-</div>
 
-<h3 class="mt-5">💰 Revenue by Price Range</h3>
-<div class="chart-container">
-<canvas id="priceRangeChart"></canvas>
-</div>
-<style>
-.chart-container {
-    max-width: 600px;   /* controls pie size */
-    margin: 0 auto;     /* centers it */
-}
-</style>
-<script>
-const priceRangeCtx = document.getElementById('priceRangeChart').getContext('2d');
+    <h3 class="mt-5">💰 Revenue by Price Range</h3>
+    <div class="chart-container">
+        <canvas id="priceRangeChart"></canvas>
+    </div>
+    <style>
+        .chart-container {
+            max-width: 600px;   /* controls pie size */
+            margin: 0 auto;     /* centers it */
+        }
+    </style>
+    <script>
+    const priceRangeCtx = document.getElementById('priceRangeChart').getContext('2d');
 
-new Chart(priceRangeCtx, {
-    type: 'doughnut',
-    data: {
-        labels: {{ price_range_labels|safe }},
-        datasets: [{
-            data: {{ price_range_revenues|safe }},
-            backgroundColor: [
-                '#36a2eb',
-                '#ffcd56',
-                '#ff6384'
-            ],
-            borderWidth: 1
-        }]
-    },
-    options: {
-        responsive: true,
-        plugins: {
-            legend: {
-                position: 'right'
+    new Chart(priceRangeCtx, {
+        type: 'doughnut',
+        data: {
+            labels: {{ price_range_labels|safe }},
+            datasets: [{
+                data: {{ price_range_revenues|safe }},
+                backgroundColor: [
+                    '#36a2eb',
+                    '#ffcd56',
+                    '#ff6384'
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'right'
+                }
             }
         }
-    }
-});
-</script>
+    });
+    </script>
 </div>
 
 <div id="customers" class="tab-content" style="display:none;">
@@ -730,27 +771,37 @@ new Chart(clvCtx, {
     });
 </script>
 </div>
-
 <script>
 document.addEventListener("DOMContentLoaded", function () {
 
-    // Default tab show
-    document.getElementById("sales").style.display = "block";
+    const tabs = document.querySelectorAll('.tab-btn');
+    const contents = document.querySelectorAll('.tab-content');
 
-    window.showTab = function(event, tabId) {
+    function showTab(tabId, clickedBtn) {
 
-        document.querySelectorAll('.tab-content').forEach(tab => {
-            tab.style.display = 'none';
+        contents.forEach(tab => tab.style.display = 'none');
+        tabs.forEach(btn => btn.classList.remove('active'));
+
+        const activeTab = document.getElementById(tabId);
+        if (activeTab) {
+            activeTab.style.display = 'block';
+        }
+
+        if (clickedBtn) {
+            clickedBtn.classList.add('active');
+        }
+    }
+
+    // Attach click events (BEST PRACTICE)
+    tabs.forEach(btn => {
+        btn.addEventListener('click', function () {
+            const tabId = this.getAttribute('data-tab');
+            showTab(tabId, this);
         });
+    });
 
-        document.querySelectorAll('.tab-btn').forEach(btn => {
-            btn.classList.remove('active');
-        });
-
-        document.getElementById(tabId).style.display = 'block';
-
-        event.target.classList.add('active');
-    };
+    // Default tab
+    showTab('sales', document.querySelector('.tab-btn.active'));
 
 });
 </script>

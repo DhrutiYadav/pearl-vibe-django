@@ -43,8 +43,10 @@
 .dashboard-ui .content {
     margin-left: 250px;
     padding: 25px;
+    transition: 0.3s;
 }
 
 .dashboard-ui {
-    background: #f1f4f9;
+    background: linear-gradient(120deg, #eef2f8, #f8fbff);
+    min-height: 100vh;
 }
