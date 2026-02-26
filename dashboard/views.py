@@ -31,8 +31,11 @@ from store.forms import InvoiceForm
 
 from store.forms import ShippingAddressForm
 
+from django.db.models.functions import ExtractDay, ExtractMonth, TruncMonth, TruncYear
+from django.db.models import Sum, Count, F, DecimalField, ExpressionWrapper
 from store.forms import UserEditForm
 from django.utils.dateparse import parse_datetime
+from collections import defaultdict
 
 def is_admin(user):
     return user.is_staff or user.is_superuser
@@ -650,6 +653,191 @@ def reports_dashboard(request):
     clv_labels = [c['order__customer__user__username'] for c in top_customers]
     clv_values = [float(c['total_spent']) for c in top_customers]
 
+    # 📅 DAY-WISE REPORT (SELECT MONTH)
+    selected_month = request.GET.get('month')
+    selected_year = request.GET.get('year')
+
+    import calendar
+
+    # ✅ Default values (VERY IMPORTANT)
+    selected_month_name = ""
+
+    if selected_month:
+        selected_month_name = calendar.month_name[int(selected_month)]
+
+    day_labels = []
+    day_orders = []
+    day_revenues = []
+
+    if selected_month and selected_year:
+        selected_month = int(selected_month)
+        selected_year = int(selected_year)
+
+        # Get total days in month
+        import calendar
+        total_days = calendar.monthrange(selected_year, selected_month)[1]
+
+        # Orders per day
+        orders_data = Order.objects.filter(
+            complete=True,
+            date_ordered__year=selected_year,
+            date_ordered__month=selected_month
+        ).annotate(
+            day=ExtractDay('date_ordered')
+        ).values('day').annotate(
+            total_orders=Count('id')
+        )
+
+        # Revenue per day
+        revenue_data = OrderItem.objects.filter(
+            order__complete=True,
+            order__date_ordered__year=selected_year,
+            order__date_ordered__month=selected_month
+        ).annotate(
+            day=ExtractDay('order__date_ordered')
+        ).values('day').annotate(
+            revenue=Sum(
+                ExpressionWrapper(
+                    F('product__price') * F('quantity'),
+                    output_field=DecimalField()
+                )
+            )
+        )
+
+        # Convert to dictionary
+        orders_dict = {item['day']: item['total_orders'] for item in orders_data}
+        revenue_dict = {item['day']: float(item['revenue']) for item in revenue_data}
+
+        # Fill ALL days (1 → 31)
+        for day in range(1, total_days + 1):
+            day_labels.append(str(day))
+            day_orders.append(orders_dict.get(day, 0))
+            day_revenues.append(revenue_dict.get(day, 0))
+
+    from_date = request.GET.get('from_date')
+    to_date = request.GET.get('to_date')
+
+    range_type = request.GET.get('range')
+
+    today = timezone.now().date()
+
+    if range_type == 'today':
+        from_date = today
+        to_date = today
+
+    elif range_type == 'week':
+        from_date = today - timedelta(days=6)
+        to_date = today
+
+    elif range_type == 'month':
+        from_date = today.replace(day=1)
+        to_date = today
+
+    # ----------------------------------------
+    # FILTERED DATE LOGIC (CLEAN VERSION)
+    # ----------------------------------------
+
+    from_date = request.GET.get('from_date')
+    to_date = request.GET.get('to_date')
+    range_type = request.GET.get('range')
+
+    today = timezone.now().date()
+
+    if range_type == 'today':
+        from_date = today
+        to_date = today
+
+    elif range_type == 'week':
+        from_date = today - timedelta(days=6)
+        to_date = today
+
+    elif range_type == 'month':
+        from_date = today.replace(day=1)
+        to_date = today
+
+    # Convert string dates properly
+    if from_date and isinstance(from_date, str):
+        from_date = datetime.strptime(from_date, "%Y-%m-%d").date()
+
+    if to_date and isinstance(to_date, str):
+        to_date = datetime.strptime(to_date, "%Y-%m-%d").date()
+
+    filtered_orders = Order.objects.filter(complete=True)
+    filtered_order_items = OrderItem.objects.filter(order__complete=True)
+
+    if from_date and to_date:
+        filtered_orders = filtered_orders.filter(
+            date_ordered__date__range=[from_date, to_date]
+        )
+
+        filtered_order_items = filtered_order_items.filter(
+            order__date_ordered__date__range=[from_date, to_date]
+        )
+
+    filtered_total_orders = filtered_orders.count()
+
+    filtered_revenue = filtered_order_items.filter(
+        order__complete=True
+    ).aggregate(
+        total=Sum(
+            ExpressionWrapper(
+                F('product__price') * F('quantity'),
+                output_field=DecimalField()
+            )
+        )
+    )['total'] or 0
+
+    # ----------------------------------------
+    # FILTERED CHART DATA
+    # ----------------------------------------
+
+    filtered_sales_data = filtered_order_items.annotate(
+        day=F('order__date_ordered__date')
+    ).values('day').annotate(
+        revenue=Sum(
+            ExpressionWrapper(
+                F('product__price') * F('quantity'),
+                output_field=DecimalField()
+            )
+        )
+    ).order_by('day')
+
+    sales_dict = defaultdict(float)
+
+    for entry in filtered_sales_data:
+        sales_dict[entry['day']] = float(entry['revenue'] or 0)
+
+    filtered_dates = []
+    filtered_revenues = []
+
+    if from_date and to_date:
+        current_day = from_date
+
+        while current_day <= to_date:
+            filtered_dates.append(current_day.strftime("%d %b"))
+            filtered_revenues.append(sales_dict.get(current_day, 0))
+            current_day += timedelta(days=1)
+
+
+
+    user_report = OrderItem.objects.filter(
+        order__complete=True,
+        order__customer__user__isnull=False
+    ).values(
+        'order__customer__user__username'
+    ).annotate(
+        total_orders=Count('order', distinct=True),
+        total_spent=Sum(
+            ExpressionWrapper(
+                F('product__price') * F('quantity'),
+                output_field=DecimalField()
+            )
+        )
+    ).order_by('-total_spent')
+
+    user_names = [u['order__customer__user__username'] for u in user_report]
+    user_spending = [float(u['total_spent']) for u in user_report]
+
     context = {
         'total_orders': total_orders,
         'paid_orders': paid_orders,
@@ -685,7 +873,20 @@ def reports_dashboard(request):
         'customer_clv': customer_clv,
         'clv_labels': json.dumps(clv_labels),
         'clv_values': json.dumps(clv_values),
-
+        'day_labels': json.dumps(day_labels),
+        'day_orders': json.dumps(day_orders),
+        'day_revenues': json.dumps(day_revenues),
+        'selected_month': selected_month,
+        'selected_month_name': selected_month_name,
+        'filtered_total_orders': filtered_total_orders,
+        'filtered_revenue': filtered_revenue,
+        'filtered_dates': json.dumps(filtered_dates),
+        'filtered_revenues': json.dumps(filtered_revenues),
+        'selected_from_date': from_date,
+        'selected_to_date': to_date,
+        'user_report': user_report,
+        'user_names': json.dumps(user_names),
+        'user_spending': json.dumps(user_spending),
     }
 
     return render(request, 'dashboard/reports.html', context)
