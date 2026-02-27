@@ -10,13 +10,8 @@ import json
 from store.models import Customer, Invoice, OrderSummary, ShippingAddress
 
 from store.models import Order, OrderItem
-from django.db.models import Count
-from django.db.models import Sum, F, ExpressionWrapper, DecimalField
 from django.utils import timezone
 from datetime import datetime
-from django.db.models.functions import TruncMonth
-from django.db.models.functions import TruncYear
-from django.db.models.functions import ExtractMonth
 
 from datetime import timedelta
 from collections import defaultdict
@@ -35,10 +30,8 @@ from django.db.models.functions import ExtractDay, ExtractMonth, TruncMonth, Tru
 from django.db.models import Sum, Count, F, DecimalField, ExpressionWrapper
 from store.forms import UserEditForm
 from django.utils.dateparse import parse_datetime
-from collections import defaultdict
 import csv
 from django.http import HttpResponse
-from store.models import Order
 
 def is_admin(user):
     return user.is_staff or user.is_superuser
@@ -412,11 +405,6 @@ def get_sales_data(request):
     dates = []
     revenues = []
 
-    # for i in range(7):
-    #     day = seven_days_ago + timedelta(days=i)
-    #     dates.append(day.strftime("%d %b"))
-    #     revenues.append(sales_dict.get(day, 0))
-
     return {
         'total_orders': total_orders,
         'paid_orders': paid_orders,
@@ -431,26 +419,6 @@ def get_sales_data(request):
 @user_passes_test(is_admin)
 def reports_dashboard(request):
     sales_data = get_sales_data(request)
-    # total_orders = Order.objects.count()
-
-    # total_orders = Order.objects.count()
-    # paid_orders = Order.objects.filter(complete=True).count()
-    # unpaid_orders = Order.objects.filter(complete=False).count()
-    # ✅ USE complete INSTEAD OF paid
-    # paid_orders = Order.objects.filter(complete=True).count()
-    # unpaid_orders = Order.objects.filter(complete=False).count()
-
-    # 💰 Revenue = sum of (product price × quantity) for completed orders
-    # total_revenue = OrderItem.objects.filter(
-    #     order__complete=True
-    # ).aggregate(
-    #     total=Sum(
-    #         ExpressionWrapper(
-    #             F('product__price') * F('quantity'),
-    #             output_field=DecimalField()
-    #         )
-    #     )
-    # )['total'] or 0
 
     # ✅ Your model uses date_ordered, not created_at
     recent_orders = Order.objects.select_related('customer__user').order_by('-date_ordered')[:10]
@@ -476,17 +444,6 @@ def reports_dashboard(request):
     today = timezone.now()
     first_day_of_month = today.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
 
-    # monthly_revenue = OrderItem.objects.filter(
-    #     order__complete=True,
-    #     order__date_ordered__gte=first_day_of_month
-    # ).aggregate(
-    #     total=Sum(
-    #         ExpressionWrapper(
-    #             F('product__price') * F('quantity'),
-    #             output_field=DecimalField()
-    #         )
-    #     )
-    # )['total'] or 0
 
     # 📈 SALES OVER LAST 7 DAYS
     today = timezone.now().date()
@@ -522,11 +479,6 @@ def reports_dashboard(request):
 
     dates = sales_data['sales_dates']
     revenues = sales_data['sales_revenues']
-
-    # for i in range(7):
-    #     day = seven_days_ago + timedelta(days=i)
-    #     dates.append(day.strftime("%d %b"))
-    #     revenues.append(sales_dict.get(day, 0))
 
     # 🥧 SALES BY CATEGORY
     category_data = OrderItem.objects.filter(order__complete=True) \
@@ -952,9 +904,6 @@ def reports_dashboard(request):
         'year_revenues': json.dumps(year_revenues),
         'year_month_labels': json.dumps(month_labels),
         'year_month_revenues': json.dumps(month_revenues),
-        # 'current_year': current_year,
-        #'year_month_labels': month_labels,
-        #'year_month_revenues': month_revenues,
         'selected_year': selected_year,
         'available_years': range(timezone.now().year, timezone.now().year - 5, -1),
         'revenue_orders_dates': json.dumps(trend_dates),
@@ -981,9 +930,6 @@ def reports_dashboard(request):
         'user_report': user_report,
         'user_names': json.dumps(user_names),
         'user_spending': json.dumps(user_spending),
-
-
-
     }
 
     return render(request, 'dashboard/reports.html', context)
