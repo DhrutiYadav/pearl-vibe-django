@@ -36,6 +36,9 @@ from django.db.models import Sum, Count, F, DecimalField, ExpressionWrapper
 from store.forms import UserEditForm
 from django.utils.dateparse import parse_datetime
 from collections import defaultdict
+import csv
+from django.http import HttpResponse
+from store.models import Order
 
 def is_admin(user):
     return user.is_staff or user.is_superuser
@@ -891,6 +894,32 @@ def reports_dashboard(request):
 
     return render(request, 'dashboard/reports.html', context)
 
+
+import csv
+from django.http import HttpResponse
+from store.models import Order   # ✅ correct import
+
+def export_orders_csv(request):
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="orders.csv"'
+
+    writer = csv.writer(response)
+    writer.writerow(['Order ID', 'Customer', 'Date', 'Status', 'Total'])
+
+    orders = Order.objects.all()
+
+    for order in orders:
+        customer = order.customer.user.username if order.customer and order.customer.user else "Guest"
+
+        writer.writerow([
+            order.id,
+            customer,
+            order.date_ordered.strftime("%d-%m-%Y"),
+            "Paid" if order.complete else "Unpaid",
+            order.get_cart_total
+        ])
+
+    return response
 
 def edit_order(request, order_id):
     order = Order.objects.get(id=order_id)

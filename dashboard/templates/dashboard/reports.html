@@ -1,14 +1,23 @@
 {% extends 'dashboard/base.html' %}
 {% block content %}
 <div class="dashboard-ui">
+<div style="display:flex; justify-content:space-between; align-items:center;">
+<!--    <h2>📊 Sales Reports</h2>-->
 
+    <button onclick="exportPDF()" class="btn-primary">
+        📄 Export PDF
+    </button>
+    <a href="{% url 'dashboard:export_csv' %}" class="btn-primary">
+    📥 Export CSV
+</a>
+</div>
     <!-- 🔷 TABS -->
     <div class="tabs">
         <button class="tab-btn active" data-tab="sales">📊 Sales</button>
         <button class="tab-btn" data-tab="products">📦 Products</button>
         <button class="tab-btn" data-tab="customers">👥 Customers</button>
     </div>
-
+<div id="reportContent">
      <!-- ================= SALES TAB ================= -->
     <div id="sales" class="tab-content" style="display:block;">
     <h2>📊 Sales Reports</h2>
@@ -816,6 +825,7 @@ new Chart(clvCtx, {
     });
 </script>
 </div>
+</div>
 <script>
 document.addEventListener("DOMContentLoaded", function () {
 
@@ -850,5 +860,40 @@ document.addEventListener("DOMContentLoaded", function () {
 
 });
 </script>
+<script>
+async function exportPDF() {
+    const { jsPDF } = window.jspdf;
 
+    const element = document.getElementById("reportContent");
+
+    // Capture UI
+    const canvas = await html2canvas(element, {
+        scale: 2
+    });
+
+    const imgData = canvas.toDataURL("image/png");
+
+    const pdf = new jsPDF('p', 'mm', 'a4');
+
+    const imgWidth = 210;
+    const pageHeight = 295;
+    const imgHeight = canvas.height * imgWidth / canvas.width;
+
+    let heightLeft = imgHeight;
+    let position = 0;
+
+    pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+    heightLeft -= pageHeight;
+
+    // Handle multiple pages
+    while (heightLeft > 0) {
+        position = heightLeft - imgHeight;
+        pdf.addPage();
+        pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+        heightLeft -= pageHeight;
+    }
+
+    pdf.save("sales_report.pdf");
+}
+</script>
 {% endblock %}
