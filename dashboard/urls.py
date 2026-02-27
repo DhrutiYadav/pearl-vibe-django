@@ -56,5 +56,5 @@ urlpatterns = [
 
     path('reports/', views.reports_dashboard, name='reports_dashboard'),
     path('export-csv/', views.export_orders_csv, name='export_csv'),
-
+    path('export-excel/', views.export_sales_excel, name='export_excel'),
 ]

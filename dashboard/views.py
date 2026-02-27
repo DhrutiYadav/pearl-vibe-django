@@ -30,8 +30,9 @@ from django.db.models.functions import ExtractDay, ExtractMonth, TruncMonth, Tru
 from django.db.models import Sum, Count, F, DecimalField, ExpressionWrapper
 from store.forms import UserEditForm
 from django.utils.dateparse import parse_datetime
-import csv
 from django.http import HttpResponse
+import openpyxl
+import csv
 
 def is_admin(user):
     return user.is_staff or user.is_superuser
@@ -959,6 +960,47 @@ def export_orders_csv(request):
             order.get_cart_total
         ])
 
+    return response
+
+def export_sales_excel(request):
+    from store.models import OrderItem
+    from django.db.models import Sum, F, DecimalField, ExpressionWrapper
+
+    # Create workbook
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = "Sales Report"
+
+    # Header
+    ws.append(["Product", "Quantity Sold", "Revenue"])
+
+    # Data
+    sales = OrderItem.objects.filter(order__complete=True) \
+        .values('product__name') \
+        .annotate(
+            total_sold=Sum('quantity'),
+            revenue=Sum(
+                ExpressionWrapper(
+                    F('product__price') * F('quantity'),
+                    output_field=DecimalField()
+                )
+            )
+        ).order_by('-total_sold')
+
+    for item in sales:
+        ws.append([
+            item['product__name'],
+            item['total_sold'],
+            float(item['revenue'] or 0)
+        ])
+
+    # Response
+    response = HttpResponse(
+        content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    )
+    response['Content-Disposition'] = 'attachment; filename="sales_report.xlsx"'
+
+    wb.save(response)
     return response
 
 def edit_order(request, order_id):

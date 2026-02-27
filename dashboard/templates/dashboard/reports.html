@@ -7,6 +7,9 @@
     <button onclick="exportPDF()" class="btn-primary">
         📄 Export PDF
     </button>
+    <a href="{% url 'dashboard:export_excel' %}" class="btn btn-success">
+    📥 Download Excel
+</a>
     <a href="{% url 'dashboard:export_csv' %}" class="btn-primary">
     📥 Export CSV
 </a>
