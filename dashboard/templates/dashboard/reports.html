@@ -1,11 +1,7 @@
 {% extends 'dashboard/base.html' %}
 {% block content %}
 <div class="dashboard-ui">
-    <!-- 🔷 HEADER -->
-    <div class="section-card">
-        <h2>📊 Sales Reports</h2>
-        <p style="color:#666;">Overview of your store performance</p>
-    </div>
+
     <!-- 🔷 TABS -->
     <div class="tabs">
         <button class="tab-btn active" data-tab="sales">📊 Sales</button>
@@ -62,7 +58,7 @@
             </div>
         </div>
     </div>
-<hr>
+
 
 <div class="full-chart">
         <!-- 🔷 CUSTOM REPORT -->
@@ -91,11 +87,83 @@
     </div>
 </div>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!-- 🔷 FILTER SECTION -->
+<div class="full-chart">
+<div class="section-card">
+    <div class="chart-card">
+    <h3>📊 Sales Chart (Filtered)</h3>
 
-    <div class="section-card">
-    <h3 class="mt-5">📅 DAY-WISE REPORT</h3>
+    <div class="filter-card">
+        <form method="get" class="filter-form">
+            <div class="filter-group">
+                <label>From:</label>
+                <input type="date" name="from_date">
+            </div>
 
-    <form method="get" style="margin-bottom: 15px;">
+            <div class="filter-group">
+                <label>To:</label>
+                <input type="date" name="to_date">
+            </div>
+            <button type="submit" class="btn-primary">Apply Filter</button>
+        </form>
+
+        <div class="quick-filters">
+            <a href="?range=today">
+                <button type="button">Today</button>
+            </a>
+
+            <a href="?range=week">
+                <button type="button">This Week</button>
+            </a>
+
+            <a href="?range=month">
+                <button type="button">This Month</button>
+            </a>
+        </div>
+    </div>
+    {% if selected_from_date and selected_to_date %}
+        <p style="margin-top:10px; color:#555;">
+            Showing from <strong>{{ selected_from_date }}</strong> to <strong>{{ selected_to_date }}</strong>
+        </p>
+    {% endif %}
+
+<!--        <h3>📊 Filtered Sales</h3>-->
+        <canvas id="filteredSalesChart"></canvas>
+    </div>
+</div>
+    <script>
+    const filteredCtx = document.getElementById('filteredSalesChart').getContext('2d');
+
+    const labels = {{ filtered_dates|safe }};
+    const revenues = {{ filtered_revenues|safe }};
+
+    if (labels.length > 0) {
+        new Chart(filteredCtx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Revenue',
+                    data: revenues,
+                    borderWidth: 2,
+                    tension: 0.3
+                }]
+            },
+            options: {
+                responsive: true
+            }
+        });
+    }
+    </script>
+</div>
+<div class="section-card full-chart">
+
+    <!-- HEADER -->
+    <div class="chart-header">
+        <h3>📅 Day-wise Report</h3>
+    </div>
+
+    <form method="get" class="filter-form">
     <div class="filter-group">
         <label>Select Month:</label>
         <select name="month" required>
@@ -130,10 +198,11 @@
     <button type="submit">Get Report</button>
     </form>
 
+    <!-- SUBTITLE -->
     {% if selected_month and selected_year %}
-        <h4>
-            Day-wise Report ({{ selected_month_name }} {{ selected_year }})
-        </h4>
+        <p class="chart-subtitle">
+            Showing data for <strong>{{ selected_month_name }} {{ selected_year }}</strong>
+        </p>
     {% endif %}
 
     <canvas id="dayWiseChart"></canvas>
@@ -171,7 +240,64 @@ new Chart(dayCtx, {
 
 
 <!-- 🔷 TABLE -->
-<div class="section-card">
+<!--<div class="section-card">-->
+<!--<h3>🕒 Recent Orders</h3>-->
+<!--<div class="table-card">-->
+<!--    <table class="custom-table">-->
+<!--        <thead>-->
+<!--            <tr>-->
+<!--                <th>Order ID</th>-->
+<!--                <th>User</th>-->
+<!--                <th>Date</th>-->
+<!--                <th>Paid</th>-->
+<!--                <th>Total</th>-->
+<!--            </tr>-->
+<!--        </thead>-->
+<!--        <tbody>-->
+<!--            {% for order in recent_orders %}-->
+<!--            <tr>-->
+<!--                <td>#{{ order.id }}</td>-->
+<!--                <td>-->
+<!--                    {% if order.customer and order.customer.user %}-->
+<!--                        {{ order.customer.user.username }}-->
+<!--                    {% else %}-->
+<!--                        Guest-->
+<!--                    {% endif %}-->
+<!--                </td>-->
+
+<!--                <td>{{ order.date_ordered|date:"d M Y" }}</td>-->
+<!--                <td>-->
+<!--                    {% if order.complete %}-->
+<!--                        <span class="badge bg-success">Paid</span>-->
+<!--                    {% else %}-->
+<!--                        <span class="badge bg-danger">Unpaid</span>-->
+<!--                    {% endif %}-->
+<!--                </td>-->
+<!--                <td>₹ {{ order.get_cart_total }}</td>-->
+<!--            </tr>-->
+<!--            {% endfor %}-->
+<!--        </tbody>-->
+<!--    </table>-->
+<!--  </div>-->
+<!--        </div>-->
+
+
+
+
+<!-- 🔷 CHART GRID START -->
+<div class="chart-grid">
+
+    <!-- SALES LAST 7 DAYS -->
+    <div class="chart-card">
+        <h3>📈 Sales Last 7 Days</h3>
+        <canvas id="salesChart"></canvas>
+    </div>
+    <!-- FILTERED SALES -->
+<!--    <div class="chart-card">-->
+<!--        <h3>📊 Filtered Sales</h3>-->
+<!--        <canvas id="filteredSalesChart"></canvas>-->
+<!--    </div>-->
+    <div class="section-card">
 <h3>🕒 Recent Orders</h3>
 <div class="table-card">
     <table class="custom-table">
@@ -212,23 +338,6 @@ new Chart(dayCtx, {
   </div>
         </div>
 
-
-
-
-<!-- 🔷 CHART GRID START -->
-<div class="chart-grid">
-
-    <!-- SALES LAST 7 DAYS -->
-    <div class="chart-card">
-        <h3>📈 Sales Last 7 Days</h3>
-        <canvas id="salesChart"></canvas>
-    </div>
-    <!-- FILTERED SALES -->
-    <div class="chart-card">
-        <h3>📊 Filtered Sales</h3>
-        <canvas id="filteredSalesChart"></canvas>
-    </div>
-
 </div>
 <!-- 🔷 CHART GRID END -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -264,71 +373,7 @@ new Chart(dayCtx, {
         });
     </script>
 
-<!-- 🔷 FILTER SECTION -->
-<div class="full-chart">
-<div class="section-card">
-    <h3>📊 Sales Chart (Filtered)</h3>
 
-    <div class="filter-card">
-        <form method="get" class="filter-form">
-            <div class="filter-group">
-                <label>From:</label>
-                <input type="date" name="from_date">
-            </div>
-
-            <div class="filter-group">
-                <label>To:</label>
-                <input type="date" name="to_date">
-            </div>
-            <button type="submit" class="btn-primary">Apply Filter</button>
-        </form>
-
-        <div class="quick-filters">
-            <a href="?range=today">
-                <button type="button">Today</button>
-            </a>
-
-            <a href="?range=week">
-                <button type="button">This Week</button>
-            </a>
-
-            <a href="?range=month">
-                <button type="button">This Month</button>
-            </a>
-        </div>
-    </div>
-    {% if selected_from_date and selected_to_date %}
-        <p style="margin-top:10px; color:#555;">
-            Showing from <strong>{{ selected_from_date }}</strong> to <strong>{{ selected_to_date }}</strong>
-        </p>
-    {% endif %}
-
-</div>
-    <script>
-    const filteredCtx = document.getElementById('filteredSalesChart').getContext('2d');
-
-    const labels = {{ filtered_dates|safe }};
-    const revenues = {{ filtered_revenues|safe }};
-
-    if (labels.length > 0) {
-        new Chart(filteredCtx, {
-            type: 'line',
-            data: {
-                labels: labels,
-                datasets: [{
-                    label: 'Revenue',
-                    data: revenues,
-                    borderWidth: 2,
-                    tension: 0.3
-                }]
-            },
-            options: {
-                responsive: true
-            }
-        });
-    }
-    </script>
-</div>
 <div class="chart-grid">
 
     <!-- CATEGORY -->

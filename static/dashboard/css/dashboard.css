@@ -348,3 +348,9 @@ td img:hover {
     background: #0b3a8d;
     color: white;
 }
+
+.chart-subtitle {
+    margin-top: 10px;
+    color: #666;
+    font-size: 14px;
+}
