@@ -348,17 +348,18 @@ def dashboard_invoices(request):
         'invoices': invoices
     })
 
-@login_required(login_url='/admin/login/')
-@user_passes_test(is_admin)
-def reports_dashboard(request):
+def get_sales_data(request):
+    from django.utils import timezone
+    from datetime import timedelta
+    from django.db.models import Sum, F, DecimalField, ExpressionWrapper
+    from collections import defaultdict
+    from store.models import Order, OrderItem
 
+    # 📊 BASIC STATS
     total_orders = Order.objects.count()
-
-    # ✅ USE complete INSTEAD OF paid
     paid_orders = Order.objects.filter(complete=True).count()
     unpaid_orders = Order.objects.filter(complete=False).count()
 
-    # 💰 Revenue = sum of (product price × quantity) for completed orders
     total_revenue = OrderItem.objects.filter(
         order__complete=True
     ).aggregate(
@@ -369,6 +370,87 @@ def reports_dashboard(request):
             )
         )
     )['total'] or 0
+
+    # 📅 SALES THIS MONTH
+    today = timezone.now()
+    first_day_of_month = today.replace(day=1)
+
+    monthly_revenue = OrderItem.objects.filter(
+        order__complete=True,
+        order__date_ordered__gte=first_day_of_month
+    ).aggregate(
+        total=Sum(
+            ExpressionWrapper(
+                F('product__price') * F('quantity'),
+                output_field=DecimalField()
+            )
+        )
+    )['total'] or 0
+
+    # 📈 LAST 7 DAYS SALES
+    today = timezone.now().date()
+    seven_days_ago = today - timedelta(days=6)
+
+    sales_data = OrderItem.objects.filter(
+        order__complete=True,
+        order__date_ordered__date__gte=seven_days_ago
+    ).annotate(
+        day=F('order__date_ordered__date')
+    ).values('day').annotate(
+        revenue=Sum(
+            ExpressionWrapper(
+                F('product__price') * F('quantity'),
+                output_field=DecimalField()
+            )
+        )
+    ).order_by('day')
+
+    sales_dict = defaultdict(int)
+    for entry in sales_data:
+        sales_dict[entry['day']] = float(entry['revenue'])
+
+    dates = []
+    revenues = []
+
+    # for i in range(7):
+    #     day = seven_days_ago + timedelta(days=i)
+    #     dates.append(day.strftime("%d %b"))
+    #     revenues.append(sales_dict.get(day, 0))
+
+    return {
+        'total_orders': total_orders,
+        'paid_orders': paid_orders,
+        'unpaid_orders': unpaid_orders,
+        'total_revenue': total_revenue,
+        'monthly_revenue': monthly_revenue,
+        'sales_dates': dates,
+        'sales_revenues': revenues,
+    }
+
+@login_required(login_url='/admin/login/')
+@user_passes_test(is_admin)
+def reports_dashboard(request):
+    sales_data = get_sales_data(request)
+    # total_orders = Order.objects.count()
+
+    # total_orders = Order.objects.count()
+    # paid_orders = Order.objects.filter(complete=True).count()
+    # unpaid_orders = Order.objects.filter(complete=False).count()
+    # ✅ USE complete INSTEAD OF paid
+    # paid_orders = Order.objects.filter(complete=True).count()
+    # unpaid_orders = Order.objects.filter(complete=False).count()
+
+    # 💰 Revenue = sum of (product price × quantity) for completed orders
+    # total_revenue = OrderItem.objects.filter(
+    #     order__complete=True
+    # ).aggregate(
+    #     total=Sum(
+    #         ExpressionWrapper(
+    #             F('product__price') * F('quantity'),
+    #             output_field=DecimalField()
+    #         )
+    #     )
+    # )['total'] or 0
 
     # ✅ Your model uses date_ordered, not created_at
     recent_orders = Order.objects.select_related('customer__user').order_by('-date_ordered')[:10]
@@ -394,23 +476,23 @@ def reports_dashboard(request):
     today = timezone.now()
     first_day_of_month = today.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
 
-    monthly_revenue = OrderItem.objects.filter(
-        order__complete=True,
-        order__date_ordered__gte=first_day_of_month
-    ).aggregate(
-        total=Sum(
-            ExpressionWrapper(
-                F('product__price') * F('quantity'),
-                output_field=DecimalField()
-            )
-        )
-    )['total'] or 0
+    # monthly_revenue = OrderItem.objects.filter(
+    #     order__complete=True,
+    #     order__date_ordered__gte=first_day_of_month
+    # ).aggregate(
+    #     total=Sum(
+    #         ExpressionWrapper(
+    #             F('product__price') * F('quantity'),
+    #             output_field=DecimalField()
+    #         )
+    #     )
+    # )['total'] or 0
 
     # 📈 SALES OVER LAST 7 DAYS
     today = timezone.now().date()
     seven_days_ago = today - timedelta(days=6)
 
-    sales_data = OrderItem.objects.filter(
+    sales_queryset = OrderItem.objects.filter(
         order__complete=True,
         order__date_ordered__date__gte=seven_days_ago
     ).annotate(
@@ -426,16 +508,25 @@ def reports_dashboard(request):
 
     # Fill missing days with 0 revenue
     sales_dict = defaultdict(int)
-    for entry in sales_data:
+    for entry in sales_queryset:
         sales_dict[entry['day']] = float(entry['revenue'])
 
-    dates = []
-    revenues = []
+    # dates = []
+    # revenues = []
 
-    for i in range(7):
-        day = seven_days_ago + timedelta(days=i)
-        dates.append(day.strftime("%d %b"))
-        revenues.append(sales_dict.get(day, 0))
+    total_orders = sales_data['total_orders']
+    paid_orders = sales_data['paid_orders']
+    unpaid_orders = sales_data['unpaid_orders']
+    total_revenue = sales_data['total_revenue']
+    monthly_revenue = sales_data['monthly_revenue']
+
+    dates = sales_data['sales_dates']
+    revenues = sales_data['sales_revenues']
+
+    # for i in range(7):
+    #     day = seven_days_ago + timedelta(days=i)
+    #     dates.append(day.strftime("%d %b"))
+    #     revenues.append(sales_dict.get(day, 0))
 
     # 🥧 SALES BY CATEGORY
     category_data = OrderItem.objects.filter(order__complete=True) \
@@ -890,6 +981,9 @@ def reports_dashboard(request):
         'user_report': user_report,
         'user_names': json.dumps(user_names),
         'user_spending': json.dumps(user_spending),
+
+
+
     }
 
     return render(request, 'dashboard/reports.html', context)
