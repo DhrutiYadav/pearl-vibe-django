@@ -1,4 +1,5 @@
 {% extends 'dashboard/base.html' %}
+{% load static %}
 {% block content %}
 <div class="dashboard-ui">
 <div style="display:flex; justify-content:space-between; align-items:center;">
@@ -139,34 +140,13 @@
         </p>
     {% endif %}
 
-<!--        <h3>📊 Filtered Sales</h3>-->
         <canvas id="filteredSalesChart"></canvas>
     </div>
 </div>
-    <script>
-    const filteredCtx = document.getElementById('filteredSalesChart').getContext('2d');
-
-    const labels = {{ filtered_dates|safe }};
-    const revenues = {{ filtered_revenues|safe }};
-
-    if (labels.length > 0) {
-        new Chart(filteredCtx, {
-            type: 'line',
-            data: {
-                labels: labels,
-                datasets: [{
-                    label: 'Revenue',
-                    data: revenues,
-                    borderWidth: 2,
-                    tension: 0.3
-                }]
-            },
-            options: {
-                responsive: true
-            }
-        });
-    }
-    </script>
+<script>
+    const filtered_dates = {{ filtered_dates|safe }};
+    const filtered_revenues = {{ filtered_revenues|safe }};
+</script>
 </div>
 
 <div class="section-card full-chart daywise-card">
@@ -437,37 +417,9 @@ new Chart(dayCtx, {
 
 </div>
 <!-- 🔷 CHART GRID END -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        const ctx = document.getElementById('salesChart').getContext('2d');
-
-            const salesChart = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: {{ sales_dates|safe }},
-                datasets: [{
-                    label: 'Revenue (₹)',
-                    data: {{ sales_revenues|safe }},
-                    borderColor: '#28a745',
-                    backgroundColor: 'rgba(40,167,69,0.1)',
-                    tension: 0.3,
-                    fill: true,
-                    pointRadius: 4,
-                    pointBackgroundColor: '#28a745'
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: { display: true }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true
-                    }
-                }
-            }
-        });
+        const sales_dates = {{ sales_dates|safe }};
+        const sales_revenues = {{ sales_revenues|safe }};
     </script>
 
 
@@ -989,4 +941,6 @@ async function exportPDF() {
     pdf.save("sales_report.pdf");
 }
 </script>
+
+    <script src="{% static 'js/dashboard_charts.js' %}"></script>
 {% endblock %}
