@@ -168,14 +168,17 @@
     }
     </script>
 </div>
-<div class="section-card full-chart">
 
+<div class="section-card full-chart daywise-card">
     <!-- HEADER -->
-    <div class="chart-header">
-        <h3>📅 Day-wise Report</h3>
-    </div>
-
-    <form method="get" class="filter-form">
+    <div class="daywise-header">
+        <!-- LEFT -->
+        <div class="header-left">
+            <h3 class="title-with-icon">📅 Day-wise Report</h3>
+            <p class="subtitle">Track daily orders & revenue visually</p>
+        </div>
+    <div class="header-actions">
+    <form method="get" class="filter-form modern-filter">
     <div class="filter-group">
         <label>Select Month:</label>
         <select name="month" required>
@@ -207,20 +210,45 @@
         </select>
     </div>
 
-    <button type="submit">Get Report</button>
+    <button type="submit" class="btn-primary">Get Report</button>
     </form>
-
+    </div>
+    </div>
     <!-- SUBTITLE -->
     {% if selected_month and selected_year %}
-        <p class="chart-subtitle">
+        <div class="selected-info">
             Showing data for <strong>{{ selected_month_name }} {{ selected_year }}</strong>
-        </p>
+        </div>
     {% endif %}
-
-    <canvas id="dayWiseChart"></canvas>
+     <div class="chart-wrapper">
+        <canvas id="dayWiseChart"></canvas>
+     </div>
 </div>
 <script>
 const dayCtx = document.getElementById('dayWiseChart').getContext('2d');
+
+/* 🔥 Gradient for Orders */
+const gradientBlue = dayCtx.createLinearGradient(0, 0, 0, 400);
+gradientBlue.addColorStop(0, 'rgba(54, 162, 235, 0.9)');
+gradientBlue.addColorStop(1, 'rgba(54, 162, 235, 0.2)');
+
+/* 🔥 Gradient for Revenue */
+const gradientPink = dayCtx.createLinearGradient(0, 0, 0, 400);
+gradientPink.addColorStop(0, 'rgba(255, 99, 132, 0.9)');
+gradientPink.addColorStop(1, 'rgba(255, 99, 132, 0.2)');
+
+Chart.defaults.elements.bar.borderSkipped = false;
+
+/*const originalDraw = Chart.controllers.bar.prototype.draw;
+Chart.controllers.bar.prototype.draw = function () {
+    const ctx = this.chart.ctx;
+    ctx.save();
+    ctx.shadowColor = 'rgba(0,0,0,0.08)';
+    ctx.shadowBlur = 8;
+    ctx.shadowOffsetY = 4;
+    originalDraw.apply(this, arguments);
+    ctx.restore();
+}; */
 
 new Chart(dayCtx, {
     type: 'bar',
@@ -230,20 +258,77 @@ new Chart(dayCtx, {
             {
                 label: 'Orders',
                 data: JSON.parse('{{ day_orders|escapejs }}'),
-                backgroundColor: 'rgba(54, 162, 235, 0.7)'
+                backgroundColor: gradientBlue,
+                hoverBackgroundColor: 'rgba(54, 162, 235, 1)',
+                borderRadius: 8,
+                barThickness: 22,
+                maxBarThickness: 28,
+                borderWidth: 1,
+                categoryPercentage: 0.5,
             },
             {
                 label: 'Revenue',
                 data: JSON.parse('{{ day_revenues|escapejs }}'),
-                backgroundColor: 'rgba(255, 99, 132, 0.7)'
+                backgroundColor: gradientPink,
+                borderRadius: 8,
+                barThickness: 22,
+                maxBarThickness: 28,
             }
         ]
     },
     options: {
         responsive: true,
-        scales: {
+        animation: {
+            duration: 1200,
+            easing: 'easeOutQuart',
+            //from: 0   // 🔥 forces bottom → up
+        },
+        animations: {
             y: {
-                beginAtZero: true
+                from: (ctx) => {
+                    if (ctx.type === 'data') {
+                        return ctx.chart.scales.y.getPixelForValue(0);
+                    }
+                }
+            }
+        },
+
+        /*transitions: {
+            active: {
+                animation: {
+                    duration: 500
+                }
+            }
+        },*/
+        plugins: {
+            legend: {
+                labels: {
+                    color: '#333',
+                    font: {
+                        weight: '600'
+                    }
+                }
+            },
+            tooltip: {
+                backgroundColor: '#0b3a8d',
+                titleColor: '#fff',
+                bodyColor: '#fff',
+                padding: 10,
+                borderRadius: 8
+            }
+        },
+        scales: {
+            x: {
+                grid: {
+                    display: false
+                }
+            },
+            y: {
+                beginAtZero: true,
+                grid: {
+
+                    color: 'rgba(0,0,0,0.05)'
+                }
             }
         }
     }
