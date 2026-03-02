@@ -204,161 +204,13 @@
         <canvas id="dayWiseChart"></canvas>
      </div>
 </div>
+
+
 <script>
-const dayCtx = document.getElementById('dayWiseChart').getContext('2d');
-
-/* 🔥 Gradient for Orders */
-const gradientBlue = dayCtx.createLinearGradient(0, 0, 0, 400);
-gradientBlue.addColorStop(0, 'rgba(54, 162, 235, 0.9)');
-gradientBlue.addColorStop(1, 'rgba(54, 162, 235, 0.2)');
-
-/* 🔥 Gradient for Revenue */
-const gradientPink = dayCtx.createLinearGradient(0, 0, 0, 400);
-gradientPink.addColorStop(0, 'rgba(255, 99, 132, 0.9)');
-gradientPink.addColorStop(1, 'rgba(255, 99, 132, 0.2)');
-
-Chart.defaults.elements.bar.borderSkipped = false;
-
-/*const originalDraw = Chart.controllers.bar.prototype.draw;
-Chart.controllers.bar.prototype.draw = function () {
-    const ctx = this.chart.ctx;
-    ctx.save();
-    ctx.shadowColor = 'rgba(0,0,0,0.08)';
-    ctx.shadowBlur = 8;
-    ctx.shadowOffsetY = 4;
-    originalDraw.apply(this, arguments);
-    ctx.restore();
-}; */
-
-new Chart(dayCtx, {
-    type: 'bar',
-    data: {
-        labels: JSON.parse('{{ day_labels|escapejs }}'),
-        datasets: [
-            {
-                label: 'Orders',
-                data: JSON.parse('{{ day_orders|escapejs }}'),
-                backgroundColor: gradientBlue,
-                hoverBackgroundColor: 'rgba(54, 162, 235, 1)',
-                borderRadius: 8,
-                barThickness: 22,
-                maxBarThickness: 28,
-                borderWidth: 1,
-                categoryPercentage: 0.5,
-            },
-            {
-                label: 'Revenue',
-                data: JSON.parse('{{ day_revenues|escapejs }}'),
-                backgroundColor: gradientPink,
-                borderRadius: 8,
-                barThickness: 22,
-                maxBarThickness: 28,
-            }
-        ]
-    },
-    options: {
-        responsive: true,
-        animation: {
-            duration: 1200,
-            easing: 'easeOutQuart',
-            //from: 0   // 🔥 forces bottom → up
-        },
-        animations: {
-            y: {
-                from: (ctx) => {
-                    if (ctx.type === 'data') {
-                        return ctx.chart.scales.y.getPixelForValue(0);
-                    }
-                }
-            }
-        },
-
-        /*transitions: {
-            active: {
-                animation: {
-                    duration: 500
-                }
-            }
-        },*/
-        plugins: {
-            legend: {
-                labels: {
-                    color: '#333',
-                    font: {
-                        weight: '600'
-                    }
-                }
-            },
-            tooltip: {
-                backgroundColor: '#0b3a8d',
-                titleColor: '#fff',
-                bodyColor: '#fff',
-                padding: 10,
-                borderRadius: 8
-            }
-        },
-        scales: {
-            x: {
-                grid: {
-                    display: false
-                }
-            },
-            y: {
-                beginAtZero: true,
-                grid: {
-
-                    color: 'rgba(0,0,0,0.05)'
-                }
-            }
-        }
-    }
-});
+    const day_labels = JSON.parse('{{ day_labels|escapejs }}');
+    const day_orders = JSON.parse('{{ day_orders|escapejs }}');
+    const day_revenues = JSON.parse('{{ day_revenues|escapejs }}');
 </script>
-
-
-<!-- 🔷 TABLE -->
-<!--<div class="section-card">-->
-<!--<h3>🕒 Recent Orders</h3>-->
-<!--<div class="table-card">-->
-<!--    <table class="custom-table">-->
-<!--        <thead>-->
-<!--            <tr>-->
-<!--                <th>Order ID</th>-->
-<!--                <th>User</th>-->
-<!--                <th>Date</th>-->
-<!--                <th>Paid</th>-->
-<!--                <th>Total</th>-->
-<!--            </tr>-->
-<!--        </thead>-->
-<!--        <tbody>-->
-<!--            {% for order in recent_orders %}-->
-<!--            <tr>-->
-<!--                <td>#{{ order.id }}</td>-->
-<!--                <td>-->
-<!--                    {% if order.customer and order.customer.user %}-->
-<!--                        {{ order.customer.user.username }}-->
-<!--                    {% else %}-->
-<!--                        Guest-->
-<!--                    {% endif %}-->
-<!--                </td>-->
-
-<!--                <td>{{ order.date_ordered|date:"d M Y" }}</td>-->
-<!--                <td>-->
-<!--                    {% if order.complete %}-->
-<!--                        <span class="badge bg-success">Paid</span>-->
-<!--                    {% else %}-->
-<!--                        <span class="badge bg-danger">Unpaid</span>-->
-<!--                    {% endif %}-->
-<!--                </td>-->
-<!--                <td>₹ {{ order.get_cart_total }}</td>-->
-<!--            </tr>-->
-<!--            {% endfor %}-->
-<!--        </tbody>-->
-<!--    </table>-->
-<!--  </div>-->
-<!--        </div>-->
-
-
 
 
 <!-- 🔷 CHART GRID START -->
@@ -445,67 +297,14 @@ new Chart(dayCtx, {
 }
 </style>
 
-
 <script>
-    const categoryCtx = document.getElementById('categoryChart').getContext('2d');
+    const category_labels = JSON.parse('{{ category_labels|escapejs }}');
+    const category_revenues = JSON.parse('{{ category_revenues|escapejs }}');
 
-    new Chart(categoryCtx, {
-        type: 'pie',
-        data: {
-            labels: JSON.parse('{{ category_labels|escapejs }}'),
-            datasets: [{
-                data: JSON.parse('{{ category_revenues|escapejs }}'),
-                backgroundColor: [
-                    '#ff6384',
-                    '#36a2eb',
-                    '#ffcd56',
-                    '#4bc0c0',
-                    '#9966ff',
-                    '#ff9f40'
-                ],
-                borderWidth: 1
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: true,
-            plugins: {
-                legend: {
-                    position: 'right'
-                }
-            }
-        }
-    });
+    const year_labels = {{ year_labels|safe }};
+    const year_revenues = {{ year_revenues|safe }};
 </script>
 
-<script>
-const yearlyCtx = document.getElementById('yearlySalesChart').getContext('2d');
-
-new Chart(yearlyCtx, {
-    type: 'bar',
-    data: {
-        labels: {{ year_labels|safe }},
-        datasets: [{
-            label: 'Yearly Revenue (₹)',
-            data: {{ year_revenues|safe }},
-            backgroundColor: 'rgba(153, 102, 255, 0.7)',
-            borderColor: '#9966ff',
-            borderWidth: 1
-        }]
-    },
-    options: {
-        responsive: true,
-        plugins: {
-            legend: { display: true }
-        },
-        scales: {
-            y: {
-                beginAtZero: true
-            }
-        }
-    }
-});
-</script>
 <div class="section-card full-chart">
         <div class="chart-header">
 <h3 class="mt-5">📅 Monthly Sales Breakdown</h3>
@@ -528,34 +327,12 @@ new Chart(yearlyCtx, {
     </p>
 <canvas id="yearMonthChart"></canvas>
 </div>
-<script>
-const yearMonthCtx = document.getElementById('yearMonthChart').getContext('2d');
 
-new Chart(yearMonthCtx, {
-    type: 'bar',
-    data: {
-        labels: {{ year_month_labels|safe }},
-        datasets: [{
-            label: 'Monthly Revenue (₹)',
-            data: {{ year_month_revenues|safe }},
-            backgroundColor: 'rgba(75, 192, 192, 0.7)',
-            borderColor: '#4bc0c0',
-            borderWidth: 1
-        }]
-    },
-    options: {
-        responsive: true,
-        plugins: {
-            legend: { display: true }
-        },
-        scales: {
-            y: {
-                beginAtZero: true
-            }
-        }
-    }
-});
+<script>
+    const year_month_labels = {{ year_month_labels|safe }};
+    const year_month_revenues = {{ year_month_revenues|safe }};
 </script>
+
 <div class="chart-grid">
 
     <!-- AOV -->
@@ -572,89 +349,13 @@ new Chart(yearMonthCtx, {
 
 </div>
 <script>
-const aovCtx = document.getElementById('aovChart').getContext('2d');
+    const aov_dates = {{ aov_dates|safe }};
+    const aov_values = {{ aov_values|safe }};
 
-new Chart(aovCtx, {
-    type: 'line',
-    data: {
-        labels: {{ aov_dates|safe }},
-        datasets: [{
-            label: 'AOV (₹)',
-            data: {{ aov_values|safe }},
-            borderColor: '#ff6384',
-            backgroundColor: 'rgba(255,99,132,0.1)',
-            tension: 0.3,
-            fill: true,
-            pointRadius: 4,
-            pointBackgroundColor: '#ff6384'
-        }]
-    },
-    options: {
-        responsive: true,
-        plugins: {
-            legend: { display: true }
-        },
-        scales: {
-            y: {
-                beginAtZero: true
-            }
-        }
-    }
-});
+    const revenue_orders_dates = {{ revenue_orders_dates|safe }};
+    const revenue_orders_revenue = {{ revenue_orders_revenue|safe }};
+    const revenue_orders_counts = {{ revenue_orders_counts|safe }};
 </script>
-
-<script>
-const roCtx = document.getElementById('revenueOrdersChart').getContext('2d');
-
-new Chart(roCtx, {
-    type: 'line',
-    data: {
-        labels: {{ revenue_orders_dates|safe }},
-        datasets: [
-            {
-                label: 'Revenue (₹)',
-                data: {{ revenue_orders_revenue|safe }},
-                borderColor: '#28a745',
-                backgroundColor: 'rgba(40,167,69,0.1)',
-                tension: 0.3,
-                yAxisID: 'y'
-            },
-            {
-                label: 'Orders',
-                data: {{ revenue_orders_counts|safe }},
-                borderColor: '#007bff',
-                backgroundColor: 'rgba(0,123,255,0.1)',
-                tension: 0.3,
-                yAxisID: 'y1'
-            }
-        ]
-    },
-    options: {
-        responsive: true,
-        interaction: { mode: 'index', intersect: false },
-        stacked: false,
-        plugins: {
-            legend: { display: true }
-        },
-        scales: {
-            y: {
-                type: 'linear',
-                position: 'left',
-                beginAtZero: true,
-                title: { display: true, text: 'Revenue (₹)' }
-            },
-            y1: {
-                type: 'linear',
-                position: 'right',
-                beginAtZero: true,
-                grid: { drawOnChartArea: false },
-                title: { display: true, text: 'Orders' }
-            }
-        }
-    }
-});
-</script>
-
 </div>
 
 <div id="products" class="tab-content" style="display:none;">
@@ -690,36 +391,6 @@ new Chart(roCtx, {
         <div class="chart-card">
             <h3 class="mt-5">📊 Top Selling Products (Chart)</h3>
             <canvas id="topProductsChart"></canvas>
-            <script>
-
-                const topProductsCtx = document.getElementById('topProductsChart').getContext('2d');
-
-                new Chart(topProductsCtx, {
-                    type: 'bar',
-                    data: {
-                        labels: JSON.parse('{{ chart_product_names|escapejs }}'),
-                        datasets: [{
-                            label: 'Units Sold',
-                            data: JSON.parse('{{ chart_product_sales|escapejs }}'),
-                            backgroundColor: 'rgba(255, 193, 7, 0.7)',
-                            borderColor: '#ffc107',
-                            borderWidth: 1
-                        }]
-                    },
-                    options: {
-                        indexAxis: 'y',  // makes it horizontal
-                        responsive: true,
-                        plugins: {
-                            legend: { display: false }
-                        },
-                        scales: {
-                            x: {
-                                beginAtZero: true
-                            }
-                        }
-                    }
-                });
-            </script>
         </div>
     </div>
 
@@ -733,33 +404,6 @@ new Chart(roCtx, {
             margin: 0 auto;     /* centers it */
         }
     </style>
-    <script>
-    const priceRangeCtx = document.getElementById('priceRangeChart').getContext('2d');
-
-    new Chart(priceRangeCtx, {
-        type: 'doughnut',
-        data: {
-            labels: {{ price_range_labels|safe }},
-            datasets: [{
-                data: {{ price_range_revenues|safe }},
-                backgroundColor: [
-                    '#36a2eb',
-                    '#ffcd56',
-                    '#ff6384'
-                ],
-                borderWidth: 1
-            }]
-        },
-        options: {
-            responsive: true,
-            plugins: {
-                legend: {
-                    position: 'right'
-                }
-            }
-        }
-    });
-    </script>
 </div>
 
 <div id="customers" class="tab-content" style="display:none;">
@@ -793,35 +437,6 @@ new Chart(roCtx, {
 <h3 class="mt-5">💎 Customer Lifetime Value (Top Customers)</h3>
 <canvas id="clvChart" height="120"></canvas>
 
-<script>
-const clvCtx = document.getElementById('clvChart').getContext('2d');
-
-new Chart(clvCtx, {
-    type: 'bar',
-    data: {
-        labels: {{ clv_labels|safe }},
-        datasets: [{
-            label: 'Lifetime Value (₹)',
-            data: {{ clv_values|safe }},
-            backgroundColor: 'rgba(255, 99, 132, 0.7)',
-            borderColor: '#ff6384',
-            borderWidth: 1
-        }]
-    },
-    options: {
-        responsive: true,
-        plugins: {
-            legend: { display: true }
-        },
-        scales: {
-            y: {
-                beginAtZero: true
-            }
-        }
-    }
-});
-</script>
-
 <h3 class="mt-5">👤 User-wise Report</h3>
 
 <table class="custom-table">
@@ -850,23 +465,22 @@ new Chart(clvCtx, {
     </tbody>
 </table>
  <canvas id="userChart"></canvas>
+
+</div>
+</div>
 <script>
-    const userCtx = document.getElementById('userChart').getContext('2d');
+    const top_products_labels = JSON.parse('{{ chart_product_names|escapejs }}');
+    const top_products_data = JSON.parse('{{ chart_product_sales|escapejs }}');
 
-    new Chart(userCtx, {
-        type: 'bar',
-        data: {
-            labels: {{ user_names|safe }},
-            datasets: [{
-                label: 'Total Spent',
-                data: {{ user_spending|safe }},
-            }]
-        }
-    });
+    const price_range_labels = {{ price_range_labels|safe }};
+    const price_range_data = {{ price_range_revenues|safe }};
+
+    const clv_labels = {{ clv_labels|safe }};
+    const clv_values = {{ clv_values|safe }};
+
+    const user_labels = {{ user_names|safe }};
+    const user_data = {{ user_spending|safe }};
 </script>
-</div>
-</div>
-
 
 <script>
 document.addEventListener("DOMContentLoaded", function () {
