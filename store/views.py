@@ -18,6 +18,9 @@ from django.conf import settings
 import os
 from django.db.models import Q, Sum
 
+from .models import Feedback
+from django.contrib import messages
+
 
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
@@ -485,3 +488,25 @@ def order_history(request):
     return render(request, 'store/order_history.html', {
         'orders': orders
     })
+
+
+def feedback(request):
+    if request.method == "POST":
+        message = request.POST.get("feedback")
+        rating = request.POST.get("rating")
+        if not rating:
+            rating = 5  # fallback safety
+
+        customer = None
+        if request.user.is_authenticated:
+            customer = Customer.objects.filter(user=request.user).first()
+
+        Feedback.objects.create(
+            customer=customer,
+            message=message,
+            rating=rating
+        )
+
+        messages.success(request, "Thank you for your feedback!")
+
+    return render(request, "store/Feedback.html")

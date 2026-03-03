@@ -15,36 +15,25 @@ document.addEventListener("DOMContentLoaded", function () {
     loadUserChart();
 });
 
-// ✅ SALES CHART
-function loadSalesChart() {
-    const canvas = document.getElementById('salesChart');
+function createChart(canvasId, config) {
+    const canvas = document.getElementById(canvasId);
     if (!canvas) return;
 
     const ctx = canvas.getContext('2d');
 
-    new Chart(ctx, {
+    new Chart(ctx, config);
+}
+
+// ✅ SALES CHART
+function loadSalesChart() {
+    createChart('salesChart', {
         type: 'line',
         data: {
             labels: sales_dates,
             datasets: [{
                 label: 'Revenue (₹)',
-                data: sales_revenues,
-                borderColor: '#28a745',
-                backgroundColor: 'rgba(40,167,69,0.1)',
-                tension: 0.3,
-                fill: true,
-                pointRadius: 4,
-                pointBackgroundColor: '#28a745'
+                data: sales_revenues
             }]
-        },
-        options: {
-            responsive: true,
-            plugins: {
-                legend: { display: true }
-            },
-            scales: {
-                y: { beginAtZero: true }
-            }
         }
     });
 }
@@ -166,31 +155,14 @@ function loadCategoryChart() {
 
 // 📆 YEARLY CHART
 function loadYearlyChart() {
-    const canvas = document.getElementById('yearlySalesChart');
-    if (!canvas) return;
-
-    const ctx = canvas.getContext('2d');
-
-    new Chart(ctx, {
+    createChart('yearlySalesChart', {
         type: 'bar',
         data: {
             labels: year_labels,
             datasets: [{
-                label: 'Yearly Revenue (₹)',
-                data: year_revenues,
-                backgroundColor: 'rgba(153, 102, 255, 0.7)',
-                borderColor: '#9966ff',
-                borderWidth: 1
+                label: 'Yearly Revenue',
+                data: year_revenues
             }]
-        },
-        options: {
-            responsive: true,
-            plugins: {
-                legend: { display: true }
-            },
-            scales: {
-                y: { beginAtZero: true }
-            }
         }
     });
 }
@@ -226,12 +198,7 @@ function loadYearMonthChart() {
 }
 
 function loadAOVChart() {
-    const canvas = document.getElementById('aovChart');
-    if (!canvas) return;
-
-    const ctx = canvas.getContext('2d');
-
-    new Chart(ctx, {
+    createChart('aovChart', {
         type: 'line',
         data: {
             labels: aov_dates,
@@ -329,23 +296,14 @@ function loadTopProductsChart() {
 
 //clv
 function loadCLVChart() {
-    const canvas = document.getElementById('clvChart');
-    if (!canvas) return;
-
-    const ctx = canvas.getContext('2d');
-
-    new Chart(ctx, {
+    createChart('clvChart', {
         type: 'bar',
         data: {
             labels: clv_labels,
             datasets: [{
-                label: 'Lifetime Value (₹)',
-                data: clv_values,
-                backgroundColor: 'rgba(255, 99, 132, 0.7)'
+                label: 'CLV',
+                data: clv_values
             }]
-        },
-        options: {
-            responsive: true
         }
     });
 }
@@ -372,25 +330,15 @@ function loadUserChart() {
     });
 }
 
+//PRICE RANGE
 function loadPriceRangeChart() {
-    const canvas = document.getElementById('priceRangeChart');
-    if (!canvas) return;
-
-    if (!price_range_labels || price_range_labels.length === 0) return;
-
-    const ctx = canvas.getContext('2d');
-
-    new Chart(ctx, {
+    createChart('priceRangeChart', {
         type: 'doughnut',
         data: {
             labels: price_range_labels,
             datasets: [{
-                data: price_range_data,
-                backgroundColor: ['#36a2eb', '#ffcd56', '#ff6384']
+                data: price_range_data
             }]
-        },
-        options: {
-            responsive: true
         }
     });
 }

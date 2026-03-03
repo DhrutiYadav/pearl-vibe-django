@@ -4,7 +4,7 @@ from django.utils.safestring import mark_safe
 from django.utils.html import format_html
 from .models import Category, SubCategory, Product, Order, OrderItem
 from .models import Customer, ShippingAddress, OrderSummary, Invoice
-
+from .models import Feedback
 
 class CategoryAdmin(admin.ModelAdmin):
     list_display = ("id", "name")
@@ -174,6 +174,7 @@ class InvoiceAdmin(admin.ModelAdmin):
 
 
 # -------- Register Models --------
+admin.site.register(Feedback)
 admin.site.register(Category, CategoryAdmin)
 admin.site.register(SubCategory, SubCategoryAdmin)
 admin.site.register(Product, ProductAdmin)

@@ -24,7 +24,8 @@ urlpatterns = [
 
     path('about/', views_extra.about, name='about'),
     path('contact/', views_extra.contact, name='contact'),
-    path('feedback/', views_extra.feedback, name='feedback'),
+    # path('feedback/', views_extra.feedback, name='feedback'),
+    path('feedback/', views.feedback, name="feedback"),
 
     path('product/<int:product_id>/', views.product_detail, name='product_detail'),
 

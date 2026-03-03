@@ -188,3 +188,24 @@ class Invoice(models.Model):
 
     def __str__(self):
         return f"Invoice {self.invoice_number}"
+
+
+# -------------------------
+# FEEDBACK MODEL
+# -------------------------
+class Feedback(models.Model):
+    customer = models.ForeignKey(
+        Customer,
+
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True
+    )
+    message = models.TextField()
+    rating = models.IntegerField(default=5)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        if self.customer:
+            return f"{self.customer} - {self.created_at}"
+        return f"Anonymous - {self.created_at}"
