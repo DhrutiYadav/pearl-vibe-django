@@ -52,7 +52,7 @@ urlpatterns = [
     path('invoices/edit/<int:invoice_id>/', views.edit_invoice, name='edit_invoice'),
     path('invoices/delete/<int:invoice_id>/', views.delete_invoice, name='delete_invoice'),
 
-
+    path('feedback/', views.feedback_list, name='dashboard-feedback'),
 
     path('reports/', views.reports_dashboard, name='reports_dashboard'),
     path('export-csv/', views.export_orders_csv, name='export_csv'),

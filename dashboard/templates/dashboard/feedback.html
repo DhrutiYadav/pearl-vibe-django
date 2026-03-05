@@ -1,0 +1,67 @@
+{% extends 'dashboard/base.html' %}
+{% block content %}
+
+<div class="dashboard-ui">
+
+```
+<h2 class="page-title">Customer Feedback</h2>
+
+<div class="table-card">
+
+    <table class="table custom-table">
+        <p class="chart-subtitle">
+        Total Feedback Received: <b>{{ feedbacks.count }}</b>
+        </p>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>USER</th>
+                <th>RATING</th>
+                <th>FEEDBACK</th>
+                <th>DATE</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for f in feedbacks %}
+            <tr>
+                <td>{{ f.id }}</td>
+
+                <td>
+                    {% if f.customer %}
+                        {{ f.customer.name }}
+                    {% else %}
+                        Anonymous
+                    {% endif %}
+                </td>
+
+                <td>
+
+                {% if f.rating >= 1 %} ⭐ {% endif %}
+                {% if f.rating >= 2 %} ⭐ {% endif %}
+                {% if f.rating >= 3 %} ⭐ {% endif %}
+                {% if f.rating >= 4 %} ⭐ {% endif %}
+                {% if f.rating >= 5 %} ⭐ {% endif %}
+
+                </td>
+
+                <td>{{ f.message }}</td>
+
+                <td>{{ f.created_at }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5" class="empty-row text-center">
+                    No feedback available
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+
+    </table>
+
+</div>
+
+</div>
+
+{% endblock %}

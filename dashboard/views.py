@@ -1,5 +1,5 @@
 from django.contrib.auth.decorators import login_required, user_passes_test
-from store.models import SubCategory
+from store.models import SubCategory, Feedback
 from store.forms import ProductForm
 from store.models import Product, Category
 from store.forms import CategoryForm
@@ -1153,3 +1153,12 @@ def delete_user(request, user_id):
 
     user_obj.delete()
     return redirect('dashboard:users')
+
+
+
+def feedback_list(request):
+    feedbacks = Feedback.objects.all().order_by('-created_at')
+
+    return render(request, 'dashboard/feedback.html', {
+        'feedbacks': feedbacks
+    })
