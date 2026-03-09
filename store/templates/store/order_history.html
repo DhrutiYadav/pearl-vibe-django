@@ -13,11 +13,17 @@
                 <a href="{% url 'store:download_invoice' order.id %}">
                     Download Invoice
                 </a>
-
             </p>
 
+            {% if order.order_status != "Cancelled" %}
+            <button onclick="cancelOrder({{ order.id }})"
+            style="background:red;color:white;padding:6px 12px;border:none;border-radius:5px;">
+            Cancel Order
+            </button>
+            {% else %}
+            <p style="color:red;">Order Cancelled</p>
+            {% endif %}
             <hr>
-
             <h4>Items in this order:</h4>
 
             <table width="100%" border="1" cellpadding="6">
@@ -46,5 +52,21 @@
     <p>You have not placed any orders yet.</p>
 {% endif %}
 
+<script>
+
+function cancelOrder(orderId){
+
+fetch(`/cancel-order/${orderId}/`)
+.then(response => response.json())
+.then(data => {
+
+alert(data.message);
+location.reload();
+
+})
+
+}
+
+</script>
 
 {% endblock %}

@@ -1,7 +1,5 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth import authenticate, login, logout
-from django.contrib import messages
-from django.http import JsonResponse
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required, user_passes_test
 from .models import *
@@ -25,6 +23,11 @@ from django.contrib import messages
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 from .forms import RegisterForm
+
+from django.utils import timezone
+from datetime import timedelta
+from django.http import JsonResponse
+from .models import Order
 
 font_path = os.path.join(settings.BASE_DIR, 'static/fonts/DejaVuSans.ttf')
 pdfmetrics.registerFont(TTFont('DejaVuSans', font_path))
@@ -510,3 +513,24 @@ def feedback(request):
         messages.success(request, "Thank you for your feedback!")
 
     return render(request, "store/Feedback.html")
+
+def cancel_order(request, order_id):
+    try:
+        order = Order.objects.get(id=order_id)
+
+        # Check if already cancelled
+        if order.order_status == "Cancelled":
+            return JsonResponse({"message": "Order already cancelled"}, status=400)
+
+        # Check 24 hour rule
+        if timezone.now() - order.date_ordered > timedelta(hours=24):
+            return JsonResponse({"message": "Cancel time expired"}, status=400)
+
+        # Cancel order
+        order.order_status = "Cancelled"
+        order.save()
+
+        return JsonResponse({"message": "Order cancelled successfully"})
+
+    except Order.DoesNotExist:
+        return JsonResponse({"message": "Order not found"}, status=404)
