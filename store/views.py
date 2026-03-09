@@ -526,7 +526,10 @@ def cancel_order(request, order_id):
         if timezone.now() - order.date_ordered > timedelta(hours=24):
             return JsonResponse({"message": "Cancel time expired"}, status=400)
 
-        # Cancel order
+        # Prevent cancel if already shipped or delivered
+        if order.order_status in ["Shipped", "Delivered"]:
+            return JsonResponse({"message": "Order already shipped, cannot cancel"}, status=400)
+
         order.order_status = "Cancelled"
         order.save()
 

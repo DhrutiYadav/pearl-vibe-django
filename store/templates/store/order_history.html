@@ -9,6 +9,18 @@
             <h3>Order #{{ order.id }}</h3>
             <p><strong>Date:</strong> {{ order.date_ordered }}</p>
             <p><strong>Total:</strong> Rs {{ order.summary.total }}</p>
+            <p><strong>Status:</strong>
+            <span style="
+            font-weight:bold;
+            {% if order.order_status == 'Placed' %}color:green;
+            {% elif order.order_status == 'Shipped' %}color:orange;
+            {% elif order.order_status == 'Delivered' %}color:blue;
+            {% elif order.order_status == 'Cancelled' %}color:red;
+            {% endif %}
+            ">
+            {{ order.order_status }}
+            </span>
+            </p>
             <p>
                 <a href="{% url 'store:download_invoice' order.id %}">
                     Download Invoice

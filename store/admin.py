@@ -146,9 +146,20 @@ class OrderAdmin(admin.ModelAdmin):
     list_filter = ("order_status", "date_ordered")
 
     def colored_status(self, obj):
-        if obj.order_status == "Cancelled":
-            return mark_safe('<span style="color:red;font-weight:bold;">Cancelled</span>')
-        return mark_safe('<span style="color:green;font-weight:bold;">Placed</span>')
+
+        if obj.order_status == "Placed":
+            color = "green"
+
+        elif obj.order_status == "Shipped":
+            color = "orange"
+
+        elif obj.order_status == "Delivered":
+            color = "blue"
+
+        elif obj.order_status == "Cancelled":
+            color = "red"
+
+        return mark_safe(f'<span style="color:{color};font-weight:bold;">{obj.order_status}</span>')
 
     colored_status.short_description = "Status"
 
