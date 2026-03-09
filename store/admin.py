@@ -5,6 +5,7 @@ from django.utils.html import format_html
 from .models import Category, SubCategory, Product, Order, OrderItem
 from .models import Customer, ShippingAddress, OrderSummary, Invoice
 from .models import Feedback
+from .models import Order
 
 class CategoryAdmin(admin.ModelAdmin):
     list_display = ("id", "name")
@@ -139,11 +140,17 @@ class OrderItemInline(admin.TabularInline):
 
 
 class OrderAdmin(admin.ModelAdmin):
-    list_display = ("id", "customer", "complete", "date_ordered")
-    list_filter = ("complete",)
+    list_display = ("id", "customer", "date_ordered", "colored_status")
     search_fields = ("customer__user__username",)
     inlines = [OrderItemInline]
+    list_filter = ("order_status", "date_ordered")
 
+    def colored_status(self, obj):
+        if obj.order_status == "Cancelled":
+            return mark_safe('<span style="color:red;font-weight:bold;">Cancelled</span>')
+        return mark_safe('<span style="color:green;font-weight:bold;">Placed</span>')
+
+    colored_status.short_description = "Status"
 
 # -------- OrderItem Admin --------
 class OrderItemAdmin(admin.ModelAdmin):

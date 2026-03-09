@@ -14,12 +14,15 @@
                     Download Invoice
                 </a>
             </p>
-
             {% if order.order_status != "Cancelled" %}
-            <button onclick="cancelOrder({{ order.id }})"
-            style="background:red;color:white;padding:6px 12px;border:none;border-radius:5px;">
-            Cancel Order
-            </button>
+                {% if order.date_ordered|timesince < "1 day" %}
+                    <button onclick="cancelOrder({{ order.id }})"
+                    style="background:red;color:white;padding:6px 12px;border:none;border-radius:5px;">
+                    Cancel Order
+                    </button>
+                {% else %}
+                    <p style="color:gray;">Cancel time expired</p>
+                {% endif %}
             {% else %}
             <p style="color:red;">Order Cancelled</p>
             {% endif %}
