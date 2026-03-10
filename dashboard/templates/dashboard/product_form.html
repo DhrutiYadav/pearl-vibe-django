@@ -1,158 +1,261 @@
 {% extends 'dashboard/base.html' %}
+
 {% block content %}
 
-<h2>{{ title }}</h2>
+<div class="container mt-4">
+
+<h2 class="page-title mb-4">{{ title }}</h2>
+
+<div class="table-card">
 
 <form method="POST" enctype="multipart/form-data">
-    {% csrf_token %}
 
-    <!-- Subcategory -->
-    <div class="mb-3">
-        <label>Subcategory</label>
-        {{ form.subcategory }}
-    </div>
+{% csrf_token %}
 
-    <!-- Name -->
-    <div class="mb-3">
-        <label>Name</label>
-        {{ form.name }}
-    </div>
+<table class="table custom-table">
 
-    <!-- Price -->
-    <div class="mb-3">
-        <label>Price</label>
-        {{ form.price }}
-    </div>
+<tbody>
+
+<!-- Subcategory -->
+<tr>
+<th style="width:220px;">Subcategory</th>
+<td>
+{{ form.subcategory }}
+</td>
+</tr>
+
+<!-- Name -->
+<tr>
+<th>Name</th>
+<td>
+{{ form.name }}
+</td>
+</tr>
+
+<!-- Price -->
+<tr>
+<th>Price</th>
+<td>
+{{ form.price }}
+</td>
+</tr>
+
 
 <!-- Product Image -->
-<div class="mb-3">
-    <label>Product Image</label>
-    {{ form.image }}
+<tr>
+<th>Product Image</th>
+<td>
 
-    <!-- Image Preview -->
-    <div class="mt-2">
-        {% if form.instance.image %}
-            <img id="imagePreview"
-                 src="{{ form.instance.image.url }}"
-                 alt="Image Preview"
-                 style="max-height:150px; border:1px solid #ddd; padding:5px; border-radius:8px;">
-        {% else %}
-            <img id="imagePreview"
-                 src="#"
-                 alt="Image Preview"
-                 style="max-height:150px; display:none; border:1px solid #ddd; padding:5px; border-radius:8px;">
-        {% endif %}
-    </div>
+{{ form.image }}
+
+<div class="mt-2">
+
+{% if form.instance.image %}
+
+<img id="imagePreview"
+src="{{ form.instance.image.url }}"
+alt="Preview"
+style="
+max-height:150px;
+border:1px solid #ddd;
+padding:5px;
+border-radius:8px;">
+
+{% else %}
+
+<img id="imagePreview"
+src="#"
+alt="Preview"
+style="
+max-height:150px;
+display:none;
+border:1px solid #ddd;
+padding:5px;
+border-radius:8px;">
+
+{% endif %}
+
 </div>
 
-    <!-- Description -->
-    <div class="mb-3">
-        <label>Description</label>
-        {{ form.description }}
-    </div>
+</td>
+</tr>
 
-    <!-- 🎨 COLOR PICKER SECTION -->
-    <div class="mb-3">
-        <label>Add Colors</label><br>
 
-        <input type="color" id="colorPicker">
-        <button type="button" class="btn btn-sm btn-dark" onclick="addColor()">Add</button>
+<!-- Description -->
+<tr>
+<th>Description</th>
+<td>
+{{ form.description }}
+</td>
+</tr>
 
-        <div id="colorPreviewBox" style="margin-top:10px;"></div>
 
-        <!-- Hidden field that will store colors -->
-        <input type="hidden" name="colors" id="colorsInput">
+<!-- Color Picker -->
+<tr>
+<th>Colors</th>
+<td>
 
-    </div>
+<input type="color" id="colorPicker">
 
-    <!-- 📏 Sizes -->
-    <div class="mb-3">
-        <label>Sizes</label>
-        {{ form.sizes }}
-        <small class="text-muted d-block">Hold CTRL to select multiple</small>
-    </div>
+<button type="button"
+class="btn btn-sm btn-dark"
+onclick="addColor()">
 
-    <button type="submit" class="btn btn-primary">Save Product</button>
-    <a href="{% url 'dashboard:dashboard_products' %}" class="btn btn-secondary">Cancel</a>
+Add
+
+</button>
+
+<div id="colorPreviewBox" style="margin-top:10px;"></div>
+
+<input type="hidden" name="colors" id="colorsInput">
+
+</td>
+</tr>
+
+
+<!-- Sizes -->
+<tr>
+<th>Sizes</th>
+<td>
+
+{{ form.sizes }}
+
+<small class="text-muted d-block">
+Hold CTRL to select multiple
+</small>
+
+</td>
+</tr>
+
+
+<!-- Buttons -->
+<tr>
+<th></th>
+<td>
+
+<button type="submit" class="btn btn-add">
+Save Product
+</button>
+
+<a href="{% url 'dashboard:dashboard_products' %}"
+class="btn btn-secondary ms-2">
+
+Cancel
+
+</a>
+
+</td>
+</tr>
+
+</tbody>
+
+</table>
+
 </form>
 
+</div>
+
+</div>
 
 
 
 <script>
-    //================= IMAGE PREVIEW SCRIPT =================
+
+// ================= IMAGE PREVIEW =================
+
 const imageInput = document.getElementById("id_image");
 const preview = document.getElementById("imagePreview");
 
-imageInput.addEventListener("change", function(event) {
-    const file = event.target.files[0];
+imageInput.addEventListener("change", function(event){
 
-    if (file) {
-        const reader = new FileReader();
+const file = event.target.files[0];
 
-        reader.onload = function(e) {
-            preview.src = e.target.result;
-            preview.style.display = "block";
-        }
+if(file){
 
-        reader.readAsDataURL(file);
-    }
+const reader = new FileReader();
+
+reader.onload = function(e){
+
+preview.src = e.target.result;
+preview.style.display = "block";
+
+}
+
+reader.readAsDataURL(file);
+
+}
+
 });
-    // ================= COLOR PICKER SCRIPT =================
+
+
+
+// ================= COLOR PICKER =================
+
 let colors = [];
 
-// 🔥 Load existing colors from Django JSON
 window.addEventListener("DOMContentLoaded", function () {
-    const existingColors = JSON.parse('{{ existing_colors|default:"[]"|escapejs }}');
 
+const existingColors = JSON.parse('{{ existing_colors|default:"[]"|escapejs }}');
 
-    if (Array.isArray(existingColors)) {
-        colors = existingColors;
-        updateColorUI();
-    }
+if (Array.isArray(existingColors)) {
+colors = existingColors;
+updateColorUI();
+}
+
 });
 
-function addColor() {
-    const picker = document.getElementById("colorPicker");
-    const color = picker.value;
+function addColor(){
 
-    if (!colors.includes(color)) {
-        colors.push(color);
-        updateColorUI();
-    }
+const picker = document.getElementById("colorPicker");
+const color = picker.value;
+
+if(!colors.includes(color)){
+colors.push(color);
+updateColorUI();
 }
 
-function removeColor(color) {
-    colors = colors.filter(c => c !== color);
-    updateColorUI();
 }
 
-function updateColorUI() {
-    const box = document.getElementById("colorPreviewBox");
-    const input = document.getElementById("colorsInput");
+function removeColor(color){
 
-    box.innerHTML = "";
+colors = colors.filter(c => c !== color);
+updateColorUI();
 
-    colors.forEach(color => {
-        const circle = document.createElement("span");
-        circle.style = `
-            display:inline-block;
-            width:24px;
-            height:24px;
-            border-radius:50%;
-            background:${color};
-            margin-right:6px;
-            cursor:pointer;
-            border:1px solid #aaa;
-        `;
-        circle.title = "Click to remove";
-        circle.onclick = () => removeColor(color);
-        box.appendChild(circle);
-    });
-
-    // 🔥 Save back as JSON string for Django
-    input.value = JSON.stringify(colors);
 }
+
+function updateColorUI(){
+
+const box = document.getElementById("colorPreviewBox");
+const input = document.getElementById("colorsInput");
+
+box.innerHTML = "";
+
+colors.forEach(color => {
+
+const circle = document.createElement("span");
+
+circle.style = `
+display:inline-block;
+width:24px;
+height:24px;
+border-radius:50%;
+background:${color};
+margin-right:6px;
+cursor:pointer;
+border:1px solid #aaa;
+`;
+
+circle.title = "Click to remove";
+circle.onclick = () => removeColor(color);
+
+box.appendChild(circle);
+
+});
+
+input.value = JSON.stringify(colors);
+
+}
+
 </script>
 
 {% endblock %}
