@@ -1081,7 +1081,8 @@ def edit_order_summary(request, summary_id):
     else:
         form = OrderSummaryForm(instance=summary)
 
-    return render(request, 'dashboard/edit_order_summary.html', {'form': form})
+    return render(request, 'dashboard/edit_order_summary.html', {'form': form,
+        'summary': summary})
 
 
 @login_required(login_url='/admin/login/')

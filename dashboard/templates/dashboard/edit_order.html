@@ -1,28 +1,91 @@
 {% extends 'dashboard/base.html' %}
 
 {% block content %}
-<h2>Edit Order #{{ order.id }}</h2>
+
+<div class="container mt-4">
+
+<h2 class="page-title mb-4">Edit Order #{{ order.id }}</h2>
+
+<div class="table-card">
 
 <form method="POST">
-    {% csrf_token %}
 
-    <label>Order Status:</label>
-    <select name="order_status">
-        <option value="Placed" {% if order.order_status == "Placed" %}selected{% endif %}>Placed</option>
-        <option value="Shipped" {% if order.order_status == "Shipped" %}selected{% endif %}>Shipped</option>
-        <option value="Delivered" {% if order.order_status == "Delivered" %}selected{% endif %}>Delivered</option>
-        <option value="Cancelled" {% if order.order_status == "Cancelled" %}selected{% endif %}>Cancelled</option>
-    </select>
-    <br><br>
+{% csrf_token %}
 
-    <label>Order Date:</label>
-    <input type="datetime-local" name="date_ordered"
-        value="{{ order.date_ordered|date:'Y-m-d\\TH:i' }}">
+<table class="table custom-table">
 
-    <br><br>
-    <button type="submit">Save Changes</button>
+<tbody>
+
+<tr>
+<th style="width:220px;">Order ID</th>
+<td>
+#{{ order.id }}
+</td>
+</tr>
+
+<tr>
+<th>Order Status</th>
+<td>
+
+<select name="order_status" class="form-control">
+
+<option value="Placed" {% if order.order_status == "Placed" %}selected{% endif %}>
+Placed
+</option>
+
+<option value="Shipped" {% if order.order_status == "Shipped" %}selected{% endif %}>
+Shipped
+</option>
+
+<option value="Delivered" {% if order.order_status == "Delivered" %}selected{% endif %}>
+Delivered
+</option>
+
+<option value="Cancelled" {% if order.order_status == "Cancelled" %}selected{% endif %}>
+Cancelled
+</option>
+
+</select>
+
+</td>
+</tr>
+
+<tr>
+<th>Order Date</th>
+<td>
+
+<input type="datetime-local"
+       name="date_ordered"
+       class="form-control"
+       value="{{ order.date_ordered|date:'Y-m-d\\TH:i' }}">
+
+</td>
+</tr>
+
+<tr>
+<th></th>
+<td>
+
+<button type="submit" class="btn btn-add">
+Save Changes
+</button>
+
+<a href="{% url 'dashboard:orders' %}"
+class="btn btn-secondary ms-2">
+Back
+</a>
+
+</td>
+</tr>
+
+</tbody>
+
+</table>
+
 </form>
 
-<br>
-<a href="{% url 'dashboard:orders' %}">Back to Orders</a>
+</div>
+
+</div>
+
 {% endblock %}

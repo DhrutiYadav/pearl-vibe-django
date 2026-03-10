@@ -1,22 +1,54 @@
-{% extends 'dashboard/base.html' %} {% block title %}Delete Category{% endblock%} {% block content %}
-<div class="container mt-5">
-    <div class="card shadow-sm p-4" style="max-width: 500px; margin: auto">
-        <h3 class="text-danger mb-3">Delete Category</h3>
+{% extends 'dashboard/base.html' %}
 
-        <p>
-            Are you sure you want to delete
-            <strong>"{{ category.name }}"</strong>?
-        </p>
+{% block title %}Delete Category{% endblock %}
 
-        <form method="POST">
-            {% csrf_token %}
-            <button type="submit" class="btn btn-danger">Yes, Delete</button>
-            <a
-                href="{% url 'dashboard:dashboard_categories' %}"
-                class="btn btn-secondary"
-                >Cancel</a
-            >
-        </form>
-    </div>
+{% block content %}
+
+<div class="container mt-4">
+
+<h2 class="page-title text-danger mb-4">Delete Category</h2>
+
+<div class="table-card">
+
+<form method="POST">
+
+{% csrf_token %}
+
+<table class="table custom-table">
+
+<tbody>
+
+<tr>
+<th style="width:220px;">Category Name</th>
+<td>
+<strong>{{ category.name }}</strong>
+</td>
+</tr>
+
+<tr>
+<th></th>
+<td>
+
+<button type="submit" class="btn btn-delete">
+Yes, Delete
+</button>
+
+<a href="{% url 'dashboard:dashboard_categories' %}"
+class="btn btn-secondary ms-2">
+Cancel
+</a>
+
+</td>
+</tr>
+
+</tbody>
+
+</table>
+
+</form>
+
 </div>
+
+</div>
+
 {% endblock %}

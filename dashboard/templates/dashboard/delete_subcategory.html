@@ -3,20 +3,75 @@
 {% block title %}Delete Subcategory{% endblock %}
 
 {% block content %}
-<div class="container mt-5">
-    <div class="card shadow-sm p-4">
-        <h3 class="text-danger">Delete Subcategory</h3>
-        <p>Are you sure you want to delete <strong>{{ subcategory.name }}</strong>?</p>
 
-        {% if subcategory.image %}
-            <img src="{{ subcategory.image.url }}" style="width:80px; border-radius:8px;">
-        {% endif %}
+<div class="container mt-4">
 
-        <form method="POST">
-            {% csrf_token %}
-            <button type="submit" class="btn btn-danger">Yes, Delete</button>
-            <a href="{% url 'dashboard:dashboard_subcategories' %}" class="btn btn-secondary">Cancel</a>
-        </form>
-    </div>
+<h2 class="page-title mb-4 text-danger">Delete Subcategory</h2>
+
+<div class="table-card">
+
+<form method="POST">
+
+{% csrf_token %}
+
+<table class="table custom-table">
+
+<tbody>
+
+<tr>
+<th style="width:220px;">Subcategory Name</th>
+<td>
+<strong>{{ subcategory.name }}</strong>
+</td>
+</tr>
+
+<tr>
+<th>Image</th>
+<td>
+
+{% if subcategory.image %}
+
+<img src="{{ subcategory.image.url }}"
+     style="
+     width:80px;
+     border-radius:8px;
+     border:1px solid #ddd;">
+
+{% else %}
+
+<span class="text-muted">No Image</span>
+
+{% endif %}
+
+</td>
+</tr>
+
+<tr>
+<th></th>
+<td>
+
+<button type="submit" class="btn btn-delete">
+Yes, Delete
+</button>
+
+<a href="{% url 'dashboard:dashboard_subcategories' %}"
+class="btn btn-secondary ms-2">
+
+Cancel
+
+</a>
+
+</td>
+</tr>
+
+</tbody>
+
+</table>
+
+</form>
+
 </div>
+
+</div>
+
 {% endblock %}
