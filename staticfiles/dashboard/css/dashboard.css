@@ -182,22 +182,3 @@ td img:hover {
     /*opacity: 0.9;*/
     color: #777;
 }
-
-/* ===== Different Colors for Each Card ===== */
-/*.stat-card.products {
-    background: linear-gradient(135deg, #667eea, #764ba2);
-}
-
-.stat-card.categories {
-    background: linear-gradient(135deg, #43cea2, #185a9d);
-}
-
-.stat-card.subcategories {
-    background: linear-gradient(135deg, #f7971e, #ffd200);
-    color: #333;
-}
-
-.stat-card.users {
-    background: linear-gradient(135deg, #ff6a00, #ee0979);
-}
-*/

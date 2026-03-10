@@ -3,41 +3,73 @@
 
 {% block content %}
 
+<style>
+
+/* Product card size */
+.product-box{
+width:200px;
+}
+
+/* Image style (no crop) */
+.product-img-rect{
+width:100%;
+height:200px;
+object-fit:contain;
+background:#f8f9fa;
+padding:10px;
+}
+
+</style>
+
 <h2 class="mb-4">{{ category.name }}</h2>
 
 <div class="row">
 
+<!-- 🔁 SUBCATEGORY CARDS -->
+{% for subcategory in subcategories %}
 
+<div class="col-md-4 mb-4 d-flex justify-content-center">
 
-    <!-- 🔁 SUBCATEGORY CARDS -->
-    {% for subcategory in subcategories %}
-    <div class="col-md-4 mb-4">
-        <div class="card h-100 shadow-sm">
+<div class="card product-box h-100 shadow-sm">
 
-            <a href="{% url 'store:products_by_subcategory' subcategory.id %}">
-                {% if subcategory.image %}
-                <img src="{{ subcategory.image.url }}"
-                     class="card-img-top product-img-rect"
-                     alt="{{ subcategory.name }}">
-                {% else %}
-                <img src="{% static 'images/placeholder.png' %}"
-                     class="card-img-top product-img-rect"
-                     alt="placeholder">
-                {% endif %}
-            </a>
+<a href="{% url 'store:products_by_subcategory' subcategory.id %}">
 
-            <div class="card-body text-center">
-                <h5 class="card-title">{{ subcategory.name }}</h5>
+{% if subcategory.image %}
 
-                <a href="{% url 'store:products_by_subcategory' subcategory.id %}"
-                   class="btn btn-outline-success btn-sm mt-2">
-                    View Products
-                </a>
-            </div>
+<img src="{{ subcategory.image.url }}"
+class="card-img-top product-img-rect"
+alt="{{ subcategory.name }}">
 
-        </div>
-    </div>
-    {% endfor %}
+{% else %}
+
+<img src="{% static 'images/placeholder.png' %}"
+class="card-img-top product-img-rect"
+alt="placeholder">
+
+{% endif %}
+
+</a>
+
+<div class="card-body text-center">
+
+<h5 class="card-title">
+{{ subcategory.name }}
+</h5>
+
+<a href="{% url 'store:products_by_subcategory' subcategory.id %}"
+class="btn btn-outline-success btn-sm mt-2">
+
+View Products
+
+</a>
+
+</div>
+
+</div>
+
+</div>
+
+{% endfor %}
 
 </div>
 
