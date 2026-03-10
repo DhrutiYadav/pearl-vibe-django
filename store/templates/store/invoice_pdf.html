@@ -3,243 +3,273 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <style>
-    body {
-    font-family: DejaVuSans;
+<style>
+
+body {
+    font-family: "DejaVu Sans";
     font-size: 12px;
     color: #333;
 }
-    .invoice-box {
-        width: 100%;
-        padding: 10px;
+
+.invoice-box {
+    width: 100%;
+    padding: 10px;
+}
+
+.header-table {
+    width: 100%;
+    border-bottom: 3px solid #0E3167;
+    padding-bottom: 10px;
+}
+
+.header-table td {
+    border: none;
+    padding: 2px 0;
+}
+
+.invoice-title {
+    font-size: 26px;
+    font-weight: bold;
+    color: #0E3167;
+    margin-bottom: 8px;
+}
+
+.section-title {
+    font-size: 14px;
+    font-weight: bold;
+    margin-top: 25px;
+    margin-bottom: 6px;
+    color: #0E3167;
+    border-bottom: 2px solid #0E3167;
+    padding-bottom: 3px;
+}
+
+table {
+    width: 100%;
+    margin-top: 5px;
+    border-collapse: collapse;
+}
+
+/* TABLE HEADER */
+th {
+    border: 1px solid #0E3167;
+    padding: 7px;
+    font-weight: bold;
+    background-color: #0E3167;
+    color: white;
+}
+
+/* TABLE CELLS */
+td {
+    border: 1px solid #0E3167;
+    padding: 7px;
+}
+
+.text-right {
+    text-align: right;
+}
+
+/* CUSTOMER BOX NOW WHITE */
+.customer-box {
+    background-color: white;
+    border: 1px solid #0E3167;
+    padding: 10px;
+    margin-top: 8px;
+    margin-bottom: 15px;
+}
+
+.summary-table {
+    width: 50%;
+    margin-left: auto;
+    margin-top: 10px;
+}
+
+.total-row {
+    font-size: 18px;
+    font-weight: bold;
+    color: #0E3167;
+    border-top: 2px solid #0E3167;
+}
+
+.invoice-meta {
+    font-size: 12px;
+    color: #555;
+}
+
+/* XHTML2PDF FOOTER */
+@page {
+    size: A4;
+    margin-top: 20mm;
+    margin-left: 15mm;
+    margin-right: 15mm;
+    margin-bottom: 30mm;
+
+    @frame content_frame {
+        left: 15mm;
+        width: 180mm;
+        top: 20mm;
+        height: 240mm;
     }
 
-    .header-table {
-        width: 100%;
-        border-bottom: 3px solid #b08d57;
-        padding-bottom: 10px;
+    @frame footer_frame {
+        -pdf-frame-content: footer_content;
+        left: 15mm;
+        width: 180mm;
+        top: 267mm;
+        height: 20mm;
     }
-
-    .header-table td {
-        border: none;
-        padding: 2px 0;
-    }
-
-    .title {
-        font-size: 26px;
-        font-weight: bold;
-        color: #b08d57; /* Pearl gold */
-    }
-
-    .section-title {
-        font-size: 14px;
-        font-weight: bold;
-        margin-top: 25px;
-        margin-bottom: 6px;
-        color: #b08d57;
-        border-bottom: 2px solid #b08d57;
-        padding-bottom: 3px;
-    }
-
-    table {
-        width: 100%;
-        margin-top: 5px;
-        border-collapse: collapse;
-    }
-
-    th {
-        border: 1px solid #d6c7a1;
-        padding: 7px;
-        font-weight: bold;
-        color: #b08d57;
-    }
-
-    .total-row td:last-child {
-        font-size: 20px;
-        font-weight: bold;
-    }
-
-    td {
-        border: 1px solid #e2d7bd;
-        padding: 7px;
-    }
-
-
-    .text-right {
-        text-align: right;
-    }
-
-    .summary-table td {
-        border: none;
-        padding: 4px 0;
-    }
-
-    .total-row {
-        font-size: 18px;
-        font-weight: bold;
-        color: #b08d57;
-        border-top: 2px solid #b08d57;
-        padding-top: 10px;
-    }
-    .invoice-title {
-        font-size: 26px;
-        font-weight: bold;
-        color: #b08d57;  /* Pearl gold */
-        margin-bottom: 8px;
-    }
-
-    .invoice-meta {
-        font-size: 12px;
-        color: #555;
-    }
-
-    .customer-box {
-        background-color: #f9f7f2;
-        border: 1px solid #e2d7bd;
-        padding: 10px;
-        margin-top: 8px;
-        margin-bottom: 15px;
-    }
-
-    .summary-table {
-        width: 50%;
-        margin-left: auto;
-        margin-top: 10px;
-        border-top: 1px solid #e2d7bd;
-        padding-top: 5px;
-    }
-
-
-
-    /* XHTML2PDF FOOTER LAYOUT */
-    @page {
-        size: A4;
-        margin-top: 20mm;
-        margin-left: 15mm;
-        margin-right: 15mm;
-        margin-bottom: 30mm;
-
-        @frame content_frame {
-            left: 15mm;
-            width: 180mm;
-            top: 20mm;
-            height: 247mm;
-        }
-
-        @frame footer_frame {
-            -pdf-frame-content: footer_content;
-            left: 15mm;
-            width: 180mm;
-            top: 267mm;
-            height: 20mm;
-        }
 }
 
 </style>
-
-
 </head>
 
 <body>
-    <div class="invoice-box">
 
-        <!-- HEADER -->
-        <table class="header-table">
-            <tr>
-                <td style="width: 60%;">
-    <img src="{% static 'images/logo.png' %}" width="140" /><br>
-    <span style="font-size:11px; color:#777;">Accessories That Match Every Man's Vibe</span>
+<div class="invoice-box">
+
+<!-- HEADER -->
+<table class="header-table">
+<tr>
+
+<td style="width:60%;">
+
+<img src="{% static 'images/logo.png' %}" width="140"><br>
+
+<strong>Pearl Vibe</strong><br>
+Accessories That Match Every Man's Vibe<br>
+Ahmedabad, Gujarat<br>
+
+<strong>Contact:</strong> +91 9876543210<br>
+<strong>Email:</strong> pearlvibe@gmail.com
+
 </td>
 
-                <td class="text-right" style="vertical-align: top;">
-                    <div class="invoice-title">INVOICE</div>
-                    <div class="invoice-meta">
-                        <strong>Invoice #:</strong> {{ invoice.invoice_number }}<br>
-                        <strong>Order ID:</strong> {{ order.id }}<br>
-                        <strong>Date:</strong> {{ order.date_ordered }}
-                    </div>
-                </td>
-            </tr>
-        </table>
+<td class="text-right" style="vertical-align:top">
+
+<div class="invoice-title">INVOICE</div>
+
+<div class="invoice-meta">
+
+<strong>Invoice #:</strong> {{ invoice.invoice_number }}<br>
+
+<strong>Order ID:</strong> {{ order.id }}<br>
+
+<strong>Date:</strong> {{ order.date_ordered|date:"d M Y" }}<br>
+
+<strong>Time:</strong> {{ order.date_ordered|time:"h:i A" }}
+
+</div>
+
+</td>
+
+</tr>
+</table>
 
 
+<!-- CUSTOMER DETAILS -->
+<div class="section-title">Customer Details</div>
 
-        <!-- CUSTOMER -->
-        <div class="section-title">Customer Details</div>
+<div class="customer-box">
 
-            <div class="customer-box">
-                <strong>Name:</strong> {{ order.customer.name }}<br>
-                <strong>Email:</strong> {{ order.customer.email }}
-            </div>
+<strong>Name:</strong> {{ order.customer.name }}<br>
 
+<strong>Address:</strong> {{ order.shipping_address }}<br>
 
-        <!-- ITEMS -->
-        <div class="section-title">Order Items</div>
-        <table>
-            <tr>
-                <th>Product</th>
-                <th>Size</th>
-                <th>Color</th>
-                <th class="text-right">Qty</th>
-                <th class="text-right">Price</th>
-                <th class="text-right">Total</th>
-            </tr>
+<strong>Email:</strong> {{ order.customer.email }}<br>
 
-            {% for item in items %}
-            <tr>
-                <td>{{ item.product.name }}</td>
-                <td>{{ item.size }}</td>
+<strong>Contact Number:</strong> {{ order.customer.phone }}
 
-                <!-- COLOR BOX -->
-                <td style="text-align:center;">
-                    <table style="border-collapse: collapse; margin:auto;">
-                        <tr>
-                            <td style="
-                                width:18px;
-                                height:18px;
-                                background-color: {{ item.color }};
-                                border:1px solid #000;">
-                            </td>
-                        </tr>
-                    </table>
-                </td>
-
-                <td class="text-right">{{ item.quantity }}</td>
-                <td class="text-right">RS {{ item.product.price }}</td>
-                <td class="text-right">RS {{ item.get_total }}</td>
-            </tr>
-            {% endfor %}
-        </table>
-
-        <!-- SUMMARY -->
-        <div class="section-title">Summary</div>
-        <table class="summary-table">
-            <tr>
-                <td>Subtotal:</td>
-                <td class="text-right">RS {{ summary.subtotal }}</td>
-            </tr>
-            <tr>
-                <td>Tax:</td>
-                <td class="text-right">RS {{ summary.tax }}</td>
-            </tr>
-            <tr>
-                <td>Shipping:</td>
-                <td class="text-right">RS {{ summary.shipping_cost }}</td>
-            </tr>
-            <tr class="total-row">
-                <td>Total:</td>
-                <td class="text-right">RS {{ summary.total }}</td>
-            </tr>
-        </table>
+</div>
 
 
-    </div>
+<!-- ORDER ITEMS -->
+<div class="section-title">Order Items</div>
 
-    <div id="footer_content" style="text-align:center; font-size:10px; color:#888;">
-        Thank you for shopping with <strong style="color:#b08d57;">Pearl Vibe</strong> ❤<br>
-        This is a computer-generated invoice. No signature required.
-    </div>
+<table>
 
+<tr>
+<th>Product</th>
+<th>Size</th>
+<th>Color</th>
+<th style="text-align:center;">Qty</th>
+<th style="text-align:center;">Price</th>
+<th style="text-align:center;">Total</th>
+</tr>
+
+{% for item in items %}
+
+<tr>
+
+<td>{{ item.product.name }}</td>
+
+<td>{{ item.size }}</td>
+
+<td style="text-align:center">
+
+<table style="border-collapse:collapse;margin:auto">
+<tr>
+<td style="
+width:18px;
+height:18px;
+background-color: {{ item.color }};
+border:1px solid #000;">
+</td>
+</tr>
+</table>
+
+</td>
+
+<td style="text-align:center">{{ item.quantity }}</td>
+
+<td style="text-align:center">Rs. {{ item.product.price }}</td>
+
+<td style="text-align:center">Rs. {{ item.get_total }}</td>
+
+</tr>
+
+{% endfor %}
+
+</table>
+
+
+<!-- SUMMARY -->
+<div class="section-title">Summary</div>
+
+<table class="summary-table">
+
+<tr>
+<td>Subtotal:</td>
+<td style="text-align:center">Rs. {{ summary.subtotal }}</td>
+</tr>
+
+<tr>
+<td>Tax:</td>
+<td style="text-align:center">Rs. {{ summary.tax|floatformat:2 }}</td>
+</tr>
+
+<tr>
+<td>Shipping:</td>
+<td style="text-align:center">Rs. {{ summary.shipping_cost }}</td>
+</tr>
+
+<tr class="total-row">
+<td>Total:</td>
+<td style="text-align:center">Rs. {{ summary.total }}</td>
+</tr>
+
+</table>
+
+</div>
+
+
+<!-- FOOTER -->
+<div id="footer_content" style="text-align:center;font-size:10px;color:#888">
+
+Thank you for shopping with <strong style="color:#0E3167">Pearl Vibe</strong> ❤<br>
+
+This is a computer-generated invoice. No signature required.
+
+</div>
 
 </body>
 </html>
