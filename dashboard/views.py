@@ -1007,10 +1007,14 @@ def edit_order(request, order_id):
     order = Order.objects.get(id=order_id)
 
     if request.method == 'POST':
-        # ✅ Update status
-        complete_value = request.POST.get('complete')
-        order.complete = True if complete_value == 'true' else False
+    #     # ✅ Update status
+    #     complete_value = request.POST.get('complete')
+    #     order.complete = True if complete_value == 'true' else False
 
+        # ✅ Update order status
+        order_status = request.POST.get('order_status')
+        if order_status:
+            order.order_status = order_status
         # ✅ Update date
         date_str = request.POST.get('date_ordered')
         if date_str:

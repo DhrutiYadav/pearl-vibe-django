@@ -6,10 +6,12 @@
 <form method="POST">
     {% csrf_token %}
 
-    <label>Status:</label>
-    <select name="complete">
-        <option value="true" {% if order.complete %}selected{% endif %}>Paid</option>
-        <option value="false" {% if not order.complete %}selected{% endif %}>Pending</option>
+    <label>Order Status:</label>
+    <select name="order_status">
+        <option value="Placed" {% if order.order_status == "Placed" %}selected{% endif %}>Placed</option>
+        <option value="Shipped" {% if order.order_status == "Shipped" %}selected{% endif %}>Shipped</option>
+        <option value="Delivered" {% if order.order_status == "Delivered" %}selected{% endif %}>Delivered</option>
+        <option value="Cancelled" {% if order.order_status == "Cancelled" %}selected{% endif %}>Cancelled</option>
     </select>
     <br><br>
 

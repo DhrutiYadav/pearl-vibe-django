@@ -46,10 +46,14 @@
                         <td>{{ order.get_cart_items }}</td>
 
                         <td>
-                            {% if order.complete %}
-                                <span style="color: green;">Paid</span>
-                            {% else %}
-                                <span style="color: orange;">Pending</span>
+                            {% if order.order_status == "Placed" %}
+                                <span style="color: blue;">Placed</span>
+                            {% elif order.order_status == "Shipped" %}
+                                <span style="color: purple;">Shipped</span>
+                            {% elif order.order_status == "Delivered" %}
+                                <span style="color: green;">Delivered</span>
+                            {% elif order.order_status == "Cancelled" %}
+                                <span style="color: red;">Cancelled</span>
                             {% endif %}
                         </td>
 
