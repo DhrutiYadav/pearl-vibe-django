@@ -57,4 +57,8 @@ urlpatterns = [
     path('reports/', views.reports_dashboard, name='reports_dashboard'),
     path('export-csv/', views.export_orders_csv, name='export_csv'),
     path('export-excel/', views.export_sales_excel, name='export_excel'),
+    path('export-products-excel/', views.export_products_excel, name='export_products_excel'),
+    path('export-products-csv/', views.export_products_csv, name='export_products_csv'),
+    path('export-customers-excel/', views.export_customers_excel, name='export_customers_excel'),
+    path('export-customers-csv/', views.export_customers_csv, name='export_customers_csv'),
 ]

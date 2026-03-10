@@ -2,19 +2,7 @@
 {% load static %}
 {% block content %}
 <div class="dashboard-ui">
-    <div style="display:flex; justify-content:space-between; align-items:center;">
-    <!--    <h2>📊 Sales Reports</h2>-->
 
-        <button onclick="exportPDF()" class="btn-primary">
-            📄 Export PDF
-        </button>
-        <a href="{% url 'dashboard:export_excel' %}" class="btn btn-success">
-        📥 Download Excel
-    </a>
-        <a href="{% url 'dashboard:export_csv' %}" class="btn-primary">
-        📥 Export CSV
-    </a>
-    </div>
     <!-- 🔷 TABS -->
     <div class="tabs">
         <button class="tab-btn active" data-tab="sales">📊 Sales</button>
@@ -25,6 +13,21 @@
          <!-- ================= SALES TAB ================= -->
         <div id="sales" class="tab-content" style="display:block;">
             <h2>📊 Sales Reports</h2>
+
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                <!--    <h2>📊 Sales Reports</h2>-->
+
+                    <button onclick="exportPDF('sales','sales_report.pdf')" class="btn-primary">
+                        📄 Export Sales PDF
+                    </button>
+                     <a href="{% url 'dashboard:export_excel' %}" class="btn btn-success">
+                        📊 Export Sales Excel
+                    </a>
+
+                    <a href="{% url 'dashboard:export_csv' %}" class="btn-primary">
+                        📦 Export Orders CSV
+                    </a>
+                </div>
                         <!-- 🔷 STATS -->
 
             <div class="section-card">
@@ -328,6 +331,22 @@
     </div>
 
     <div id="products" class="tab-content" style="display:none;">
+
+        <div class="report-actions">
+
+            <button onclick="exportPDF('products','products_report.pdf')" class="btn-primary">
+                📄 Export Products PDF
+            </button>
+
+            <a href="{% url 'dashboard:export_products_excel' %}" class="btn btn-success">
+                📊 Export Products Excel
+            </a>
+
+            <a href="{% url 'dashboard:export_products_csv' %}" class="btn-primary">
+                📦 Export Products CSV
+            </a>
+
+        </div>
         <h3>🏆 Top Selling Products</h3>
 
         <table class="custom-table">
@@ -376,64 +395,80 @@
     </div>
 
     <div id="customers" class="tab-content" style="display:none;">
-    <h3 class="mt-5">💎 Top Customers by Lifetime Value (CLV)</h3>
 
-    <table class="custom-table">
-        <thead>
-            <tr>
-                <th>Customer</th>
-                <th>Total Orders</th>
-                <th>Total Spent (₹)</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for c in customer_clv %}
-            <tr>
-                <td>{{ c.order__customer__user__username }}</td>
-                <td>{{ c.total_orders }}</td>
-                <td>₹ {{ c.total_spent|floatformat:2 }}</td>
-            </tr>
-            {% empty %}
-            <tr>
-                <td colspan="3" style="text-align:center; color:gray;">
-                    No customer data yet
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    <div class="report-actions">
 
-    <h3 class="mt-5">💎 Customer Lifetime Value (Top Customers)</h3>
-    <canvas id="clvChart" height="120"></canvas>
+        <button onclick="exportPDF('customers','customers_report.pdf')" class="btn-primary">
+            📄 Export Customers PDF
+        </button>
 
-    <h3 class="mt-5">👤 User-wise Report</h3>
+        <a href="{% url 'dashboard:export_customers_excel' %}" class="btn btn-success">
+            📊 Export Customers Excel
+        </a>
 
-    <table class="custom-table">
-        <thead>
-            <tr>
-                <th>User</th>
-                <th>Total Orders</th>
-                <th>Total Spent (₹)</th>
-            </tr>
-        </thead>
+        <a href="{% url 'dashboard:export_customers_csv' %}" class="btn-primary">
+            📦 Export Customers CSV
+        </a>
 
-        <tbody>
-            {% for user in user_report %}
-            <tr>
-                <td>{{ user.order__customer__user__username }}</td>
-                <td>{{ user.total_orders }}</td>
-                <td>₹ {{ user.total_spent|floatformat:2 }}</td>
-            </tr>
-            {% empty %}
-            <tr>
-                <td colspan="3" style="text-align:center; color:gray;">
-                    No user data available
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-     <canvas id="userChart"></canvas>
+    </div>
+        <h3 class="mt-5">💎 Top Customers by Lifetime Value (CLV)</h3>
+
+        <table class="custom-table">
+            <thead>
+                <tr>
+                    <th>Customer</th>
+                    <th>Total Orders</th>
+                    <th>Total Spent (₹)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for c in customer_clv %}
+                <tr>
+                    <td>{{ c.order__customer__user__username }}</td>
+                    <td>{{ c.total_orders }}</td>
+                    <td>₹ {{ c.total_spent|floatformat:2 }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="3" style="text-align:center; color:gray;">
+                        No customer data yet
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <h3 class="mt-5">💎 Customer Lifetime Value (Top Customers)</h3>
+        <canvas id="clvChart" height="120"></canvas>
+
+        <h3 class="mt-5">👤 User-wise Report</h3>
+
+        <table class="custom-table">
+            <thead>
+                <tr>
+                    <th>User</th>
+                    <th>Total Orders</th>
+                    <th>Total Spent (₹)</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for user in user_report %}
+                <tr>
+                    <td>{{ user.order__customer__user__username }}</td>
+                    <td>{{ user.total_orders }}</td>
+                    <td>₹ {{ user.total_spent|floatformat:2 }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="3" style="text-align:center; color:gray;">
+                        No user data available
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <canvas id="userChart"></canvas>
 
     </div>
     </div>
@@ -522,15 +557,18 @@ document.addEventListener("DOMContentLoaded", function () {
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script>
-async function exportPDF() {
+async function exportPDF(sectionId, filename="report.pdf") {
+
     const { jsPDF } = window.jspdf;
 
-    const element = document.getElementById("reportContent");
+    const element = document.getElementById(sectionId);
 
-    // Capture UI
-    const canvas = await html2canvas(element, {
-        scale: 2
-    });
+    if (!element) {
+        alert("Report section not found");
+        return;
+    }
+
+    const canvas = await html2canvas(element, { scale: 2 });
 
     const imgData = canvas.toDataURL("image/png");
 
@@ -546,7 +584,6 @@ async function exportPDF() {
     pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
     heightLeft -= pageHeight;
 
-    // Handle multiple pages
     while (heightLeft > 0) {
         position = heightLeft - imgHeight;
         pdf.addPage();
@@ -554,7 +591,7 @@ async function exportPDF() {
         heightLeft -= pageHeight;
     }
 
-    pdf.save("sales_report.pdf");
+    pdf.save(filename);
 }
 </script>
 

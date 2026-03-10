@@ -17,15 +17,10 @@ from datetime import timedelta
 from collections import defaultdict
 from django.db.models import Q
 from django.shortcuts import get_object_or_404, redirect, render
-
 from store.forms import CustomerForm
-
 from store.forms import OrderSummaryForm
-
 from store.forms import InvoiceForm
-
 from store.forms import ShippingAddressForm
-
 from django.db.models.functions import ExtractDay, ExtractMonth, TruncMonth, TruncYear
 from django.db.models import Sum, Count, F, DecimalField, ExpressionWrapper
 from store.forms import UserEditForm
@@ -33,6 +28,8 @@ from django.utils.dateparse import parse_datetime
 from django.http import HttpResponse
 import openpyxl
 import csv
+from openpyxl.styles import Font
+
 
 def is_admin(user):
     return user.is_staff or user.is_superuser
@@ -963,8 +960,7 @@ def export_orders_csv(request):
     return response
 
 def export_sales_excel(request):
-    from store.models import OrderItem
-    from django.db.models import Sum, F, DecimalField, ExpressionWrapper
+
 
     # Create workbook
     wb = openpyxl.Workbook()
@@ -974,6 +970,12 @@ def export_sales_excel(request):
     # Header
     ws.append(["Product", "Quantity Sold", "Revenue"])
 
+    for cell in ws[1]:
+        cell.font = Font(bold=True)
+
+    ws.column_dimensions['A'].width = 30
+    ws.column_dimensions['B'].width = 15
+    ws.column_dimensions['C'].width = 15
     # Data
     sales = OrderItem.objects.filter(order__complete=True) \
         .values('product__name') \
@@ -1002,6 +1004,144 @@ def export_sales_excel(request):
 
     wb.save(response)
     return response
+
+
+def export_products_excel(request):
+    from store.models import OrderItem
+
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = "Products Report"
+
+    ws.append(["Product", "Units Sold", "Revenue"])
+
+    # make header bold
+    for cell in ws[1]:
+        cell.font = Font(bold=True)
+
+    # set column widths
+    ws.column_dimensions['A'].width = 30
+    ws.column_dimensions['B'].width = 15
+    ws.column_dimensions['C'].width = 15
+    products = OrderItem.objects.filter(order__complete=True) \
+        .values('product__name') \
+        .annotate(
+            total_sold=Sum('quantity'),
+            revenue=Sum(
+                ExpressionWrapper(
+                    F('product__price') * F('quantity'),
+                    output_field=DecimalField()
+                )
+            )
+        ).order_by('-total_sold')
+
+    for p in products:
+        ws.append([
+            p['product__name'],
+            p['total_sold'],
+            float(p['revenue'] or 0)
+        ])
+
+    response = HttpResponse(
+        content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    )
+    response['Content-Disposition'] = 'attachment; filename="products_report.xlsx"'
+
+    wb.save(response)
+    return response
+
+def export_products_csv(request):
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="products_report.csv"'
+
+    writer = csv.writer(response)
+    writer.writerow(["Product", "Units Sold", "Revenue"])
+
+    products = OrderItem.objects.filter(order__complete=True) \
+        .values('product__name') \
+        .annotate(
+            total_sold=Sum('quantity'),
+            revenue=Sum(
+                ExpressionWrapper(
+                    F('product__price') * F('quantity'),
+                    output_field=DecimalField()
+                )
+            )
+        )
+
+    for p in products:
+        writer.writerow([
+            p['product__name'],
+            p['total_sold'],
+            float(p['revenue'] or 0)
+        ])
+
+    return response
+
+def export_customers_excel(request):
+
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = "Customers Report"
+
+    ws.append(["Customer", "Total Orders", "Total Spent"])
+
+    customers = OrderItem.objects.filter(order__complete=True) \
+        .values('order__customer__user__username') \
+        .annotate(
+            total_orders=Count('order', distinct=True),
+            total_spent=Sum(
+                ExpressionWrapper(
+                    F('product__price') * F('quantity'),
+                    output_field=DecimalField()
+                )
+            )
+        ).order_by('-total_spent')
+
+    for c in customers:
+        ws.append([
+            c['order__customer__user__username'],
+            c['total_orders'],
+            float(c['total_spent'] or 0)
+        ])
+
+    response = HttpResponse(
+        content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    )
+    response['Content-Disposition'] = 'attachment; filename="customers_report.xlsx"'
+
+    wb.save(response)
+    return response
+
+def export_customers_csv(request):
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="customers_report.csv"'
+
+    writer = csv.writer(response)
+    writer.writerow(["Customer", "Total Orders", "Total Spent"])
+
+    customers = OrderItem.objects.filter(order__complete=True) \
+        .values('order__customer__user__username') \
+        .annotate(
+            total_orders=Count('order', distinct=True),
+            total_spent=Sum(
+                ExpressionWrapper(
+                    F('product__price') * F('quantity'),
+                    output_field=DecimalField()
+                )
+            )
+        )
+
+    for c in customers:
+        writer.writerow([
+            c['order__customer__user__username'],
+            c['total_orders'],
+            float(c['total_spent'] or 0)
+        ])
+
+    return response
+
+
 
 def edit_order(request, order_id):
     order = Order.objects.get(id=order_id)
