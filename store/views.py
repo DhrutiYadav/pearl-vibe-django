@@ -535,7 +535,7 @@ def cancel_order(request, order_id):
         order.order_status = "Cancelled"
         order.save()
 
-        return JsonResponse({"message": "Order cancelled successfully"})
+        return JsonResponse({"message": "Order cancelled successfully. Your payment will be refunded within 7 business days."})
 
     except Order.DoesNotExist:
         return JsonResponse({"message": "Order not found"}, status=404)
