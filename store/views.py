@@ -486,7 +486,7 @@ from django.contrib.auth.decorators import login_required
 @login_required
 def order_history(request):
     customer = request.user.customer
-    orders = Order.objects.filter(customer=customer, complete=True).order_by('-date_ordered')
+    orders = Order.objects.filter(customer=customer).order_by('-date_ordered')
 
     return render(request, 'store/order_history.html', {
         'orders': orders
@@ -514,9 +514,10 @@ def feedback(request):
 
     return render(request, "store/Feedback.html")
 
+@login_required
 def cancel_order(request, order_id):
     try:
-        order = Order.objects.get(id=order_id)
+        order = get_object_or_404(Order, id=order_id, customer=request.user.customer)
 
         # Check if already cancelled
         if order.order_status == "Cancelled":
