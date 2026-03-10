@@ -269,10 +269,11 @@ def checkout(request):
             defaults={'name': request.user.username}
         )
 
-        order, created = Order.objects.get_or_create(
-            customer=customer,
-            complete=False
-        )
+        order = Order.objects.filter(customer=customer, complete=False).first()
+
+        if not order:
+            order = Order.objects.create(customer=customer, complete=False)
+
         items = order.orderitem_set.all()
         cartItems = order.get_cart_items
     else:
@@ -305,10 +306,10 @@ def updateItem(request):
 
     product = Product.objects.get(id=productId)
 
-    order, created = Order.objects.get_or_create(
-        customer=customer,
-        complete=False
-    )
+    order = Order.objects.filter(customer=customer, complete=False).first()
+
+    if not order:
+        order = Order.objects.create(customer=customer, complete=False)
 
     # Try to get item first
     orderItem = OrderItem.objects.filter(
