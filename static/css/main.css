@@ -152,3 +152,8 @@ html, body {
 .chg-quantity:hover {
     opacity: 0.6;
 }
+
+mark{
+    background-color:#cddcff;
+    border-radius:4px;
+}
