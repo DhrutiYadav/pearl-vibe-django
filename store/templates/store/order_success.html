@@ -1,34 +1,106 @@
 {% extends 'store/main.html' %}
 {% block content %}
 
-<div class="container mt-5">
-    <h2>🎉 Order Placed Successfully!</h2>
-    <hr>
+<style>
 
-    <h4>Order ID: {{ order.id }}</h4>
-    <p>Date: {{ order.date_ordered }}</p>
+.success-wrapper{
+display:flex;
+justify-content:center;
+align-items:center;
+min-height:75vh;
+<!--background:#f5f6fa;-->
+}
 
-    {% if invoice %}
-        <h5>Invoice Number: {{ invoice.invoice_number }}</h5>
-    {% endif %}
+.success-card{
+background:white;
+width:480px;
+padding:45px;
+border-radius:12px;
+text-align:center;
+box-shadow:0 10px 30px rgba(0,0,0,0.15);
+}
 
-    <hr>
+.success-icon{
+width:80px;
+height:80px;
+border-radius:50%;
+border:3px solid #0E3167;
+color:#0E3167;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:36px;
+margin:0 auto 25px auto;
+font-weight:bold;
+}
 
-    {% if summary %}
-    <h4>Order Summary</h4>
-    <ul>
-        <li>Subtotal: ₹{{ summary.subtotal }}</li>
-        <li>Tax: ₹{{ summary.tax }}</li>
-        <li>Shipping: ₹{{ summary.shipping_cost }}</li>
-        <li><strong>Total: ₹{{ summary.total }}</strong></li>
-    </ul>
-    {% endif %}
-    <a href="{% url 'store:download_invoice' order.id %}" class="btn btn-success mt-3">
-        Download Invoice (PDF)
-    </a>
+.summary-box{
+background:#f8f9fc;
+padding:15px;
+border-radius:8px;
+margin-top:15px;
+margin-bottom:20px;
+}
+
+.summary-box li{
+margin:6px 0;
+}
+
+.success-buttons a{
+margin:6px;
+}
+
+</style>
 
 
-    <a href="{% url 'store:home' %}" class="btn btn-dark mt-3">Continue Shopping</a>
+<div class="success-wrapper">
+
+<div class="success-card">
+
+<div class="success-icon">
+✔
+</div>
+
+<h2>🎉 Order Placed Successfully!</h2>
+
+<h4>Order ID: {{ order.id }}</h4>
+<p>Date: {{ order.date_ordered }}</p>
+
+{% if invoice %}
+<h5>Invoice Number: {{ invoice.invoice_number }}</h5>
+{% endif %}
+
+{% if summary %}
+
+<div class="summary-box">
+
+<h4>Order Summary</h4>
+
+<ul style="list-style:none;padding:0;">
+<li>Subtotal: ₹{{ summary.subtotal }}</li>
+<li>Tax: ₹{{ summary.tax }}</li>
+<li>Shipping: ₹{{ summary.shipping_cost }}</li>
+<li><strong>Total: ₹{{ summary.total }}</strong></li>
+</ul>
+
+</div>
+
+{% endif %}
+
+<div class="success-buttons">
+
+<a href="{% url 'store:download_invoice' order.id %}" class="btn btn-success" style="background-color:#0E3167;" >
+Download Invoice (PDF)
+</a>
+
+<a href="{% url 'store:home' %}" class="btn btn-dark">
+Continue Shopping
+</a>
+
+</div>
+
+</div>
+
 </div>
 
 {% endblock %}
