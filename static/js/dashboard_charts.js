@@ -27,33 +27,33 @@ function createChart(canvasId, config) {
 // ✅ SALES CHART
 function loadSalesChart() {
 
-    fetch("/dashboard/api/sales-report/")
-    .then(response => response.json())
-    .then(data => {
+    fetch("/dashboard/api/sales/")
+        .then(response => response.json())
+        .then(data => {
 
-        const ctx = document.getElementById('salesChart');
+            const labels = data.labels;
+            const values = data.data;
 
-        if (!ctx) return;
+            const ctx = document.getElementById("salesChart").getContext("2d");
 
-        new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: data.labels,
-                datasets: [{
-                    label: 'Revenue (₹)',
-                    data: data.revenues,
-                    borderWidth: 2,
-                    tension: 0.3
-                }]
-            },
-            options: {
-                responsive: true
+            if (window.salesChartInstance) {
+                window.salesChartInstance.destroy();
             }
+
+            window.salesChartInstance = new Chart(ctx, {
+                type: "line",
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: "Sales",
+                        data: values,
+                        borderWidth: 2,
+                        fill: false
+                    }]
+                }
+            });
+
         });
-
-    })
-    .catch(error => console.error("Error loading sales report:", error));
-
 }
 
 // ✅ FILTERED CHART
@@ -139,35 +139,42 @@ function loadDayWiseChart(month=null, year=null) {
 }
 // 📦 CATEGORY CHART
 function loadCategoryChart() {
-    const canvas = document.getElementById('categoryChart');
-    if (!canvas) return;
 
-    const ctx = canvas.getContext('2d');
+    fetch("/dashboard/api/category-report/")
+    .then(res => res.json())
+    .then(data => {
 
-    new Chart(ctx, {
-        type: 'pie',
-        data: {
-            labels: category_labels,
-            datasets: [{
-                data: category_revenues,
-                backgroundColor: [
-                    '#ff6384',
-                    '#36a2eb',
-                    '#ffcd56',
-                    '#4bc0c0',
-                    '#9966ff',
-                    '#ff9f40'
-                ]
-            }]
-        },
-        options: {
-            responsive: true,
-            plugins: {
-                legend: {
-                    position: 'right'
+        const canvas = document.getElementById('categoryChart');
+        if (!canvas) return;
+
+        const ctx = canvas.getContext('2d');
+
+        new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: data.labels,
+                datasets: [{
+                    data: data.revenues,
+                    backgroundColor: [
+                        '#ff6384',
+                        '#36a2eb',
+                        '#ffcd56',
+                        '#4bc0c0',
+                        '#9966ff',
+                        '#ff9f40'
+                    ]
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'right'
+                    }
                 }
             }
-        }
+        });
+
     });
 }
 
@@ -184,37 +191,50 @@ function loadYearlyChart() {
         }
     });
 }
+let monthlyChart = null;
 
-function loadYearMonthChart() {
-    const canvas = document.getElementById('yearMonthChart');
-    if (!canvas) return;
+function loadYearMonthChart(year=null){
 
-    const ctx = canvas.getContext('2d');
+    if(!year){
+        const yearSelect = document.getElementById("yearSelect");
+        year = yearSelect.value;
+    }
 
-    new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: year_month_labels,
-            datasets: [{
-                label: 'Monthly Revenue (₹)',
-                data: year_month_revenues,
-                backgroundColor: 'rgba(75, 192, 192, 0.7)',
-                borderColor: '#4bc0c0',
-                borderWidth: 1
-            }]
-        },
-        options: {
-            responsive: true,
-            plugins: {
-                legend: { display: true }
-            },
-            scales: {
-                y: { beginAtZero: true }
-            }
+    fetch(`/dashboard/api/monthly-sales/?year=${year}`)
+    .then(res => res.json())
+    .then(data => {
+
+        const canvas = document.getElementById("yearMonthChart");
+        if(!canvas) return;
+
+        const ctx = canvas.getContext("2d");
+
+        if(monthlyChart){
+            monthlyChart.destroy();
         }
-    });
-}
 
+        monthlyChart = new Chart(ctx,{
+            type:"bar",
+            data:{
+                labels:data.labels,
+                datasets:[{
+                    label:"Monthly Revenue (₹)",
+                    data:data.revenues,
+                    backgroundColor:"rgba(75,192,192,0.7)",
+                    borderRadius:6
+                }]
+            },
+            options:{
+                responsive:true,
+                scales:{
+                    y:{beginAtZero:true}
+                }
+            }
+        });
+
+    });
+
+}
 function loadAOVChart() {
     createChart('aovChart', {
         type: 'line',
@@ -456,6 +476,22 @@ document.addEventListener("DOMContentLoaded",function(){
         const year = form.querySelector("select[name='year']").value;
 
         loadDayWiseChart(month,year);
+
+    });
+
+});
+
+document.addEventListener("DOMContentLoaded", function(){
+
+    const form = document.getElementById("monthlySalesForm");
+
+    if(!form) return;
+
+    form.addEventListener("change", function(){
+
+        const year = document.getElementById("yearSelect").value;
+
+        loadYearMonthChart(year);
 
     });
 

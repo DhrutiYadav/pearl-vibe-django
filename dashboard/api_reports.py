@@ -142,3 +142,80 @@ def daywise_report_api(request):
         "revenues": revenues
     })
 
+@login_required
+@user_passes_test(is_admin)
+def monthly_sales_api(request):
+
+    year = request.GET.get("year")
+
+    if not year:
+        return JsonResponse({
+            "labels": [],
+            "revenues": []
+        })
+
+    year = int(year)
+
+    data = (
+        OrderItem.objects
+        .filter(order__complete=True, order__date_ordered__year=year)
+        .annotate(month=F("order__date_ordered__month"))
+        .values("month")
+        .annotate(
+            revenue=Sum(
+                ExpressionWrapper(
+                    F("product__price") * F("quantity"),
+                    output_field=DecimalField()
+                )
+            )
+        )
+        .order_by("month")
+    )
+
+    revenue_dict = defaultdict(float)
+
+    for item in data:
+        revenue_dict[item["month"]] = float(item["revenue"] or 0)
+
+    labels = [
+        "Jan","Feb","Mar","Apr","May","Jun",
+        "Jul","Aug","Sep","Oct","Nov","Dec"
+    ]
+
+    revenues = []
+
+    for i in range(1,13):
+        revenues.append(revenue_dict.get(i,0))
+
+    return JsonResponse({
+        "labels": labels,
+        "revenues": revenues
+    })
+
+
+def category_report_api(request):
+
+    revenue_expr = ExpressionWrapper(
+        F("product__price") * F("quantity"),
+        output_field=DecimalField()
+    )
+
+    categories = (
+        OrderItem.objects
+        .values("product__subcategory__category__name")
+        .annotate(revenue=Sum(revenue_expr))
+        .order_by("-revenue")
+    )
+
+    labels = []
+    revenues = []
+
+    for c in categories:
+        labels.append(c["product__subcategory__category__name"])
+        revenues.append(float(c["revenue"] or 0))
+
+    return JsonResponse({
+        "labels": labels,
+        "revenues": revenues
+    })
+

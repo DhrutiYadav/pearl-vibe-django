@@ -283,9 +283,9 @@
             <div class="chart-header">
     <h3 class="mt-5">📅 Monthly Sales Breakdown</h3>
 
-    <form method="get">
+    <form id="monthlySalesForm">
         <label for="yearSelect"><strong>Select Year:</strong></label>
-        <select name="year" id="yearSelect" onchange="this.form.submit()">
+        <select name="year" id="yearSelect">
             {% for year in available_years %}
                 <option value="{{ year }}" {% if year == selected_year %}selected{% endif %}>
                     {{ year }}
