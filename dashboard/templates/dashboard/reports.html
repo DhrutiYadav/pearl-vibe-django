@@ -124,17 +124,9 @@
                         </form>
 
                         <div class="quick-filters">
-                            <a href="?range=today">
-                                <button type="button">Today</button>
-                            </a>
-
-                            <a href="?range=week">
-                                <button type="button">This Week</button>
-                            </a>
-
-                            <a href="?range=month">
-                                <button type="button">This Month</button>
-                            </a>
+                            <button type="button" onclick="quickFilter('today')">Today</button>
+                            <button type="button" onclick="quickFilter('week')">This Week</button>
+                            <button type="button" onclick="quickFilter('month')">This Month</button>
                         </div>
                     </div>
                     {% if selected_from_date and selected_to_date %}

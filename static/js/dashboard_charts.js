@@ -361,6 +361,40 @@ function loadPriceRangeChart() {
     });
 }
 
+function quickFilter(range){
+
+    fetch(`/dashboard/api/sales-report/?range=${range}`)
+    .then(res => res.json())
+    .then(data => {
+
+        let chart = Chart.getChart("filteredSalesChart");
+
+        if(chart){
+            chart.destroy();
+        }
+
+        const ctx = document.getElementById("filteredSalesChart");
+
+        new Chart(ctx, {
+            type: "line",
+            data: {
+                labels: data.labels,
+                datasets: [{
+                    label: "Revenue",
+                    data: data.revenues,
+                    borderWidth: 2,
+                    tension: 0.3
+                }]
+            },
+            options: {
+                responsive: true
+            }
+        });
+
+    });
+
+}
+
 document.addEventListener("DOMContentLoaded", function(){
 
     const form = document.getElementById("salesFilterForm");

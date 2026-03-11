@@ -4,6 +4,7 @@ from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.utils import timezone
 from datetime import timedelta
+from datetime import datetime
 from django.db.models import Sum, Count, F, DecimalField, ExpressionWrapper
 from collections import defaultdict
 
@@ -25,14 +26,31 @@ def sales_report_api(request):
 
     query = OrderItem.objects.filter(order__complete=True)
 
-    if from_date and to_date:
-        query = query.filter(
-            order__date_ordered__date__range=[from_date, to_date]
-        )
+    range_filter = request.GET.get("range")
+
+    if range_filter == "today":
+        start_date = today
+        end_date = today
+
+    elif range_filter == "week":
+        start_date = today - timedelta(days=6)
+        end_date = today
+
+    elif range_filter == "month":
+        start_date = today.replace(day=1)
+        end_date = today
+
+    elif from_date and to_date:
+        start_date = datetime.strptime(from_date, "%Y-%m-%d").date()
+        end_date = datetime.strptime(to_date, "%Y-%m-%d").date()
+
     else:
-        query = query.filter(
-            order__date_ordered__date__gte=seven_days_ago
-        )
+        start_date = seven_days_ago
+        end_date = today
+
+    query = query.filter(
+        order__date_ordered__date__range=[start_date, end_date]
+    )
 
     sales_queryset = query.annotate(
         day=F('order__date_ordered__date')
@@ -52,14 +70,6 @@ def sales_report_api(request):
 
     labels = []
     revenues = []
-
-    # determine range
-    if from_date and to_date:
-        start_date = timezone.datetime.strptime(from_date, "%Y-%m-%d").date()
-        end_date = timezone.datetime.strptime(to_date, "%Y-%m-%d").date()
-    else:
-        start_date = seven_days_ago
-        end_date = today
 
     current_day = start_date
 
