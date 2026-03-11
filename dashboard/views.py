@@ -28,8 +28,8 @@ from django.utils.dateparse import parse_datetime
 from django.http import HttpResponse
 import openpyxl
 import csv
-from openpyxl.styles import Font
-
+from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
+from openpyxl.worksheet.table import Table, TableStyleInfo
 
 def is_admin(user):
     return user.is_staff or user.is_superuser
@@ -961,45 +961,58 @@ def export_orders_csv(request):
 
 def export_sales_excel(request):
 
-
-    # Create workbook
     wb = openpyxl.Workbook()
     ws = wb.active
     ws.title = "Sales Report"
 
     # Header
-    ws.append(["Product", "Quantity Sold", "Revenue"])
+    ws.append(["Order ID", "Customer", "Date", "Status", "Total"])
+
+    # Header styling
+    header_fill = PatternFill(start_color="0b2e66", end_color="0b2e66", fill_type="solid")
+    header_font = Font(bold=True, color="FFFFFF")
+    header_alignment = Alignment(horizontal="center")
 
     for cell in ws[1]:
-        cell.font = Font(bold=True)
+        cell.font = header_font
+        cell.fill = header_fill
+        cell.alignment = header_alignment
 
-    ws.column_dimensions['A'].width = 30
-    ws.column_dimensions['B'].width = 15
-    ws.column_dimensions['C'].width = 15
-    # Data
-    sales = OrderItem.objects.filter(order__complete=True) \
-        .values('product__name') \
-        .annotate(
-            total_sold=Sum('quantity'),
-            revenue=Sum(
-                ExpressionWrapper(
-                    F('product__price') * F('quantity'),
-                    output_field=DecimalField()
-                )
-            )
-        ).order_by('-total_sold')
+    # Column widths
+    ws.column_dimensions['A'].width = 12
+    ws.column_dimensions['B'].width = 20
+    ws.column_dimensions['C'].width = 18
+    ws.column_dimensions['D'].width = 12
+    ws.column_dimensions['E'].width = 12
 
-    for item in sales:
+    orders = Order.objects.select_related('customer__user').all()
+
+    for order in orders:
+
+        customer = "Guest"
+        if order.customer and order.customer.user:
+            customer = order.customer.user.username
+
         ws.append([
-            item['product__name'],
-            item['total_sold'],
-            float(item['revenue'] or 0)
+            order.id,
+            customer,
+            order.date_ordered.strftime("%d-%m-%Y"),
+            "Paid" if order.complete else "Unpaid",
+            float(order.get_cart_total)
         ])
 
-    # Response
+
+    table = Table(displayName="ReportTable", ref=f"A1:E{ws.max_row}")
+
+    style = TableStyleInfo(name="TableStyleMedium9", showRowStripes=True, showColumnStripes=False)
+
+    table.tableStyleInfo = style
+    ws.add_table(table)
+
     response = HttpResponse(
         content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
     )
+
     response['Content-Disposition'] = 'attachment; filename="sales_report.xlsx"'
 
     wb.save(response)
@@ -1013,16 +1026,24 @@ def export_products_excel(request):
     ws = wb.active
     ws.title = "Products Report"
 
+    # Header
     ws.append(["Product", "Units Sold", "Revenue"])
 
-    # make header bold
-    for cell in ws[1]:
-        cell.font = Font(bold=True)
+    # Header styling
+    header_fill = PatternFill(start_color="0b2e66", end_color="0b2e66", fill_type="solid")
+    header_font = Font(bold=True, color="FFFFFF")
+    header_alignment = Alignment(horizontal="center")
 
-    # set column widths
+    for cell in ws[1]:
+        cell.font = header_font
+        cell.fill = header_fill
+        cell.alignment = header_alignment
+
+    # Column widths
     ws.column_dimensions['A'].width = 30
     ws.column_dimensions['B'].width = 15
     ws.column_dimensions['C'].width = 15
+
     products = OrderItem.objects.filter(order__complete=True) \
         .values('product__name') \
         .annotate(
@@ -1042,9 +1063,22 @@ def export_products_excel(request):
             float(p['revenue'] or 0)
         ])
 
+    # Create table
+    table = Table(displayName="ProductsTable", ref=f"A1:C{ws.max_row}")
+
+    style = TableStyleInfo(
+        name="TableStyleMedium9",
+        showRowStripes=True,
+        showColumnStripes=False
+    )
+
+    table.tableStyleInfo = style
+    ws.add_table(table)
+
     response = HttpResponse(
         content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
     )
+
     response['Content-Disposition'] = 'attachment; filename="products_report.xlsx"'
 
     wb.save(response)
@@ -1084,19 +1118,37 @@ def export_customers_excel(request):
     ws = wb.active
     ws.title = "Customers Report"
 
+    # Header
     ws.append(["Customer", "Total Orders", "Total Spent"])
 
-    customers = OrderItem.objects.filter(order__complete=True) \
-        .values('order__customer__user__username') \
-        .annotate(
-            total_orders=Count('order', distinct=True),
-            total_spent=Sum(
-                ExpressionWrapper(
-                    F('product__price') * F('quantity'),
-                    output_field=DecimalField()
-                )
+    # Header styling
+    header_fill = PatternFill(start_color="0b2e66", end_color="0b2e66", fill_type="solid")
+    header_font = Font(bold=True, color="FFFFFF")
+    header_alignment = Alignment(horizontal="center")
+
+    for cell in ws[1]:
+        cell.font = header_font
+        cell.fill = header_fill
+        cell.alignment = header_alignment
+
+    # Column widths
+    ws.column_dimensions['A'].width = 25
+    ws.column_dimensions['B'].width = 15
+    ws.column_dimensions['C'].width = 15
+
+    customers = OrderItem.objects.filter(
+        order__complete=True,
+        order__customer__user__isnull=False
+    ).values('order__customer__user__username') \
+    .annotate(
+        total_orders=Count('order', distinct=True),
+        total_spent=Sum(
+            ExpressionWrapper(
+                F('product__price') * F('quantity'),
+                output_field=DecimalField()
             )
-        ).order_by('-total_spent')
+        )
+    ).order_by('-total_spent')
 
     for c in customers:
         ws.append([
@@ -1105,9 +1157,22 @@ def export_customers_excel(request):
             float(c['total_spent'] or 0)
         ])
 
+    # Create table
+    table = Table(displayName="CustomersTable", ref=f"A1:C{ws.max_row}")
+
+    style = TableStyleInfo(
+        name="TableStyleMedium9",
+        showRowStripes=True,
+        showColumnStripes=False
+    )
+
+    table.tableStyleInfo = style
+    ws.add_table(table)
+
     response = HttpResponse(
         content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
     )
+
     response['Content-Disposition'] = 'attachment; filename="customers_report.xlsx"'
 
     wb.save(response)
