@@ -1,0 +1,53 @@
+{% extends 'dashboard/base.html' %}
+
+{% block content %}
+
+<div class="container mt-5">
+
+<div class="card shadow-sm p-4" style="max-width:600px;margin:auto">
+
+<h3 class="text-danger mb-4">Delete User</h3>
+
+<div class="row mb-3">
+<div class="col-md-4"><strong>Username</strong></div>
+<div class="col-md-8">{{ user_obj.username }}</div>
+</div>
+
+<div class="row mb-3">
+<div class="col-md-4"><strong>Email</strong></div>
+<div class="col-md-8">{{ user_obj.email }}</div>
+</div>
+
+<div class="row mb-3">
+<div class="col-md-4"><strong>Role</strong></div>
+<div class="col-md-8">
+{% if user_obj.is_superuser %}
+Admin
+{% elif user_obj.is_staff %}
+Staff
+{% else %}
+Customer
+{% endif %}
+</div>
+</div>
+
+<hr>
+
+<form method="POST">
+{% csrf_token %}
+
+<button type="submit" class="btn btn-danger">
+Yes, Delete
+</button>
+
+<a href="{% url 'dashboard:users' %}" class="btn btn-secondary">
+Cancel
+</a>
+
+</form>
+
+</div>
+
+</div>
+
+{% endblock %}

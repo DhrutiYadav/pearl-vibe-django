@@ -1367,21 +1367,23 @@ def edit_user(request, user_id):
 
     return render(request, 'dashboard/edit_user.html', {'form': form})
 
-
 @login_required(login_url='/admin/login/')
 @user_passes_test(is_admin)
 def delete_user(request, user_id):
     user_obj = get_object_or_404(User, id=user_id)
 
-    # prevent deleting yourself (important safety)
+    # Prevent deleting yourself
     if request.user == user_obj:
         messages.error(request, "You cannot delete your own account.")
         return redirect('dashboard:users')
 
-    user_obj.delete()
-    return redirect('dashboard:users')
+    if request.method == "POST":
+        user_obj.delete()
+        return redirect('dashboard:users')
 
-
+    return render(request, "dashboard/user_confirm_delete.html", {
+        "user_obj": user_obj
+    })
 
 def feedback_list(request):
     feedbacks = Feedback.objects.all().order_by('-created_at')

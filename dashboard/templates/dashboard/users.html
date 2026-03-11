@@ -15,6 +15,7 @@
         <!-- Card Wrapper -->
         <div class="card shadow-card">
             <table class="table custom-table align-middle">
+
                 <thead>
                     <tr>
                         <th>#</th>
@@ -22,15 +23,20 @@
                         <th>Email</th>
                         <th>Role</th>
                         <th>Actions</th>
-
                     </tr>
                 </thead>
+
                 <tbody>
+
                     {% for user in users %}
                     <tr>
+
                         <td>{{ forloop.counter }}</td>
+
                         <td>{{ user.username }}</td>
+
                         <td>{{ user.email }}</td>
+
                         <td>
                             {% if user.is_superuser %}
                                 <span class="badge bg-danger">Admin</span>
@@ -40,26 +46,39 @@
                                 <span class="badge bg-secondary">Customer</span>
                             {% endif %}
                         </td>
-                        <td>
-                            <a href="{% url 'dashboard:edit_user' user.id %}"
-                               class="btn btn-sm btn-warning">Edit</a>
 
+                        <td>
+
+                            <!-- Edit Button -->
+                            <a href="{% url 'dashboard:edit_user' user.id %}"
+                               class="btn btn-sm btn-warning">
+                               Edit
+                            </a>
+
+                            <!-- Delete Button (opens confirmation page) -->
                             <a href="{% url 'dashboard:delete_user' user.id %}"
-                               class="btn btn-sm btn-danger"
-                               onclick="return confirm('Delete this user?');">
+                               class="btn btn-sm btn-danger">
                                Delete
                             </a>
+
                         </td>
+
                     </tr>
+
                     {% empty %}
                     <tr>
-                        <td colspan="5" class="text-center text-muted">No users found</td>
+                        <td colspan="5" class="text-center text-muted">
+                            No users found
+                        </td>
                     </tr>
                     {% endfor %}
+
                 </tbody>
+
             </table>
         </div>
 
     </div>
+
 </div>
 {% endblock %}
