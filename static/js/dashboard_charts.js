@@ -26,16 +26,34 @@ function createChart(canvasId, config) {
 
 // ✅ SALES CHART
 function loadSalesChart() {
-    createChart('salesChart', {
-        type: 'line',
-        data: {
-            labels: sales_dates,
-            datasets: [{
-                label: 'Revenue (₹)',
-                data: sales_revenues
-            }]
-        }
-    });
+
+    fetch("/dashboard/api/sales-report/")
+    .then(response => response.json())
+    .then(data => {
+
+        const ctx = document.getElementById('salesChart');
+
+        if (!ctx) return;
+
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: data.labels,
+                datasets: [{
+                    label: 'Revenue (₹)',
+                    data: data.revenues,
+                    borderWidth: 2,
+                    tension: 0.3
+                }]
+            },
+            options: {
+                responsive: true
+            }
+        });
+
+    })
+    .catch(error => console.error("Error loading sales report:", error));
+
 }
 
 // ✅ FILTERED CHART

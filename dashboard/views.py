@@ -1239,10 +1239,20 @@ def edit_order(request, order_id):
     return render(request, 'dashboard/edit_order.html', {'order': order})
 
 
+@login_required(login_url='/admin/login/')
+@user_passes_test(is_admin)
 def delete_order(request, order_id):
     order = get_object_or_404(Order, id=order_id)
-    order.delete()
-    return redirect('dashboard:orders')
+
+    # If admin clicks "Yes Delete"
+    if request.method == "POST":
+        order.delete()
+        return redirect('dashboard:orders')
+
+    # Show delete confirmation page
+    return render(request, "dashboard/order_confirm_delete.html", {
+        "order": order
+    })
 
 @login_required(login_url='/admin/login/')
 @user_passes_test(is_admin)
@@ -1303,9 +1313,16 @@ def edit_invoice(request, invoice_id):
 @user_passes_test(is_admin)
 def delete_invoice(request, invoice_id):
     invoice = get_object_or_404(Invoice, id=invoice_id)
-    invoice.delete()
-    return redirect('dashboard:dashboard_invoices')
 
+    # When admin confirms deletion
+    if request.method == "POST":
+        invoice.delete()
+        return redirect('dashboard:dashboard_invoices')
+
+    # Show confirmation page
+    return render(request, "dashboard/invoice_confirm_delete.html", {
+        "invoice": invoice
+    })
 
 @login_required(login_url='/admin/login/')
 @user_passes_test(is_admin)
@@ -1326,8 +1343,14 @@ def edit_shipping_address(request, address_id):
 @user_passes_test(is_admin)
 def delete_shipping_address(request, address_id):
     address = get_object_or_404(ShippingAddress, id=address_id)
-    address.delete()
-    return redirect('dashboard:dashboard_shipping_addresses')
+
+    if request.method == "POST":
+        address.delete()
+        return redirect('dashboard:dashboard_shipping_addresses')
+
+    return render(request, "dashboard/shipping_address_confirm_delete.html", {
+        "address": address
+    })
 
 @login_required(login_url='/admin/login/')
 @user_passes_test(is_admin)

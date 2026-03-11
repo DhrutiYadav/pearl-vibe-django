@@ -1,0 +1,56 @@
+{% extends 'dashboard/base.html' %}
+
+{% block content %}
+
+<div class="container mt-5">
+
+<div class="card shadow-sm p-4" style="max-width:600px;margin:auto">
+
+<h3 class="text-danger mb-4">Delete Order</h3>
+
+<div class="row mb-3">
+<div class="col-md-4"><strong>Order ID</strong></div>
+<div class="col-md-8">{{ order.id }}</div>
+</div>
+
+<div class="row mb-3">
+<div class="col-md-4"><strong>Customer</strong></div>
+<div class="col-md-8">
+{% if order.customer %}
+{{ order.customer.name }}
+{% else %}
+Guest
+{% endif %}
+</div>
+</div>
+
+<div class="row mb-3">
+<div class="col-md-4"><strong>Total</strong></div>
+<div class="col-md-8">₹{{ order.get_cart_total }}</div>
+</div>
+
+<div class="row mb-3">
+<div class="col-md-4"><strong>Status</strong></div>
+<div class="col-md-8">{{ order.order_status }}</div>
+</div>
+
+<hr>
+
+<form method="POST">
+{% csrf_token %}
+
+<button type="submit" class="btn btn-danger">
+Yes, Delete
+</button>
+
+<a href="{% url 'dashboard:orders' %}" class="btn btn-secondary">
+Cancel
+</a>
+
+</form>
+
+</div>
+
+</div>
+
+{% endblock %}

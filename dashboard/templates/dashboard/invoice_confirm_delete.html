@@ -1,0 +1,57 @@
+{% extends 'dashboard/base.html' %}
+
+{% block content %}
+
+<div class="container mt-5">
+
+<div class="card shadow-sm p-4" style="max-width:600px;margin:auto">
+
+<h3 class="text-danger mb-4">Delete Invoice</h3>
+
+<div class="row mb-3">
+<div class="col-md-4"><strong>Invoice Number</strong></div>
+<div class="col-md-8">{{ invoice.invoice_number }}</div>
+</div>
+
+<div class="row mb-3">
+<div class="col-md-4"><strong>Order ID</strong></div>
+<div class="col-md-8">{{ invoice.order.id }}</div>
+</div>
+
+<div class="row mb-3">
+<div class="col-md-4"><strong>Issued Date</strong></div>
+<div class="col-md-8">{{ invoice.issued_date }}</div>
+</div>
+
+<div class="row mb-3">
+<div class="col-md-4"><strong>Status</strong></div>
+<div class="col-md-8">
+{% if invoice.paid %}
+<span class="badge bg-success">Paid</span>
+{% else %}
+<span class="badge bg-warning text-dark">Pending</span>
+{% endif %}
+</div>
+</div>
+
+<hr>
+
+<form method="POST">
+{% csrf_token %}
+
+<button type="submit" class="btn btn-danger">
+Yes, Delete
+</button>
+
+<a href="{% url 'dashboard:dashboard_invoices' %}"
+   class="btn btn-secondary">
+Cancel
+</a>
+
+</form>
+
+</div>
+
+</div>
+
+{% endblock %}

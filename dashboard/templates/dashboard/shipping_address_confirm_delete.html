@@ -1,0 +1,50 @@
+{% extends 'dashboard/base.html' %}
+
+{% block content %}
+
+<div class="container mt-5">
+
+<div class="card shadow-sm p-4" style="max-width:600px;margin:auto">
+
+<h3 class="text-danger mb-4">Delete Shipping Address</h3>
+
+<div class="row mb-3">
+<div class="col-md-4"><strong>Customer</strong></div>
+<div class="col-md-8">{{ address.customer.name }}</div>
+</div>
+
+<div class="row mb-3">
+<div class="col-md-4"><strong>City</strong></div>
+<div class="col-md-8">{{ address.city }}</div>
+</div>
+
+<div class="row mb-3">
+<div class="col-md-4"><strong>State</strong></div>
+<div class="col-md-8">{{ address.state }}</div>
+</div>
+
+<div class="row mb-3">
+<div class="col-md-4"><strong>Zip Code</strong></div>
+<div class="col-md-8">{{ address.zipcode }}</div>
+</div>
+
+<hr>
+
+<form method="POST">
+{% csrf_token %}
+
+<button type="submit" class="btn btn-primary">
+Yes, Delete
+</button>
+
+<a href="{% url 'dashboard:dashboard_shipping_addresses' %}" class="btn btn-secondary">
+Cancel
+</a>
+
+</form>
+
+</div>
+
+</div>
+
+{% endblock %}

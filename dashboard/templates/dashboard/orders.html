@@ -15,6 +15,7 @@
         <!-- Card Wrapper -->
         <div class="card shadow-card">
             <table class="table custom-table align-middle">
+
                 <thead>
                     <tr>
                         <th>Order ID</th>
@@ -31,6 +32,7 @@
 
                     {% for order in orders %}
                     <tr>
+
                         <td><strong>{{ order.id }}</strong></td>
 
                         <td>
@@ -60,21 +62,33 @@
                         <td>{{ order.date_ordered|date:"d M Y" }}</td>
 
                         <td>
-                            <a href="{% url 'dashboard:edit_order' order.id %}" class="btn btn-sm btn-primary">Edit</a>
 
+                            <!-- Edit -->
+                            <a href="{% url 'dashboard:edit_order' order.id %}"
+                               class="btn btn-sm btn-primary">
+                               Edit
+                            </a>
+
+                            <!-- Delete (opens confirmation page) -->
                             <a href="{% url 'dashboard:delete_order' order.id %}"
-                               class="btn btn-sm btn-danger"
-                               onclick="return confirm('Are you sure you want to delete this order?');">
+                               class="btn btn-sm btn-danger">
                                Delete
                             </a>
 
                         </td>
+
                     </tr>
+
                     {% empty %}
                     <tr>
-                        <td colspan="7" class="text-center text-muted">No orders found</td>
+                        <td colspan="7" class="text-center text-muted">
+                            No orders found
+                        </td>
                     </tr>
                     {% endfor %}
+
+                </tbody>
+
             </table>
         </div>
 
