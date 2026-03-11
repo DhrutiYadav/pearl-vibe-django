@@ -82,3 +82,63 @@ def sales_report_api(request):
         "labels": labels,
         "revenues": revenues
     })
+
+
+@login_required
+@user_passes_test(is_admin)
+def daywise_report_api(request):
+
+    month = request.GET.get("month")
+    year = request.GET.get("year")
+
+    if not month or not year:
+        return JsonResponse({
+            "labels": [],
+            "orders": [],
+            "revenues": []
+        })
+
+    month = int(month)
+    year = int(year)
+
+    query = OrderItem.objects.filter(
+        order__complete=True,
+        order__date_ordered__year=year,
+        order__date_ordered__month=month
+    )
+
+    sales_queryset = query.annotate(
+        day=F("order__date_ordered__day")
+    ).values("day").annotate(
+        orders=Count("order", distinct=True),
+        revenue=Sum(
+            ExpressionWrapper(
+                F("product__price") * F("quantity"),
+                output_field=DecimalField()
+            )
+        )
+    ).order_by("day")
+
+    sales_dict = defaultdict(lambda: {"orders": 0, "revenue": 0})
+
+    for entry in sales_queryset:
+        sales_dict[entry["day"]] = {
+            "orders": entry["orders"] or 0,
+            "revenue": float(entry["revenue"] or 0)
+        }
+
+    labels = []
+    orders = []
+    revenues = []
+
+    for day in range(1, 32):
+        labels.append(day)
+        orders.append(sales_dict[day]["orders"])
+        revenues.append(sales_dict[day]["revenue"])
+
+    return JsonResponse({
+        "labels": labels,
+        "orders": orders,
+        "revenues": revenues
+    })
+

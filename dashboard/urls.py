@@ -1,6 +1,7 @@
 from django.urls import path
 from . import views
 from .api_reports import sales_report_api
+from . import api_reports
 
 app_name = 'dashboard'   # 🔥 THIS LINE IS REQUIRED
 
@@ -64,4 +65,5 @@ urlpatterns = [
     path('export-customers-csv/', views.export_customers_csv, name='export_customers_csv'),
 
     path("api/sales-report/", sales_report_api, name="sales_report_api"),
+    path("api/daywise-report/", api_reports.daywise_report_api, name="daywise_report_api"),
 ]

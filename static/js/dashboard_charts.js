@@ -82,61 +82,61 @@ function loadFilteredChart() {
     });
 }
 
-function loadDayWiseChart() {
-    const canvas = document.getElementById('dayWiseChart');
-    if (!canvas) return;
+let dayChart = null;
 
-    const ctx = canvas.getContext('2d');
+function loadDayWiseChart(month=null, year=null) {
 
-    // 🎨 Gradients
-    const gradientBlue = ctx.createLinearGradient(0, 0, 0, 400);
-    gradientBlue.addColorStop(0, 'rgba(54, 162, 235, 0.9)');
-    gradientBlue.addColorStop(1, 'rgba(54, 162, 235, 0.2)');
+    if(!month || !year){
+        const monthSelect = document.querySelector("select[name='month']");
+        const yearSelect = document.querySelector("select[name='year']");
 
-    const gradientPink = ctx.createLinearGradient(0, 0, 0, 400);
-    gradientPink.addColorStop(0, 'rgba(255, 99, 132, 0.9)');
-    gradientPink.addColorStop(1, 'rgba(255, 99, 132, 0.2)');
+        month = monthSelect.value;
+        year = yearSelect.value;
+    }
 
-    new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: day_labels,
-            datasets: [
-                {
-                    label: 'Orders',
-                    data: day_orders,
-                    backgroundColor: gradientBlue,
-                    borderRadius: 8
-                },
-                {
-                    label: 'Revenue',
-                    data: day_revenues,
-                    backgroundColor: gradientPink,
-                    borderRadius: 8
-                }
-            ]
-        },
-        options: {
-            responsive: true,
-            plugins: {
-                legend: {
-                    labels: {
-                        color: '#333',
-                        font: { weight: '600' }
+    fetch(`/dashboard/api/daywise-report/?month=${month}&year=${year}`)
+    .then(res => res.json())
+    .then(data => {
+
+        const canvas = document.getElementById("dayWiseChart");
+        if(!canvas) return;
+
+        const ctx = canvas.getContext("2d");
+
+        if(dayChart){
+            dayChart.destroy();
+        }
+
+        dayChart = new Chart(ctx,{
+            type:"bar",
+            data:{
+                labels:data.labels,
+                datasets:[
+                    {
+                        label:"Orders",
+                        data:data.orders,
+                        backgroundColor:"rgba(54,162,235,0.7)",
+                        borderRadius:6
+                    },
+                    {
+                        label:"Revenue",
+                        data:data.revenues,
+                        backgroundColor:"rgba(255,99,132,0.7)",
+                        borderRadius:6
                     }
-                }
+                ]
             },
-            scales: {
-                x: { grid: { display: false } },
-                y: {
-                    beginAtZero: true,
-                    grid: { color: 'rgba(0,0,0,0.05)' }
+            options:{
+                responsive:true,
+                scales:{
+                    y:{beginAtZero:true}
                 }
             }
-        }
-    });
-}
+        });
 
+    });
+
+}
 // 📦 CATEGORY CHART
 function loadCategoryChart() {
     const canvas = document.getElementById('categoryChart');
@@ -437,6 +437,25 @@ document.addEventListener("DOMContentLoaded", function(){
             });
 
         });
+
+    });
+
+});
+
+document.addEventListener("DOMContentLoaded",function(){
+
+    const form = document.getElementById("daywiseForm");
+
+    if(!form) return;
+
+    form.addEventListener("submit",function(e){
+
+        e.preventDefault();
+
+        const month = form.querySelector("select[name='month']").value;
+        const year = form.querySelector("select[name='year']").value;
+
+        loadDayWiseChart(month,year);
 
     });
 
