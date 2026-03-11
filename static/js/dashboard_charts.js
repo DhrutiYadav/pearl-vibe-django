@@ -360,3 +360,50 @@ function loadPriceRangeChart() {
         }
     });
 }
+
+document.addEventListener("DOMContentLoaded", function(){
+
+    const form = document.getElementById("salesFilterForm");
+
+    if(!form) return;
+
+    form.addEventListener("submit", function(e){
+
+        e.preventDefault();   // 🚀 stops page reload
+
+        let from = form.querySelector("input[name='from_date']").value;
+        let to = form.querySelector("input[name='to_date']").value;
+
+        fetch(`/dashboard/api/sales-report/?from_date=${from}&to_date=${to}`)
+        .then(res => res.json())
+        .then(data => {
+
+            let chart = Chart.getChart("filteredSalesChart");
+
+            if(chart){
+                chart.destroy();
+            }
+
+            const ctx = document.getElementById("filteredSalesChart");
+
+            new Chart(ctx, {
+                type: "line",
+                data: {
+                    labels: data.labels,
+                    datasets: [{
+                        label: "Revenue",
+                        data: data.revenues,
+                        borderWidth: 2,
+                        tension: 0.3
+                    }]
+                },
+                options: {
+                    responsive: true
+                }
+            });
+
+        });
+
+    });
+
+});

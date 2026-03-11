@@ -13,18 +13,28 @@ from store.models import Order, OrderItem
 def is_admin(user):
     return user.is_staff or user.is_superuser
 
-
 @login_required
 @user_passes_test(is_admin)
 def sales_report_api(request):
 
+    from_date = request.GET.get("from_date")
+    to_date = request.GET.get("to_date")
+
     today = timezone.now().date()
     seven_days_ago = today - timedelta(days=6)
 
-    sales_queryset = OrderItem.objects.filter(
-        order__complete=True,
-        order__date_ordered__date__gte=seven_days_ago
-    ).annotate(
+    query = OrderItem.objects.filter(order__complete=True)
+
+    if from_date and to_date:
+        query = query.filter(
+            order__date_ordered__date__range=[from_date, to_date]
+        )
+    else:
+        query = query.filter(
+            order__date_ordered__date__gte=seven_days_ago
+        )
+
+    sales_queryset = query.annotate(
         day=F('order__date_ordered__date')
     ).values('day').annotate(
         revenue=Sum(
@@ -43,10 +53,20 @@ def sales_report_api(request):
     labels = []
     revenues = []
 
-    for i in range(7):
-        day = seven_days_ago + timedelta(days=i)
-        labels.append(day.strftime("%d %b"))
-        revenues.append(sales_dict.get(day, 0))
+    # determine range
+    if from_date and to_date:
+        start_date = timezone.datetime.strptime(from_date, "%Y-%m-%d").date()
+        end_date = timezone.datetime.strptime(to_date, "%Y-%m-%d").date()
+    else:
+        start_date = seven_days_ago
+        end_date = today
+
+    current_day = start_date
+
+    while current_day <= end_date:
+        labels.append(current_day.strftime("%d %b"))
+        revenues.append(sales_dict.get(current_day, 0))
+        current_day += timedelta(days=1)
 
     return JsonResponse({
         "labels": labels,
