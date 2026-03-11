@@ -15,8 +15,8 @@
         <!-- Card Wrapper -->
         <div class="card shadow-card">
             <table class="table custom-table align-middle">
-                <thead>
 
+                <thead>
                     <tr>
                         <th>ID</th>
                         <th>Username</th>
@@ -27,27 +27,50 @@
                 </thead>
 
                 <tbody>
+
                     {% for c in customers %}
                     <tr>
-                        <td><strong>{{ c.id }}</strong></td>
-                        <td>{{ c.user.username }}</td>
-                        <td>{{ c.name }}</td>
-                        <td>{{ c.email }}</td>
-                        <td>
-                        <a href="{% url 'dashboard:edit_customer' c.id %}" class="btn btn-sm btn-warning">Edit</a>
 
-                        <a href="{% url 'dashboard:delete_customer' c.id %}"
-                           class="btn btn-sm btn-danger"
-                           onclick="return confirm('Delete this customer?');">
-                           Delete
-                        </a>
+                        <td><strong>{{ c.id }}</strong></td>
+
+                        <td>{{ c.user.username }}</td>
+
+                        <td>{{ c.name }}</td>
+
+                        <td>{{ c.email }}</td>
+
+                        <td>
+
+                            <!-- Edit Button -->
+                            <a href="{% url 'dashboard:edit_customer' c.id %}"
+                               class="btn btn-sm btn-warning">
+                               Edit
+                            </a>
+
+                            <!-- Delete Button (opens confirmation page) -->
+                            <a href="{% url 'dashboard:delete_customer' c.id %}"
+                               class="btn btn-sm btn-danger">
+                               Delete
+                            </a>
+
                         </td>
-                </tr>
-            {% endfor %}
-        </tbody>
+
+                    </tr>
+
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="text-center text-muted">
+                            No customers found
+                        </td>
+                    </tr>
+                    {% endfor %}
+
+                </tbody>
+
             </table>
         </div>
 
     </div>
+
 </div>
 {% endblock %}

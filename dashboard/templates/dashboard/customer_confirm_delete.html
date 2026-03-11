@@ -1,0 +1,52 @@
+{% extends 'dashboard/base.html' %}
+
+{% block content %}
+
+<div class="container mt-5">
+
+<div class="card shadow-sm p-4" style="max-width:600px;margin:auto">
+
+<h3 class="text-danger mb-4">Delete Customer</h3>
+
+<div class="row mb-3">
+<div class="col-md-4"><strong>Username</strong></div>
+<div class="col-md-8">{{ customer.user.username }}</div>
+</div>
+
+<div class="row mb-3">
+<div class="col-md-4"><strong>Name</strong></div>
+<div class="col-md-8">{{ customer.name }}</div>
+</div>
+
+<div class="row mb-3">
+<div class="col-md-4"><strong>Email</strong></div>
+<div class="col-md-8">{{ customer.email }}</div>
+</div>
+
+<div class="row mb-3">
+<div class="col-md-4"><strong>Contact</strong></div>
+<div class="col-md-8">{{ customer.contact_no }}</div>
+</div>
+
+<hr>
+
+<form method="POST">
+
+{% csrf_token %}
+
+<button type="submit" class="btn btn-danger">
+Yes, Delete
+</button>
+
+<a href="{% url 'dashboard:dashboard_customers' %}"
+class="btn btn-secondary">
+Cancel
+</a>
+
+</form>
+
+</div>
+
+</div>
+
+{% endblock %}

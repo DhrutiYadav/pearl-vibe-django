@@ -1274,9 +1274,14 @@ def edit_customer(request, customer_id):
 @user_passes_test(is_admin)
 def delete_customer(request, customer_id):
     customer = get_object_or_404(Customer, id=customer_id)
-    customer.delete()
-    return redirect('dashboard:dashboard_customers')
 
+    if request.method == "POST":
+        customer.delete()
+        return redirect('dashboard:dashboard_customers')
+
+    return render(request, "dashboard/customer_confirm_delete.html", {
+        "customer": customer
+    })
 @login_required(login_url='/admin/login/')
 @user_passes_test(is_admin)
 def edit_order_summary(request, summary_id):
