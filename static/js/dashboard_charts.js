@@ -1,27 +1,40 @@
 document.addEventListener("DOMContentLoaded", function () {
     console.log("Charts JS Loaded ✅");
 
-    loadSalesChart();
-    loadFilteredChart();
-    loadDayWiseChart();
-    loadCategoryChart();
-    loadYearlyChart();
-    loadYearMonthChart();
-    loadAOVChart();
-    loadRevenueOrdersChart();
-    loadTopProductsChart();
-    loadPriceRangeChart();
-    loadCLVChart();
-    loadUserChart();
+    const chartLoaders = [
+        loadSalesChart,
+        loadFilteredChart,
+        loadDayWiseChart,
+        loadCategoryChart,
+        loadYearlyChart,
+        loadYearMonthChart,
+        loadAOVChart,
+        loadRevenueOrdersChart,
+        loadTopProductsChart,
+        loadPriceRangeChart,
+        loadCLVChart,
+        loadUserChart
+    ];
+
+    chartLoaders.forEach(fn => fn());
 });
 
+// File: static/js/dashboard_charts.js
+
 function createChart(canvasId, config) {
+
     const canvas = document.getElementById(canvasId);
     if (!canvas) return;
 
+    // 🔥 destroy existing chart automatically
+    let existingChart = Chart.getChart(canvasId);
+    if (existingChart) {
+        existingChart.destroy();
+    }
+
     const ctx = canvas.getContext('2d');
 
-    new Chart(ctx, config);
+    return new Chart(ctx, config);
 }
 
 // ✅ SALES CHART
@@ -32,7 +45,7 @@ function loadSalesChart() {
         .then(data => {
 
             const labels = data.labels;
-            const values = data.data;
+            const values = data.revenues;
 
             const ctx = document.getElementById("salesChart").getContext("2d");
 
@@ -191,6 +204,8 @@ function loadYearlyChart() {
         }
     });
 }
+
+
 let monthlyChart = null;
 
 function loadYearMonthChart(year=null){
@@ -309,27 +324,42 @@ function loadRevenueOrdersChart() {
 }
 
 //top selling products
+let topProductsChart = null;
+
 function loadTopProductsChart() {
-    const canvas = document.getElementById('topProductsChart');
-    if (!canvas) return;
 
-    const ctx = canvas.getContext('2d');
+    fetch("/dashboard/api/top-products/")
+    .then(res => res.json())
+    .then(data => {
 
-    new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: top_products_labels,
-            datasets: [{
-                label: 'Units Sold',
-                data: top_products_data,
-                backgroundColor: 'rgba(255, 193, 7, 0.7)'
-            }]
-        },
-        options: {
-            indexAxis: 'y',
-            responsive: true
+        const canvas = document.getElementById('topProductsChart');
+        if (!canvas) return;
+
+        const ctx = canvas.getContext('2d');
+
+        // 🔹 destroy previous chart if exists
+        if (topProductsChart) {
+            topProductsChart.destroy();
         }
+
+        topProductsChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: data.labels,
+                datasets: [{
+                    label: 'Units Sold',
+                    data: data.data,
+                    backgroundColor: 'rgba(255,193,7,0.7)'
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true
+            }
+        });
+
     });
+
 }
 
 //clv

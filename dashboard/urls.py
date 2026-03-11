@@ -2,6 +2,7 @@ from django.urls import path
 from . import views
 from .api_reports import sales_report_api
 from . import api_reports
+
 app_name = 'dashboard'   # 🔥 THIS LINE IS REQUIRED
 
 urlpatterns = [
@@ -67,8 +68,6 @@ urlpatterns = [
     path("api/daywise-report/", api_reports.daywise_report_api, name="daywise_report_api"),
     path("api/monthly-sales/", api_reports.monthly_sales_api, name="monthly_sales_api"),
     path("api/category-report/", api_reports.category_report_api, name="category_report_api"),
-#     path("api/sales/", api_reports.sales_report_api, name="api_sales"),
-#     path("api/products/", api_reports.products_report_api, name="api_products"),
-#     path("api/customers/", api_reports.customers_report_api, name="api_customers"),
-#     path("api/states/", api_reports.states_report_api, name="api_states"),
+    path("api/top-products/", api_reports.top_products_api, name="top_products_api"),
+    path("api/sales/", api_reports.sales_report_api, name="api_sales"),
 ]

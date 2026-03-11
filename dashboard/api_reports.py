@@ -192,18 +192,17 @@ def monthly_sales_api(request):
         "revenues": revenues
     })
 
-
+@login_required
+@user_passes_test(is_admin)
 def category_report_api(request):
 
-    revenue_expr = ExpressionWrapper(
-        F("product__price") * F("quantity"),
-        output_field=DecimalField()
-    )
+    from django.db.models import Sum
+    from store.models import OrderItem
 
     categories = (
-        OrderItem.objects
+        OrderItem.objects.filter(order__complete=True)
         .values("product__subcategory__category__name")
-        .annotate(revenue=Sum(revenue_expr))
+        .annotate(revenue=Sum(F("quantity") * F("product__price")))
         .order_by("-revenue")
     )
 
@@ -219,3 +218,27 @@ def category_report_api(request):
         "revenues": revenues
     })
 
+def top_products_api(request):
+
+    from django.db.models import Sum
+    from store.models import OrderItem
+    from django.http import JsonResponse
+
+    products = (
+        OrderItem.objects
+        .values("product__name")
+        .annotate(total_sold=Sum("quantity"))
+        .order_by("-total_sold")[:10]
+    )
+
+    labels = []
+    data = []
+
+    for p in products:
+        labels.append(p["product__name"])
+        data.append(p["total_sold"])
+
+    return JsonResponse({
+        "labels": labels,
+        "data": data
+    })
