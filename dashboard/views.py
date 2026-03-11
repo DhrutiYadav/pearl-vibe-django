@@ -162,25 +162,19 @@ def product_edit(request, pk):
         form = ProductForm(instance=product)
     return render(request, 'dashboard/product_form.html', {'form': form, 'title': 'Edit Product'})
 
-# DELETE product
-def product_delete(request, pk):
-    product = get_object_or_404(Product, pk=pk)
-    if request.method == 'POST':
-        product.delete()
-        return redirect('product_list')
-    return render(request, 'dashboard/product_confirm_delete.html', {'product': product})
 
 @login_required(login_url='/admin/login/')
 @user_passes_test(is_admin)
 def dashboard_delete_product(request, pk):
     product = get_object_or_404(Product, pk=pk)
 
-    if request.method == 'POST':
+    if request.method == "POST":
         product.delete()
         return redirect('dashboard:dashboard_products')
 
-    # optional safety fallback
-    return redirect('dashboard:dashboard_products')
+    return render(request, "dashboard/product_confirm_delete.html", {
+        "product": product
+    })
 
 @login_required(login_url='/admin/login/')
 @user_passes_test(is_admin)
