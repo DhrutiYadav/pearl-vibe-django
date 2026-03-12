@@ -12,11 +12,21 @@ const globalTooltip = {
             let label = context.dataset.label || "";
             let value = context.raw;
 
-            if(label){
-                label += ": ";
+            // detect chart type
+            const chartType = context.chart.config.type;
+
+            // charts that represent money
+            const currencyCharts = ["line", "bar", "pie", "doughnut"];
+
+            if(chartType === "pie" || chartType === "doughnut"){
+                return context.label + ": ₹" + value.toLocaleString();
             }
 
-            return label + "₹" + value.toLocaleString();
+            if(label.includes("Revenue") || label.includes("AOV") || label.includes("CLV") || label.includes("Sales") || label.includes("Total Spent")){
+                return label + ": ₹" + value.toLocaleString();
+            }
+
+            return label + ": " + value.toLocaleString();
         }
     }
 };
@@ -41,7 +51,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
     chartLoaders.forEach(fn => fn());
 });
-
 function createChart(canvasId, config) {
 
     const canvas = document.getElementById(canvasId);
@@ -54,7 +63,6 @@ function createChart(canvasId, config) {
 
     const ctx = canvas.getContext('2d');
 
-    // ⭐ Advanced Tooltip (Global)
     if(!config.options){
         config.options = {};
     }
@@ -64,6 +72,15 @@ function createChart(canvasId, config) {
     }
 
     config.options.plugins.tooltip = globalTooltip;
+
+    // only apply default interaction if chart doesn't define it
+    if(!config.options.interaction){
+        config.options.interaction = {
+            mode: 'index',
+            intersect: false
+        };
+    }
+
     return new Chart(ctx, config);
 }
 
@@ -83,7 +100,7 @@ function loadSalesChart() {
                 window.salesChartInstance.destroy();
             }
 
-            window.salesChartInstance = new Chart("salesChart", {
+            window.salesChartInstance = createChart("salesChart", {
                 type: "line",
                 data: {
                     labels: labels,
@@ -93,9 +110,11 @@ function loadSalesChart() {
                         borderWidth: 2,
                         fill: false
                     }]
+                },
+                options: {
+                    responsive: true
                 }
             });
-
         });
 }
 
@@ -108,7 +127,7 @@ function loadFilteredChart() {
 
     const ctx = canvas.getContext('2d');
 
-    new Chart(ctx, {
+    createChart("filteredSalesChart", {
         type: 'line',
         data: {
             labels: filtered_dates,
@@ -192,7 +211,8 @@ function loadCategoryChart() {
 
         const ctx = canvas.getContext('2d');
 
-        new Chart(ctx, {
+//        new Chart(ctx, {
+        createChart("categoryChart", {
             type: 'pie',
             data: {
                 labels: data.labels,
@@ -258,7 +278,7 @@ function loadYearMonthChart(year=null){
             monthlyChart.destroy();
         }
 
-        monthlyChart = new Chart(ctx,{
+        monthlyChart = createChart("yearMonthChart",{
             type:"bar",
             data:{
                 labels:data.labels,
@@ -312,7 +332,7 @@ function loadRevenueOrdersChart() {
 
     const ctx = canvas.getContext('2d');
 
-    new Chart(ctx, {
+    createChart("revenueOrdersChart",{
         type: 'line',
         data: {
             labels: revenue_orders_dates,
@@ -321,6 +341,8 @@ function loadRevenueOrdersChart() {
                     label: 'Revenue (₹)',
                     data: revenue_orders_revenue,
                     borderColor: '#28a745',
+                    hoverOffset: 12,
+                    borderWidth: 2,
                     tension: 0.3,
                     yAxisID: 'y'
                 },
@@ -329,6 +351,8 @@ function loadRevenueOrdersChart() {
                     data: revenue_orders_counts,
                     borderColor: '#007bff',
                     tension: 0.3,
+                    hoverOffset: 12,
+                    borderWidth: 2,
                     yAxisID: 'y1'
                 }
             ]
@@ -372,24 +396,44 @@ function loadTopProductsChart() {
             topProductsChart.destroy();
         }
 
-        topProductsChart = new Chart(ctx, {
+        topProductsChart = createChart("topProductsChart",{
             type: 'bar',
             data: {
                 labels: data.labels,
                 datasets: [{
                     label: 'Units Sold',
                     data: data.data,
-                    backgroundColor: 'rgba(255,193,7,0.7)'
+                    backgroundColor: 'rgba(255,193,7,0.7)',
+                    borderWidth: 2,
+                    hoverOffset: 12,
+                    borderRadius: 6,
+                    barThickness: 20
                 }]
             },
             options: {
                 indexAxis: 'y',
-                responsive: true
+                responsive: true,
+
+                interaction: {
+                    mode: 'nearest',
+                    axis: 'y',
+                    intersect: false
+                },
+
+                hover: {
+                    mode: 'nearest',
+                    axis: 'y',
+                    intersect: false
+                },
+
+                scales: {
+                    x: {
+                        beginAtZero: true
+                    }
+                }
             }
         });
-
     });
-
 }
 
 //clv
@@ -400,6 +444,8 @@ function loadCLVChart() {
             labels: clv_labels,
             datasets: [{
                 label: 'CLV',
+                hoverOffset: 12,
+                borderWidth: 2,
                 data: clv_values
             }]
         }
@@ -413,12 +459,14 @@ function loadUserChart() {
 
     const ctx = canvas.getContext('2d');
 
-    new Chart(ctx, {
+    createChart("userChart",{
         type: 'bar',
         data: {
             labels: user_labels,
             datasets: [{
                 label: 'Total Spent',
+                hoverOffset: 12,
+                borderWidth: 2,
                 data: user_data
             }]
         },
@@ -435,7 +483,9 @@ function loadPriceRangeChart() {
         data: {
             labels: price_range_labels,
             datasets: [{
-                data: price_range_data
+                data: price_range_data,
+                hoverOffset: 12,
+                borderWidth: 2
             }]
         }
     });
@@ -455,13 +505,14 @@ function quickFilter(range){
 
         const ctx = document.getElementById("filteredSalesChart");
 
-        new Chart(ctx, {
+        createChart("filteredSalesChart",{
             type: "line",
             data: {
                 labels: data.labels,
                 datasets: [{
                     label: "Revenue",
                     data: data.revenues,
+                    hoverOffset: 12,
                     borderWidth: 2,
                     tension: 0.3
                 }]
@@ -500,7 +551,7 @@ document.addEventListener("DOMContentLoaded", function(){
 
             const ctx = document.getElementById("filteredSalesChart");
 
-            new Chart(ctx, {
+            createChart("filteredSalesChart",{
                 type: "line",
                 data: {
                     labels: data.labels,
@@ -508,6 +559,7 @@ document.addEventListener("DOMContentLoaded", function(){
                         label: "Revenue",
                         data: data.revenues,
                         borderWidth: 2,
+                        hoverOffset: 12,
                         tension: 0.3
                     }]
                 },
