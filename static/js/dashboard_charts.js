@@ -1,3 +1,26 @@
+const globalTooltip = {
+    backgroundColor: "#0d3b66",
+    titleColor: "#ffffff",
+    bodyColor: "#ffffff",
+    borderColor: "#ccc",
+    borderWidth: 1,
+    padding: 10,
+    displayColors: false,
+    callbacks: {
+        label: function(context){
+
+            let label = context.dataset.label || "";
+            let value = context.raw;
+
+            if(label){
+                label += ": ";
+            }
+
+            return label + "₹" + value.toLocaleString();
+        }
+    }
+};
+
 document.addEventListener("DOMContentLoaded", function () {
     console.log("Charts JS Loaded ✅");
 
@@ -19,14 +42,11 @@ document.addEventListener("DOMContentLoaded", function () {
     chartLoaders.forEach(fn => fn());
 });
 
-// File: static/js/dashboard_charts.js
-
 function createChart(canvasId, config) {
 
     const canvas = document.getElementById(canvasId);
     if (!canvas) return;
 
-    // 🔥 destroy existing chart automatically
     let existingChart = Chart.getChart(canvasId);
     if (existingChart) {
         existingChart.destroy();
@@ -34,6 +54,16 @@ function createChart(canvasId, config) {
 
     const ctx = canvas.getContext('2d');
 
+    // ⭐ Advanced Tooltip (Global)
+    if(!config.options){
+        config.options = {};
+    }
+
+    if(!config.options.plugins){
+        config.options.plugins = {};
+    }
+
+    config.options.plugins.tooltip = globalTooltip;
     return new Chart(ctx, config);
 }
 
@@ -53,7 +83,7 @@ function loadSalesChart() {
                 window.salesChartInstance.destroy();
             }
 
-            window.salesChartInstance = new Chart(ctx, {
+            window.salesChartInstance = new Chart("salesChart", {
                 type: "line",
                 data: {
                     labels: labels,
@@ -141,8 +171,8 @@ function loadDayWiseChart(month=null, year=null) {
             },
             options:{
                 responsive:true,
-                scales:{
-                    y:{beginAtZero:true}
+                plugins:{
+                    tooltip: globalTooltip
                 }
             }
         });

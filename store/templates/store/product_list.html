@@ -6,6 +6,17 @@
 
 <style>
 
+/* Make all cards same height */
+.card{
+height:100%;
+display:flex;
+flex-direction:column;
+}
+/* Prevent size/color section from stretching */
+.product-info{
+min-height:40px;
+}
+
 .product-img-rect{
 width:100%;
 height:200px;
@@ -35,9 +46,26 @@ border:none;
 background:#082642;
 color:white;
 }
+/* Limit product title height */
+.card-title{
+min-height:48px;
+}
 
-.card-body {
-    background-color: #f0f4fa;
+/* Make body stretch evenly */
+.card-body{
+background-color:#f0f4fa;
+flex-grow:1;
+display:flex;
+flex-direction:column;
+justify-content:space-between;
+}
+
+.card-title{
+min-height:48px;
+overflow:hidden;
+display:-webkit-box;
+-webkit-line-clamp:2;
+-webkit-box-orient:vertical;
 }
 </style>
 
@@ -209,7 +237,7 @@ alt="placeholder">
 
 <!-- Price + Size + Colors -->
 
-<div class="d-flex justify-content-between align-items-center mb-2">
+<div class="d-flex justify-content-between align-items-center mb-2 product-info">
 
 <div class="d-flex align-items-center gap-2">
 
