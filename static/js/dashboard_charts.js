@@ -218,6 +218,8 @@ function loadCategoryChart() {
                 labels: data.labels,
                 datasets: [{
                     data: data.revenues,
+                    hoverOffset: 30,
+                    borderWidth: 2,
                     backgroundColor: [
                         '#ff6384',
                         '#36a2eb',
