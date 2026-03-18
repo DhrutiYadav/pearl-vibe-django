@@ -49,14 +49,14 @@
 
             <div class="d-flex gap-2 mt-2" id="size-options">
                 {% for size in product.sizes %}
-                    {% if size != "Free" %}
-                        <span
-                            class="size-option"
-                            data-size="{{ size }}"
-                            style="padding:6px 12px;border:1px solid #333;border-radius:6px;cursor:pointer;">
-                            {{ size }}
-                        </span>
-                    {% endif %}
+
+                    <span
+                        class="size-option"
+                        data-size="{{ size }}"
+                        style="padding:6px 12px;border:1px solid #333;border-radius:6px;cursor:pointer;">
+                        {{ size }}
+                    </span>
+
                 {% endfor %}
             </div>
         </div>
@@ -88,8 +88,12 @@
     const colorOptions = document.querySelectorAll(".color-option");
     const addToCartBtn = document.getElementById("add-to-cart-btn");
     // 🔥 Enable button if no size/color exists
-    if (sizeOptions.length === 0 && colorOptions.length === 0) {
-        addToCartBtn.disabled = false;
+    if (sizeOptions.length === 1 && sizeOptions[0].dataset.size === "Free") {
+        selectedSize = "Free";
+        document.getElementById("selected-size").value = "Free";
+        sizeOptions[0].style.background = "#ddd";
+
+        checkEnableButton(); // 🔥 ADD THIS LINE
     }
 
     function checkEnableButton() {

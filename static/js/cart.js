@@ -34,15 +34,9 @@ document.addEventListener('DOMContentLoaded', function () {
                     color = colorInput.value;
                 }
             }
-
-            // 🧹 Remove fake "Free"
-            if (size === "Free") {
-                size = "";
-            }
-
             // 🚨 VALIDATION
-            var sizeOptions = document.querySelectorAll(".size-option");
-            var colorOptions = document.querySelectorAll(".color-option");
+            var sizeOptions = document.querySelectorAll(".size-option") || [];
+            var colorOptions = document.querySelectorAll(".color-option") || [];
 
             var hasSizeOptions = sizeOptions.length > 0;
             var hasColorOptions = colorOptions.length > 0;
@@ -91,4 +85,5 @@ document.addEventListener('DOMContentLoaded', function () {
             location.reload();
         });
     }
+    checkEnableButton();
 });
