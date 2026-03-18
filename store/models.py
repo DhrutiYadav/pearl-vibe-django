@@ -23,7 +23,7 @@ class SubCategory(models.Model):
 
 
 def default_sizes():
-    return ["Free"]
+    return []
 
 class Product(models.Model):
     subcategory = models.ForeignKey(SubCategory, on_delete=models.CASCADE, related_name='products')
@@ -34,9 +34,13 @@ class Product(models.Model):
     description = models.TextField(blank=True)
     # ✅ ADD THESE TWO LINES
     colors = models.JSONField(default=list, blank=True)  # multiple colors
-    # sizes = models.JSONField(default=default_sizes, blank=True)
     sizes = models.JSONField(default=default_sizes, blank=True)
-    # default_color = models.CharField(max_length=20, default="#8B4513")
+
+    def has_sizes(self):
+        return len(self.sizes) > 0
+
+    def has_colors(self):
+        return len(self.colors) > 0
 
     def __str__(self):
         return self.name
