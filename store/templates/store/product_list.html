@@ -265,8 +265,6 @@ Size:
 
 </div>
 
-
-
 {% if product.colors %}
 
 <div class="d-flex align-items-center gap-1">
@@ -302,14 +300,23 @@ display:inline-block;
 
 <div class="d-flex gap-2">
 
+{% if product.colors %}
+
+<a href="{% url 'store:product_detail' product.id %}"
+   class="btn btn-outline-secondary btn-sm">
+   Select Options
+</a>
+
+{% else %}
+
 <button
 data-product="{{ product.id }}"
 data-action="add"
 class="btn btn-outline-secondary btn-sm update-cart">
-
 Add to cart
-
 </button>
+
+{% endif %}
 
 
 <a href="{% url 'store:product_detail' product.id %}"

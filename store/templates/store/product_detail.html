@@ -18,7 +18,7 @@
         {% endif %}
 
 
-        {% if product.colors %}
+        {% if product.colors|length > 0 %}
         <div class="mt-3">
             <strong>Available Colors:</strong>
 
@@ -49,18 +49,14 @@
 
             <div class="d-flex gap-2 mt-2" id="size-options">
                 {% for size in product.sizes %}
-                <span
-                        class="size-option"
-                        data-size="{{ size }}"
-                        style="
-                padding: 6px 12px;
-                border: 1px solid #333;
-                border-radius: 6px;
-                cursor: pointer;
-                user-select: none;
-            ">
-            {{ size }}
-        </span>
+                    {% if size != "Free" %}
+                        <span
+                            class="size-option"
+                            data-size="{{ size }}"
+                            style="padding:6px 12px;border:1px solid #333;border-radius:6px;cursor:pointer;">
+                            {{ size }}
+                        </span>
+                    {% endif %}
                 {% endfor %}
             </div>
         </div>
@@ -91,9 +87,22 @@
     const sizeOptions = document.querySelectorAll(".size-option");
     const colorOptions = document.querySelectorAll(".color-option");
     const addToCartBtn = document.getElementById("add-to-cart-btn");
+    // 🔥 Enable button if no size/color exists
+    if (sizeOptions.length === 0 && colorOptions.length === 0) {
+        addToCartBtn.disabled = false;
+    }
 
     function checkEnableButton() {
-        if (selectedSize && selectedColor) {
+        let hasSizeOptions = sizeOptions.length > 0;
+        let hasColorOptions = colorOptions.length > 0;
+
+        if (!hasSizeOptions && !hasColorOptions) {
+            addToCartBtn.disabled = false;
+        } else if (hasSizeOptions && !hasColorOptions && selectedSize) {
+            addToCartBtn.disabled = false;
+        } else if (!hasSizeOptions && hasColorOptions && selectedColor) {
+            addToCartBtn.disabled = false;
+        } else if (hasSizeOptions && hasColorOptions && selectedSize && selectedColor) {
             addToCartBtn.disabled = false;
         }
     }
